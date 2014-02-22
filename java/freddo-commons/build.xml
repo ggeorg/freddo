@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build-jar" name="freddo-commons">
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	
+	<property environment="env" />
+	<property file="build.properties" />
+	
+	<path id="freddo-commons.classpath">
+		<pathelement location="bin" />
+		<fileset dir="lib" includes="**/*.jar" />
+	</path>
+	<target name="init">
+	    <tstamp/>
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall">
+	    <delete file="${ant.project.name}-${project.version}.jar" />
+    </target>
+	<target depends="build-project" name="build" />
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin"
+			includeantruntime="false" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="freddo-commons.classpath" />
+		</javac>
+	</target>
+	<target depends="build" name="build-jar">
+		<jar destfile="${ant.project.name}-${project.version}.jar" basedir="bin" />
+	</target>
+	<target name="doc" description="Generate documentation">
+		<delete dir="${doc.dir}" />
+		<mkdir dir="${doc.dir}" />
+		<javadoc sourcepath="src" destdir="${doc.dir}" />
+	</target>
+</project>
