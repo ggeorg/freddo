@@ -15,22 +15,21 @@
  */
 package freddo.dtalk.events;
 
-import com.arkasoft.freddo.jmdns.ServiceInfo;
+import com.arkasoft.freddo.dtalk.netty4.server.WebPresenceService;
 
-public class DTalkServiceEvent {
-
-  private final ServiceInfo serviceInfo;
-
-  public DTalkServiceEvent() {
-    this.serviceInfo = null;
+/**
+ * Event fired by {@link WebPresenceService}.
+ */
+public class WebPresenceEvent {
+  
+  private final boolean mOpen;
+  
+  public WebPresenceEvent(boolean open) {
+    mOpen = open;
   }
 
-  public DTalkServiceEvent(ServiceInfo serviceInfo) {
-    this.serviceInfo = serviceInfo;
-  }
-
-  public ServiceInfo getServiceInfo() {
-    return serviceInfo;
+  public boolean isOpen() {
+    return mOpen;
   }
 
 }

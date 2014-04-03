@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.services;
+package freddo.dtalk.services.clients;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,39 +21,48 @@ import org.json.JSONObject;
 import freddo.dtalk.AsyncCallback;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkEventListener;
+import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkSubscribeHandle;
 
 public class Video extends Service {
-  private static Video sInstance = null;
 
-  public static synchronized Video getInstance() throws JSONException {
-    if (sInstance == null) {
-      sInstance = new Video();
+  public Video() {
+    this(null);
+  }
+
+  public Video(String target) {
+    super("dtalk.service.Video", target);
+  }
+
+  public void getInfo(AsyncCallback<JSONObject> callback) {
+    try {
+      DTalkServiceAdapter.get(this, "info", callback);
+    } catch (DTalkException e) {
+      callback.onFailure(e);
     }
-    return sInstance;
   }
 
-  private Video() throws JSONException {
-    super(SRV_PREFIX + "Video");
+  public void getSrc(AsyncCallback<String> callback) {
+    try {
+      DTalkServiceAdapter.get(this, "src", callback);
+    } catch (DTalkException e) {
+      callback.onFailure(e);
+    }
   }
 
-  public void getInfo(AsyncCallback<JSONObject> callback) throws JSONException {
-    DTalkServiceAdapter.get(this, "info", callback);
-  }
-
-  public void getSrc(AsyncCallback<String> callback) throws JSONException {
-    DTalkServiceAdapter.get(this, "src", callback);
-  }
-
-  public void setSrc(String src) throws JSONException {
+  public void setSrc(String src) throws DTalkException {
     DTalkServiceAdapter.set(this, "src", src);
   }
 
-  public void setSrc(String src, double startPositionPercent) throws JSONException {
-    JSONObject options = new JSONObject();
-    options.put("src", src);
-    options.put("startPositionPercent", startPositionPercent);
-    DTalkServiceAdapter.set(this, options);
+  public void setSrc(String src, double startPositionPercent) throws DTalkException {
+    try {
+      JSONObject options = new JSONObject();
+      options.put("src", src);
+      options.put("startPositionPercent", startPositionPercent);
+      DTalkServiceAdapter.set(this, options);
+    } catch (JSONException e) {
+      throw new DTalkException(DTalkException.INVALID_JSON, e.getMessage());
+    }
   }
 
   /**
@@ -61,10 +70,11 @@ public class Video extends Service {
    * <p>
    * If playback is not currently underway, this method has no effect. To resume
    * playback of the current item from the pause point, call the play method.
+   * @throws DTalkException 
    * 
    * @throws JSONException
    */
-  public void pause() throws JSONException {
+  public void pause() throws DTalkException  {
     DTalkServiceAdapter.invoke(this, "pause");
   }
 
@@ -75,10 +85,11 @@ public class Video extends Service {
    * measured in seconds from the beginning of the current item. For content
    * streamed live from a server, this value represents the time from the
    * beginning of the playlist when it was first loaded.
+   * @throws DTalkException 
    * 
    * @throws JSONException
    */
-  public void seekTo(double sec) throws JSONException {
+  public void seekTo(double sec) throws DTalkException  {
     DTalkServiceAdapter.invoke(this, "seekTo", sec);
   }
 
@@ -88,10 +99,11 @@ public class Video extends Service {
    * If playback was previously paused, this method resumes playback where it
    * left; otherwise, this method plays the first available item, from the
    * beginning.
+   * @throws DTalkException 
    * 
    * @throws JSONException
    */
-  public void play() throws JSONException {
+  public void play() throws DTalkException  {
     DTalkServiceAdapter.invoke(this, "play");
   }
 
@@ -101,10 +113,11 @@ public class Video extends Service {
    * This method stops playback of the current item and resets the playhead to
    * the start of the item. Calling the play method again initiates playback
    * from the beginning of the item.
+   * @throws DTalkException 
    * 
    * @throws JSONException
    */
-  public void stop() throws JSONException {
+  public void stop() throws DTalkException  {
     DTalkServiceAdapter.invoke(this, "stop");
   }
 
@@ -113,19 +126,21 @@ public class Video extends Service {
    * the playback rate: 0 is paused, 1 is playing at the normal speed. If the
    * video implementation allows fast forward then it will work with values like
    * 2,3 etc.
+   * @throws DTalkException 
    * 
    * @throws JSONException
    */
-  public void setRate(double rate) throws JSONException {
+  public void setRate(double rate) throws DTalkException  {
     DTalkServiceAdapter.invoke(this, "setRate", rate);
   }
 
   /**
    * Send an image to render in the view
+   * @throws DTalkException 
    * 
    * @throws JSONException
    */
-  public void setPhoto(String photoUrl) throws JSONException {
+  public void setPhoto(String photoUrl) throws DTalkException  {
     DTalkServiceAdapter.set(this, "photo", photoUrl);
   }
 

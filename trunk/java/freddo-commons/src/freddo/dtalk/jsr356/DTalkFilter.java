@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.server;
+package freddo.dtalk.jsr356;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,7 +28,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.arkasoft.freddo.util.LOG;
+import freddo.dtalk.util.LOG;
 
 public class DTalkFilter implements Filter {
   private static final String TAG = LOG.tag(DTalkFilter.class);
