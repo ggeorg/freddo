@@ -13,24 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.server;
+package freddo.dtalk.jsr356;
 
-public class DTalkConnectionEvent {
+import javax.websocket.HandshakeResponse;
+import javax.websocket.server.HandshakeRequest;
+import javax.websocket.server.ServerEndpointConfig;
 
-  private final DTalkConnection conn;
-  private final boolean open;
+public class DTalkConfigurator extends ServerEndpointConfig.Configurator {
 
-  public DTalkConnectionEvent(DTalkConnection conn, boolean open) {
-    this.conn = conn;
-    this.open = open;
-  }
-
-  public DTalkConnection getConnection() {
-    return conn;
-  }
-
-  public boolean isOpen() {
-    return open;
+  @Override
+  public void modifyHandshake(ServerEndpointConfig conf, HandshakeRequest req, HandshakeResponse resp) {
+    conf.getUserProperties().put("handshake-req", req);
+    
+    
   }
 
 }

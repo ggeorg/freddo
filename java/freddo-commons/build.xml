@@ -7,7 +7,7 @@
 	<property environment="env" />
 	<property file="build.properties" />
 	
-	<path id="freddo-commons.classpath">
+	<path id="com.arkasoft.freddo-commons.classpath">
 		<pathelement location="bin" />
 		<fileset dir="lib" includes="**/*.jar" />
 	</path>
@@ -23,17 +23,16 @@
 	</target>
 	<target name="clean">
 		<delete dir="bin" />
+		<delete file="${ant.project.name}-${project.version}.jar" />
 	</target>
-	<target depends="clean" name="cleanall">
-	    <delete file="${ant.project.name}-${project.version}.jar" />
-    </target>
+	<target depends="clean" name="cleanall" />
 	<target depends="build-project" name="build" />
 	<target depends="init" name="build-project">
 		<echo message="${ant.project.name}: ${ant.file}" />
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin"
 			includeantruntime="false" source="${source}" target="${target}">
 			<src path="src" />
-			<classpath refid="freddo-commons.classpath" />
+			<classpath refid="com.arkasoft.freddo-commons.classpath" />
 		</javac>
 	</target>
 	<target depends="build" name="build-jar">

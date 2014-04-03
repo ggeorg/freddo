@@ -15,32 +15,10 @@
  */
 package freddo.dtalk.services;
 
-import org.json.JSONException;
+import org.json.JSONObject;
 
-public abstract class Service {
+public interface FdServiceFactory<T> {
+  FdService<T> create(T context, JSONObject options);
 
-  protected final static String SRV_PREFIX = "dtalk.service.";
-
-  private final String name;
-  protected final String replyName;
-
-  protected Service(String name) throws JSONException {
-    this.name = name;
-    this.replyName = '$' + name;
-
-    // Create peer...
-    DTalkServiceAdapter.sendStart(this);
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  protected String eventCallbackService(String event) {
-    return replyName + "." + event;
-  }
-
-  public static void dispose() {
-    //DTalkServiceAdapter.sendStop(this);
-  }
+  String getType();
 }

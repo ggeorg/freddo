@@ -13,19 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.server;
+package freddo.dtalk.jsr356;
 
-import javax.websocket.HandshakeResponse;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerEndpointConfig;
+import org.json.JSONObject;
 
-public class DTalkConfigurator extends ServerEndpointConfig.Configurator {
+import com.arkasoft.freddo.messagebus.MessageBusListener;
 
-  @Override
-  public void modifyHandshake(ServerEndpointConfig conf, HandshakeRequest req, HandshakeResponse resp) {
-    conf.getUserProperties().put("handshake-req", req);
-    
-    
-  }
+public interface Service extends MessageBusListener<JSONObject> {
+
+  void stop();
+
+  void start();
 
 }

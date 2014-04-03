@@ -5,6 +5,7 @@
 	<classpathentry kind="lib" path="lib/provided/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/provided/websocket-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/optional/netty-all-4.0.12.Final.jar"/>
+	<classpathentry kind="lib" path="lib/optional/javassist.jar"/>
+	<classpathentry kind="lib" path="lib/provided/android.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

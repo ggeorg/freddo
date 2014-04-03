@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.server;
+package freddo.dtalk.jsr356;
 
 import java.io.IOException;
 
@@ -22,18 +22,16 @@ import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
-import javax.websocket.PongMessage;
 import javax.websocket.Session;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpoint;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.arkasoft.freddo.messagebus.MessageBus;
-import com.arkasoft.freddo.util.LOG;
 
 import freddo.dtalk.events.IncomingMessageEvent;
+import freddo.dtalk.util.LOG;
 
 @ServerEndpoint(value = "/dtalksrv", configurator = DTalkConfigurator.class)
 public class DTalkConnection {
@@ -57,6 +55,8 @@ public class DTalkConnection {
 
   @OnOpen
   public void onOpen(Session session, EndpointConfig config) {
+    LOG.v(TAG, ">>> ================================================ onOpen: %s", session.getId());
+    
     request = (HandshakeRequest) config.getUserProperties().get("handshake-req");
     // Map<String, List<String>> headers = req.getHeaders();
     //
@@ -66,11 +66,12 @@ public class DTalkConnection {
     this.session = session;
 
     MessageBus.sendMessage(new DTalkConnectionEvent(this, true));
-    // DTalkContextListener.addConnection(session.getId(), this);
   }
 
   @OnClose
   public void onClose() {
+    LOG.v(TAG, ">>> ------------------------------------------------ onClose %s", session.getId());
+    
     MessageBus.sendMessage(new DTalkConnectionEvent(this, false));
 
     // DTalkContextListener.removeConnection(session.getId());
@@ -81,21 +82,19 @@ public class DTalkConnection {
   public void onMessage(String message) {
     try {
       JSONObject jsonMsg = new JSONObject(message);
-      // String body = jsonMsg.optString(MessageEvent.KEY_BODY);
-      // if (body != null) {
-      JSONObject jsonBody = jsonMsg; // new JSONObject(body);
+      JSONObject jsonBody = jsonMsg;
       // TODO jsonMsg validation
       MessageBus.sendMessage(new IncomingMessageEvent(session.getId(), jsonBody));
-      // }
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    } catch (Throwable t) {
+      LOG.e(TAG, "Error in %s", message);
+      t.printStackTrace();
     }
   }
 
   @OnError
   public void onError(Throwable exception, Session session) {
-    LOG.i(TAG, "Error for client: %s", session.getId());
+    LOG.e(TAG, ">>> onError: %s (%s)", exception.getMessage(), session.getId());
+    exception.printStackTrace();
 
     try {
       session.close();
@@ -106,12 +105,12 @@ public class DTalkConnection {
 
   void sendMessage(String msg) {
     LOG.v(TAG, ">>> sendMessage: %s", msg);
-    
     try {
-      if (session.isOpen()) {
-        session.getBasicRemote().sendText(msg);
-      }
-    } catch (IOException ioe) {
+      //if (session.isOpen()) {
+      session.getBasicRemote().sendText(msg);
+      //}
+    } catch (Exception e) {
+      LOG.e(TAG, "%s... Closing %s", e.getMessage(), session.getId());
       try {
         session.close();
       } catch (IOException e1) {
@@ -125,10 +124,10 @@ public class DTalkConnection {
    * 
    * @param pm Ignored.
    */
-  @OnMessage
-  public void echoPongMessage(PongMessage pm) {
-    // NO-OP
-  }
+//  @OnMessage
+//  public void echoPongMessage(PongMessage pm) {
+//    LOG.v(TAG, ">>> echoPongMessage");
+//  }
 
   @Override
   public String toString() {

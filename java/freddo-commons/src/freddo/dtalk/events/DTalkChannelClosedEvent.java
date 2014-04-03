@@ -15,22 +15,16 @@
  */
 package freddo.dtalk.events;
 
-import com.arkasoft.freddo.jmdns.ServiceInfo;
+public class DTalkChannelClosedEvent {
 
-public class DTalkServiceEvent {
+  private final String name;
 
-  private final ServiceInfo serviceInfo;
-
-  public DTalkServiceEvent() {
-    this.serviceInfo = null;
+  public DTalkChannelClosedEvent(String name) {
+    this.name = name;
   }
 
-  public DTalkServiceEvent(ServiceInfo serviceInfo) {
-    this.serviceInfo = serviceInfo;
-  }
-
-  public ServiceInfo getServiceInfo() {
-    return serviceInfo;
+  public String getName() {
+    return name;
   }
 
 }

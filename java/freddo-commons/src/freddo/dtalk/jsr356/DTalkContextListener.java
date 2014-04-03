@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.server;
+package freddo.dtalk.jsr356;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -28,11 +28,11 @@ import org.json.JSONObject;
 
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
-import com.arkasoft.freddo.util.LOG;
 
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
+import freddo.dtalk.util.LOG;
 
 public abstract class DTalkContextListener implements ServletContextListener {
   private static final String TAG = LOG.tag(DTalkContextListener.class);
@@ -94,6 +94,7 @@ public abstract class DTalkContextListener implements ServletContextListener {
   }
 
   protected void sendMessage(OutgoingMessageEvent message) throws Exception {
+    LOG.v(TAG, ">>> sendMessage: %s", message);
     String to = message.getTo();
     JSONObject jsonMsg = message.getMsg();
     sendMessage(to, jsonMsg.toString());
@@ -101,11 +102,12 @@ public abstract class DTalkContextListener implements ServletContextListener {
   
   protected void sendMessage(String to, String message) {
     LOG.v(TAG, ">>> sendMessage to: %s, message: %s", to, message);
-    
     if (to != null) { // TODO message validation
       DTalkConnection conn = connections.get(to);
       if (conn != null) {
         conn.sendMessage(message);
+      } else {
+        LOG.w(TAG, "Connection %s not found!", to);
       }
     } else {
       // TODO broadcast?

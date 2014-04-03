@@ -13,16 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.server;
+package freddo.dtalk.jsr356;
 
-import org.json.JSONObject;
+public class DTalkConnectionEvent {
 
-import com.arkasoft.freddo.messagebus.MessageBusListener;
+  private final DTalkConnection conn;
+  private final boolean open;
 
-public interface Service extends MessageBusListener<JSONObject> {
+  public DTalkConnectionEvent(DTalkConnection conn, boolean open) {
+    this.conn = conn;
+    this.open = open;
+  }
 
-  void stop();
+  public DTalkConnection getConnection() {
+    return conn;
+  }
 
-  void start();
+  public boolean isOpen() {
+    return open;
+  }
 
 }
