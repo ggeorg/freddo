@@ -28,8 +28,8 @@ import io.netty.handler.codec.http.HttpServerCodec;
 
 import java.net.InetSocketAddress;
 
-import com.arkasoft.freddo.dtalk.DTalkService;
-import com.arkasoft.freddo.util.LOG;
+import freddo.dtalk.DTalkService;
+import freddo.dtalk.util.LOG;
 
 public class WebSocketServer {
   private static final String TAG = LOG.tag(WebSocketServer.class);

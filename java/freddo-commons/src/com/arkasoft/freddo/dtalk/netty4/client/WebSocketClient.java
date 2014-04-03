@@ -34,10 +34,12 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import java.net.URI;
 
-import com.arkasoft.freddo.util.LOG;
+import freddo.dtalk.util.LOG;
 
 public class WebSocketClient {
   private static final String TAG = LOG.tag(WebSocketClient.class);
+  
+  private static EventLoopGroup group = null;
 
   private final URI uri;
 
@@ -47,6 +49,11 @@ public class WebSocketClient {
 
   public Channel connect() {
     assert uri != null : "URI is null";
+    LOG.v(TAG, ">>> connect: %s", uri);
+    
+    if (group == null) {
+      group = new NioEventLoopGroup();
+    }
 
     Channel ch = null;
     EventLoopGroup group = new NioEventLoopGroup();
@@ -101,7 +108,11 @@ public class WebSocketClient {
       // ch.writeAndFlush(new CloseWebSocketFrame());
 
     } catch (Exception e) {
+      LOG.e(TAG, "Error: %s", e.getMessage());
+      // e.printStackTrace();
+
       group.shutdownGracefully();
+      group = null;
     }
 
     return ch;
