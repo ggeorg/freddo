@@ -17,6 +17,7 @@ package com.arkasoft.freddo.dtalk.netty4.client;
 
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
+import freddo.dtalk.util.LOG;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -33,7 +34,6 @@ import io.netty.util.CharsetUtil;
 import org.json.JSONObject;
 
 import com.arkasoft.freddo.messagebus.MessageBus;
-import com.arkasoft.freddo.util.LOG;
 
 public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
   private static final String TAG = "WebSocketClientHandler";
@@ -61,7 +61,7 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    System.out.println("WebSocket Client disconnected!");
+    LOG.d(TAG, "WebSocket Client disconnected!");
   }
 
   @Override
@@ -69,7 +69,7 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
     Channel ch = ctx.channel();
     if (!handshaker.isHandshakeComplete()) {
       handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-      System.out.println("WebSocket Client connected!");
+      LOG.d(TAG, "WebSocket Client connected!");
       handshakeFuture.setSuccess();
       return;
     }
@@ -123,9 +123,9 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
       }
 
     } else if (frame instanceof PongWebSocketFrame) {
-      System.out.println("WebSocket Client received pong");
+      LOG.d(TAG, "WebSocket Client received pong");
     } else if (frame instanceof CloseWebSocketFrame) {
-      System.out.println("WebSocket Client received closing");
+      LOG.d(TAG, "WebSocket Client received closing");
       ch.close();
     }
   }

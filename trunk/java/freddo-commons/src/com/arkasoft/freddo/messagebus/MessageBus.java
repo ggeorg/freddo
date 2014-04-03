@@ -63,6 +63,23 @@ public class MessageBus {
       messageTopics.remove(topic);
     }
   }
+  
+  /**
+   * Tests the existence of a listener.
+   * 
+   * @param topic
+   * @param messageListener
+   * @return
+   */
+  public static <T> boolean hasListener(String topic, MessageBusListener<T> messageListener) {
+    ListenerList<MessageBusListener<?>> topicListeners = messageTopics.get(topic);
+
+    if (topicListeners != null) {
+      return topicListeners.contains(messageListener);
+    }
+    
+    return false;
+  }
 
   /**
    * Sends a message to subscribed topic listeners.

@@ -102,6 +102,10 @@ public class MimetypesFileTypeMap {
     mt = new String[] {"text/css"};
     mimeTypes.put("text/css", mt);
     mimeTypes.put("css", mt);
+    
+    mt = new String[] {"video/mp4"};
+    mimeTypes.put("video/mp4", mt);
+    mimeTypes.put("mp4", mt);
   }
 
   private static String[] UNKNOWN = new String[] {"application/octet-stream"};

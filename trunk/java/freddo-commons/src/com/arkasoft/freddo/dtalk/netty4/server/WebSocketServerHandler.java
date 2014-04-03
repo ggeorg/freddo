@@ -10,8 +10,8 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
+ * License for the specific language governing permissions and limitations
+ * under the License.
  */
 package com.arkasoft.freddo.dtalk.netty4.server;
 
@@ -26,9 +26,11 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.LAST_MODIFIED;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
+import freddo.dtalk.util.LOG;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
@@ -64,9 +66,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.dtalk.DTalkService;
 import com.arkasoft.freddo.messagebus.MessageBus;
-import com.arkasoft.freddo.util.LOG;
 
 /**
  * Handles handshakes and messages
@@ -146,7 +146,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
       WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(req);
       if (handshaker == null) {
         LOG.w(TAG, "Unsupported version: %s", req);
-        WebSocketServerHandshakerFactory.sendUnsupportedWebSocketVersionResponse(ctx.channel());
+        WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
       } else {
         LOG.d(TAG, "Handshake: %s", req);
         Channel channel = ctx.channel();
@@ -200,7 +200,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
   }
 
   private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-    LOG.v(TAG, "Got %s", frame);
+    LOG.v(TAG, ">>> handleWebSocketFrame");
 
     final Channel channel = ctx.channel();
 
@@ -227,7 +227,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     // Got message...
     String message = ((TextWebSocketFrame) frame).text();
-    LOG.v(TAG, "Got messages: %s", message);
+    LOG.d(TAG, "Got message: %s", message);
 
     try {
 
@@ -248,6 +248,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
       JSONObject jsonBody = jsonMsg; // new JSONObject(body);
 
       if (!jsonBody.has(MessageEvent.KEY_BODY_SERVICE)) {
+        LOG.w(TAG, "Invalid Message");
         JSONObject _jsonBody = jsonBody;
         jsonBody = new JSONObject();
         jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
