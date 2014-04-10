@@ -84,7 +84,7 @@ public class WebSocketClient {
             }
           });
 
-      LOG.d(TAG, "WebSocket Client connecting");
+      LOG.d(TAG, "WebSocket Client connecting...");
       ch = b.connect(uri.getHost(), uri.getPort()).addListener(new GenericFutureListener<ChannelFuture>() {
         @Override
         public void operationComplete(ChannelFuture f) throws Exception {
