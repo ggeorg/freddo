@@ -26,6 +26,7 @@ import static io.netty.handler.codec.http.HttpHeaders.Names.LAST_MODIFIED;
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
@@ -217,7 +218,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
     }
 
     if (frame instanceof PingWebSocketFrame) {
+      LOG.d(TAG, "Got ping ws frame");
       ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
+      return;
+    }
+    
+    if (frame instanceof PongWebSocketFrame) {
+      LOG.d(TAG, "Got pong ws frame");
       return;
     }
 
@@ -235,9 +242,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
       String localServiceName = dtalkService.getLocalServiceInfo().getName();
 
-      String to = jsonMsg.optString(MessageEvent.KEY_TO, null);
-      String from = jsonMsg.optString(MessageEvent.KEY_FROM, null);
-      // String body = jsonMsg.optString(MessageEvent.KEY_BODY, null);
+      String to = jsonMsg.optString(DTalk.KEY_TO, null);
+      String from = jsonMsg.optString(DTalk.KEY_FROM, null);
+      String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
 
       // clean up message
       jsonMsg.remove(MessageEvent.KEY_FROM);
@@ -247,7 +254,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
       JSONObject jsonBody = jsonMsg; // new JSONObject(body);
 
-      if (!jsonBody.has(MessageEvent.KEY_BODY_SERVICE)) {
+      if (service == null) {
         LOG.w(TAG, "Invalid Message");
         JSONObject _jsonBody = jsonBody;
         jsonBody = new JSONObject();
@@ -270,8 +277,13 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         // incoming message
         //
 
-        if (from == null) { // anonymous message
-          from = String.valueOf(channel.hashCode());
+        if (from == null) { 
+          // anonymous message...
+          if (service != null && !service.startsWith("$")) {
+            // if its not a broadcast message add 'from'...
+            from = String.valueOf(channel.hashCode());
+          }
+          // else: see DTalkDispatcher for message forwarding.
         } else {
           // replace anonymous channel
           dtalkService.addChannel(from, channel);

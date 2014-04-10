@@ -50,7 +50,7 @@ public final class DTalkDispatcher {
 
   public static void start() {
     LOG.v(TAG, ">>> start");
-    
+
     if (instance == null) {
       instance = new DTalkDispatcher();
     } else {
@@ -96,8 +96,9 @@ public final class DTalkDispatcher {
             LOG.d(TAG, "unsubscribe: %s", topic);
             if (mSubscribers.containsKey(from + topic)) {
               _MessageBusListener subscriber = mSubscribers.remove(from + topic);
-              if (subscriber != null)
+              if (subscriber != null) {
                 MessageBus.unsubscribe(topic, subscriber);
+              }
             }
           }
         } else {
@@ -107,7 +108,7 @@ public final class DTalkDispatcher {
         // Ignore from == null
       }
     } else if (service != null) {
-      
+
       // Dispatch message event...
       if (from != null) {
         try {
@@ -132,14 +133,15 @@ public final class DTalkDispatcher {
     @Override
     public void messageSent(String topic, JSONObject message) {
       try {
-        // clone, cleanup from/to attributes and send it...
+        // clone, cleanup to attribute and send it...
         JSONObject jsonMsg = new JSONObject(message.toString());
-        //jsonMsg.remove(MessageEvent.KEY_FROM);
         jsonMsg.remove(MessageEvent.KEY_TO);
+        // NOTE: don't change the 'from'
+        // By keeping 'from' we do support event forwarding...
+        // jsonMsg.remove(MessageEvent.KEY_FROM);
         MessageBus.sendMessage(new OutgoingMessageEvent(recipient, jsonMsg));
       } catch (JSONException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.e(TAG, "JSON error: %s", e.getMessage());
       }
     }
 
