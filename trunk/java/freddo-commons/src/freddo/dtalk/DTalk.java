@@ -15,6 +15,7 @@
  */
 package freddo.dtalk;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -281,6 +282,8 @@ public final class DTalk implements MessageEvent {
   // LOW LEVEL MESSAGING
   // --------------------------------------------------------------------------
 
+  private final static ExecutorService sThreadPool = Executors.newCachedThreadPool();
+
   /**
    * Forward message, don't do any processing.
    * 
@@ -288,9 +291,14 @@ public final class DTalk implements MessageEvent {
    * @param message
    * @throws DTalkException
    */
-  public static void forward(String service, JSONObject message) throws DTalkException {
+  public static void forward(final String service, final JSONObject message) throws DTalkException {
     if (service != null && service.trim().length() > 0) {
-      MessageBus.sendMessage(service, message);
+      sThreadPool.execute(new Runnable() {
+        @Override
+        public void run() {
+          MessageBus.sendMessage(service, message);
+        }
+      });
     } else {
       throw new DTalkException(DTalkException.INTERNAL_ERROR, "Invalid service or null");
     }
@@ -425,7 +433,7 @@ public final class DTalk implements MessageEvent {
       public void remove() {
         try {
           MessageBus.unsubscribe(topic, listener);
-        } catch(Exception e) {
+        } catch (Exception e) {
           LOG.e(TAG, e.getMessage());
         }
       }

@@ -22,6 +22,7 @@ package freddo.dtalk.util;
  * http://developer.android.com/reference/java/util/Formatter.html
  */
 public class LOG {
+  private static final String TAG = LOG.class.getName();
 
   // from android.util.Log
   public static final int VERBOSE = 2;
@@ -121,7 +122,7 @@ public class LOG {
    */
   public static void setLogLevel(int logLevel) {
     LOGLEVEL = logLevel;
-    LOGGER.i("FreddoLOG", "Changing log level to " + logLevel);
+    LOGGER.i(TAG, "Changing log level to " + logLevel);
   }
 
   /**
@@ -131,7 +132,7 @@ public class LOG {
    */
   public static void setLogger(Logger logger) {
     LOGGER = logger;
-    LOGGER.i("FreddoLOG", "Changed to: " + LOGGER.getClass().getName());
+    LOGGER.i(TAG, "Changed to: " + LOGGER.getClass().getName());
   }
 
   /**
