@@ -17,8 +17,9 @@
  ******************************************************************************/
 
 /*******************************************************************************
- * VERSION: 0.9.2
+ * VERSION: 0.9.3
  * 
+ *  - Added: DTalk.subscribe() & DTalk.unsubscribe()
  *  - WebPresence support added
  *  - Use always DTalk.connect(); by default this connects to the given 'ws' url
  *    parameter.
@@ -45,12 +46,12 @@
 					this.send = function(message) {
 						XDTalk.send(message);
 					};
-					this._subscribe = function(topic, target) {
+					this.subscribe = function(topic, target) {
 						if (target) {
 							DTalk._subscribeTo(topic, target);
 						}
 					};
-					this._unsubscribe = function(topic, from) {
+					this.unsubscribe = function(topic, from) {
 						if (from) {
 							DTalk._unsubscribeFrom(topic, from);
 						}
@@ -78,14 +79,14 @@
 					this.send = function(message) {
 						AndroidDTalk.send(message);
 					};
-					this._subscribe = function(topic, target) {
+					this.subscribe = function(topic, target) {
 						AndroidDTalk.subscribe(topic);
 
 						if (target) {
 							DTalk._subscribeTo(topic, target);
 						}
 					};
-					this._unsubscribe = function(topic, from) {
+					this.unsubscribe = function(topic, from) {
 						AndroidDTalk.unsubscribe(topic);
 
 						if (from) {
@@ -151,7 +152,7 @@
 								console.error(e);
 							}
 						};
-						this._subscribe = function(topic, target) {
+						this.subscribe = function(topic, target) {
 							var subscribe = {
 								service : "dtalk.Dispatcher",
 								action : "subscribe",
@@ -162,7 +163,7 @@
 							// subscribe also to target...
 							DTalk._subscribeTo(topic, target);
 						};
-						this._unsubscribe = function(topic, target) {
+						this.unsubscribe = function(topic, target) {
 							var unsubscribe = {
 								service : "dtalk.Dispatcher",
 								action : "unsubscribe",
@@ -369,7 +370,7 @@
 				}
 
 				if (register && (DTalk.getReadyState() === 1))
-					this._subscribe(event, target);
+					this.subscribe(event, target);
 
 			} catch (e) {
 				console.error(e);
@@ -390,7 +391,7 @@
 				}
 
 				if (unregister && (DTalk.getReadyState() === 1))
-					this._unsubscribe(event, target);
+					this.unsubscribe(event, target);
 
 			} catch (e) {
 				console.error(e);
@@ -398,7 +399,7 @@
 		},
 
 		// TODO documentation
-		_subscribe : function(topic, target) {
+		subscribe : function(topic, target) {
 			console.error("First open a connection before sending a message !");
 		},
 
@@ -417,7 +418,7 @@
 		},
 
 		// TODO documentation
-		_unsubscribe : function(topic, target) {
+		unsubscribe : function(topic, target) {
 			console.error("First open a connection before sending a message !");
 		},
 
