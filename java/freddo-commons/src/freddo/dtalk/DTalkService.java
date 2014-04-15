@@ -605,8 +605,14 @@ public class DTalkService {
     return mWebPresenceService;
   }
 
-  // to be run in a separate thread
-  private void enableWebPresence(boolean webPresence) {
+  /**
+   * Enabled/disable WebPresence.
+   * <p>
+   * NOTE: to be run in a separate thread.
+   * </p>
+   * @param webPresence
+   */
+  public void enableWebPresence(boolean webPresence) {
     LOG.v(TAG, ">>> enableWebPresence: %b", webPresence);
 
     if (webPresence) {
