@@ -20,8 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provides support for basic intra-application message passing.
- * 
- * @author ggeorg
  */
 public class MessageBus {
   private static final Map<String, ListenerList<MessageBusListener<?>>> messageTopics =
@@ -37,8 +35,7 @@ public class MessageBus {
     ListenerList<MessageBusListener<?>> topicListeners = messageTopics.get(topic);
 
     if (topicListeners == null) {
-      topicListeners = new ListenerList<MessageBusListener<?>>() {
-      };
+      topicListeners = new ListenerList<MessageBusListener<?>>();
       messageTopics.put(topic, topicListeners);
     }
 

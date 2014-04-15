@@ -51,13 +51,14 @@ import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.messagebus.MessageBus;
 
 import freddo.dtalk.DTalk;
+import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.WebPresenceEvent;
 import freddo.dtalk.util.Base64;
 import freddo.dtalk.util.LOG;
 
 public class WebPresenceService {
   private static final String TAG = LOG.tag(WebPresenceService.class);
-  
+
   private static EventLoopGroup group = null;
 
   private Channel ch = null;
@@ -65,7 +66,7 @@ public class WebPresenceService {
   public void publish(URI uri, JmDNS jmdns, ServiceInfo serviceInfo) {
     LOG.v(TAG, ">>> publishService: %s", serviceInfo);
     LOG.v(TAG, ">>> publishService: %s", uri);
-    
+
     if (group == null) {
       group = new NioEventLoopGroup();
     }
@@ -86,7 +87,7 @@ public class WebPresenceService {
       }
 
       presence.put(DTalk.KEY_NAME, serviceInfo.getName());
-      presence.put(DTalk.KEY_SERVER, serviceInfo.getServer());
+      presence.put(DTalk.KEY_SERVER, DTalkService.getAddress(serviceInfo));
       presence.put(DTalk.KEY_PORT, serviceInfo.getPort());
 
       HttpHeaders customHeaders = new DefaultHttpHeaders();
@@ -118,7 +119,7 @@ public class WebPresenceService {
 
       group.shutdownGracefully();
       group = null;
-      
+
       MessageBus.sendMessage(new WebPresenceEvent(false));
     }
   }
@@ -173,7 +174,7 @@ public class WebPresenceService {
     @Override
     public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
       LOG.v(TAG, ">>> channelRead0: %s", msg);
-      
+
       Channel ch = ctx.channel();
       if (!handshaker.isHandshakeComplete()) {
         handshaker.finishHandshake(ch, (FullHttpResponse) msg);
@@ -203,14 +204,14 @@ public class WebPresenceService {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
       LOG.e(TAG, ">>> exceptionCaught: %s (error: %s)", ctx, cause);
-      //cause.printStackTrace();
+      // cause.printStackTrace();
 
       if (!handshakeFuture.isDone()) {
         handshakeFuture.setFailure(cause);
         ctx.close();
       }
 
-      //ctx.close();
+      // ctx.close();
     }
   }
 }

@@ -31,21 +31,15 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 
 import freddo.dtalk.util.LOG;
 
-public class DTalkDiscovery {
+class DTalkDiscovery {
   private static final String TAG = LOG.tag(DTalkDiscovery.class);
 
-  private final Map<String, ServiceInfo> serviceInfoMap;
+  final Map<String, ServiceInfo> mServiceInfoMap;
 
-  private final DTalkService dtalkService;
-  private DTalkServiceListener serviceListener = null;
+  private volatile DTalkServiceListener mServiceListener = null;
 
-  public DTalkDiscovery(DTalkService dtalkService) {
-    this.dtalkService = dtalkService;
-    this.serviceInfoMap = new ConcurrentHashMap<String, ServiceInfo>();
-  }
-
-  public Map<String, ServiceInfo> getServiceInfoMap() {
-    return serviceInfoMap;
+  public DTalkDiscovery() {
+    mServiceInfoMap = new ConcurrentHashMap<String, ServiceInfo>();
   }
 
   public void startup() {
@@ -60,21 +54,21 @@ public class DTalkDiscovery {
     setServiceListener(null);
   }
 
-  private void setServiceListener(final DTalkServiceListener serviceListener) {
-    JmDNS jmDNS = dtalkService.getConfig().getJmDNS();
+  private synchronized void setServiceListener(final DTalkServiceListener serviceListener) {
+    final JmDNS jmDNS = DTalkService.getInstance().getConfiguration().getJmDNS();
 
-    // Remove listener for services of a given type.
-    if (this.serviceListener != null) {
+    // Remove listener...
+    if (mServiceListener != null) {
       LOG.v(TAG, "removeServiceListener: %s", DTalk.SERVICE_TYPE);
-      jmDNS.removeServiceListener(DTalk.SERVICE_TYPE, this.serviceListener);
+      jmDNS.removeServiceListener(DTalk.SERVICE_TYPE, mServiceListener);
     }
 
-    this.serviceListener = serviceListener;
+    mServiceListener = serviceListener;
 
-    // Register a service.
-    if (this.serviceListener != null) {
+    // Register listener...
+    if (mServiceListener != null) {
       LOG.v(TAG, "addServiceListener: %s", DTalk.SERVICE_TYPE);
-      jmDNS.addServiceListener(DTalk.SERVICE_TYPE, this.serviceListener);
+      jmDNS.addServiceListener(DTalk.SERVICE_TYPE, mServiceListener);
     }
   }
 
@@ -85,15 +79,15 @@ public class DTalkDiscovery {
       return;
     }
 
-    ServiceInfo _info = getServiceInfoMap().get(info.getName());
+    final ServiceInfo _info = mServiceInfoMap.get(info.getName());
     if (_info != null) {
       if (!_info.equals(info)) {
         return;
       }
     }
 
-    getServiceInfoMap().remove(info.getName());
-    if (info != null && !info.getName().equals(dtalkService.getLocalServiceInfo().getName())) {
+    mServiceInfoMap.remove(info.getName());
+    if (info != null && !info.getName().equals(DTalkService.getInstance().getLocalServiceInfo().getName())) {
       try {
         JSONObject params = new JSONObject();
         params.put(DTalk.KEY_NAME, info.getName());
@@ -120,7 +114,7 @@ public class DTalkDiscovery {
       return;
     }
 
-    ServiceInfo _info = getServiceInfoMap().get(info.getName());
+    ServiceInfo _info = mServiceInfoMap.get(info.getName());
     if (_info != null) {
       if (!_info.equals(info)) {
         serviceRemoved(_info);
@@ -130,9 +124,9 @@ public class DTalkDiscovery {
       }
     }
 
-    if (info != null && !info.getName().equals(dtalkService.getLocalServiceInfo().getName())) {
+    if (info != null && !info.getName().equals(DTalkService.getInstance().getLocalServiceInfo().getName())) {
       // NOTE: self is excluded!!!
-      getServiceInfoMap().put(info.getName(), info);
+      mServiceInfoMap.put(info.getName(), info);
 
       try {
         JSONObject params = new JSONObject();
@@ -168,10 +162,10 @@ public class DTalkDiscovery {
       // check if already resolved
       if (!checkIfAlreadyResolved(event.getInfo())) {
         // we need to resolve
-        dtalkService.getConfig().getThreadPool().execute(new Runnable() {
+        DTalkService.getInstance().getConfiguration().getThreadPool().execute(new Runnable() {
           @Override
           public void run() {
-            JmDNS jmDNS = dtalkService.getConfig().getJmDNS();
+            JmDNS jmDNS = DTalkService.getInstance().getConfiguration().getJmDNS();
 
             LOG.d(TAG, "(1) Request service info: %s", event.getName());
             jmDNS.requestServiceInfo(DTalk.SERVICE_TYPE, event.getName(), true);
