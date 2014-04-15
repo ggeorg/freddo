@@ -19,13 +19,11 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Abstract base class for listener lists.
+ * Class for listener lists.
  * 
  * @param <T>
- * 
- * @author ggeorg
  */
-public abstract class ListenerList<T> implements Iterable<T> {
+final class ListenerList<T> implements Iterable<T> {
    // Node containing a listener in the list
    private class Node {
       private Node previous;

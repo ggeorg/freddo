@@ -26,9 +26,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import freddo.dtalk.DTalkService;
+import freddo.dtalk.DTalkService.Configuration;
 import freddo.dtalk.util.LOG;
 
 public class WebSocketServer {
@@ -38,17 +40,11 @@ public class WebSocketServer {
 
   private Channel ch = null;
 
-  private final DTalkService dtalkService;
-
-  public WebSocketServer(DTalkService dtalkService) {
-    this.dtalkService = dtalkService;
-  }
-
   public InetSocketAddress getAddress() {
     return ch != null && ch.isOpen() ? (InetSocketAddress) ch.localAddress() : null;
   }
 
-  public void startup(Runnable onStartUp) throws Exception {
+  public void startup(Runnable onStartup) throws Exception {
     EventLoopGroup bossGroup = new NioEventLoopGroup();
     EventLoopGroup workerGroup = new NioEventLoopGroup();
     try {
@@ -61,18 +57,18 @@ public class WebSocketServer {
               ChannelPipeline pipeline = ch.pipeline();
               pipeline.addLast("codec-http", new HttpServerCodec());
               pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-              pipeline.addLast("handler", new WebSocketServerHandler(dtalkService));
+              pipeline.addLast("handler", new WebSocketServerHandler());
             }
           });
       
-      final int port = dtalkService.getConfig().getPort();
-      ch = bootstrap.bind(new InetSocketAddress(port)).sync().channel();
-      InetSocketAddress address = (InetSocketAddress) ch.localAddress();
+      final Configuration conf = DTalkService.getInstance().getConfiguration();
+      ch = bootstrap.bind(new InetSocketAddress(conf.getJmDNS().getInterface(), conf.getPort())).sync().channel();
+      final InetSocketAddress address = (InetSocketAddress) ch.localAddress();
       LOG.i(TAG, "Web socket server started at port " + address.getPort() + '.');
-      LOG.i(TAG, "Open your browser and navigate to http://localhost:%d/", address.getPort());
+      LOG.i(TAG, "Open your browser and navigate to http://%s:%d/", address.getHostString(), address.getPort());
 
-      if (onStartUp != null) {
-        onStartUp.run();
+      if (onStartup != null) {
+        onStartup.run();
       }
 
       // WebSocketServerHandler will close the connection when the client

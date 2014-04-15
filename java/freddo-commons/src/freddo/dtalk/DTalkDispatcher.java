@@ -31,7 +31,7 @@ import freddo.dtalk.util.LOG;
 
 /**
  * A singleton class for message dispatching that monitors all
- * {@link IncomingMessageEvent}s and republishes based on topic.
+ * {@link IncomingMessageEvent}s and re-publishes based on topic.
  * <p>
  * Consumes service: dtalk.Dispatcher
  * </p>
@@ -42,17 +42,25 @@ import freddo.dtalk.util.LOG;
  * <li>unsubscribe:topic</li>
  * </ul>
  * </p>
+ * 
+ * TODO: reference counting & listen to closed ws connections...
  */
 public final class DTalkDispatcher {
   private static final String TAG = LOG.tag(DTalkDispatcher.class);
 
-  private static volatile DTalkDispatcher instance;
+  private static volatile DTalkDispatcher sInstance;
 
+  /**
+   * Start {@code DTalkDispatcher}.
+   */
   public static void start() {
     LOG.v(TAG, ">>> start");
 
-    if (instance == null) {
-      instance = new DTalkDispatcher();
+    if (sInstance == null) {
+      synchronized (DTalkDispatcher.class) {
+        if (sInstance == null)
+          sInstance = new DTalkDispatcher();
+      }
     } else {
       LOG.w(TAG, "Allready started");
     }
@@ -62,36 +70,49 @@ public final class DTalkDispatcher {
 
   private DTalkDispatcher() {
     mSubscribers = new ConcurrentHashMap<String, _MessageBusListener>();
+
+    // Subscribe to incoming events (Note: We never un-subscribe).
     MessageBus.subscribe(IncomingMessageEvent.class.getName(), new MessageBusListener<IncomingMessageEvent>() {
       @Override
       public void messageSent(String topic, IncomingMessageEvent message) {
-        onIncomingMessageEvent(message);
+        try {
+          onIncomingMessageEvent(message);
+        } catch (Throwable t) {
+          LOG.e(TAG, "Unhandled exception:", t);
+        }
       }
     });
   }
 
-  protected void onIncomingMessageEvent(IncomingMessageEvent pMessage) {
+  /**
+   * Incoming event handler.
+   * 
+   * @param message
+   */
+  protected void onIncomingMessageEvent(IncomingMessageEvent message) {
     LOG.v(TAG, ">>> onIncomingMessageEvent");
 
-    final JSONObject jsonMsg = pMessage.getMsg();
-    final String from = pMessage.getFrom();
+    final JSONObject jsonMsg = message.getMsg();
+    final String from = message.getFrom();
     final String service = jsonMsg.optString(MessageEvent.KEY_BODY_SERVICE, null);
 
+    // If 'service' is 'dtalk.Dispatcher' consume the event...
     if (DTalk.SERVICE_DTALK_DISPATCHER.equals(service)) {
       if (from != null) {
-        String action = jsonMsg.optString(MessageEvent.KEY_BODY_ACTION, null);
+        final String action = jsonMsg.optString(MessageEvent.KEY_BODY_ACTION, null);
         if (DTalk.ACTION_SUBSCRIBE.equals(action)) {
-          String topic = jsonMsg.optString(MessageEvent.KEY_BODY_PARAMS, null);
+          // Handle 'subscribe' request...
+          final String topic = jsonMsg.optString(MessageEvent.KEY_BODY_PARAMS, null);
           if (topic != null) {
             LOG.d(TAG, "subscribe: %s (%s)", topic, from);
             if (!mSubscribers.containsKey(from + topic)) {
               _MessageBusListener subscriber = new _MessageBusListener(from);
               mSubscribers.put(from + topic, subscriber);
               MessageBus.subscribe(topic, subscriber);
-            }
-          }
+            } // XXX: reference counting?
+          } // else: No topic to subscribe to, ignore event.
         } else if (DTalk.ACTION_UNSUBSCRIBE.equals(action)) {
-          String topic = jsonMsg.optString(MessageEvent.KEY_BODY_PARAMS, null);
+          final String topic = jsonMsg.optString(MessageEvent.KEY_BODY_PARAMS, null);
           if (topic != null) {
             LOG.d(TAG, "unsubscribe: %s", topic);
             if (mSubscribers.containsKey(from + topic)) {
@@ -99,16 +120,11 @@ public final class DTalkDispatcher {
               if (subscriber != null) {
                 MessageBus.unsubscribe(topic, subscriber);
               }
-            }
-          }
-        } else {
-          // Ignore invalid action
-        }
-      } else {
-        // Ignore from == null
-      }
+            } // XXX: reference counting?
+          } // else: No topic to un-subscribe from, ignore event.
+        } // else: Ignore invalid event action.
+      } // else: Don't handle events from unknown senders ('from' == null).
     } else if (service != null) {
-
       // Dispatch message event...
       if (from != null) {
         try {
@@ -117,12 +133,16 @@ public final class DTalkDispatcher {
           // Ignore
         }
       }
-
-      // Publish message with topic
       MessageBus.sendMessage(service, jsonMsg);
+    } else {
+      // Should never happen!
+      LOG.w(TAG, "Invalid event: %s", message);
     }
   }
 
+  /**
+   * Message broadcaster/gateway used by DTalkDispatcher. 
+   */
   private class _MessageBusListener implements MessageBusListener<JSONObject> {
     private final String recipient;
 

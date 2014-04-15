@@ -19,8 +19,6 @@ package com.arkasoft.freddo.messagebus;
  * Message bus listener interface.
  * 
  * @param <T>
- * 
- * @author ggeorg
  */
 public interface MessageBusListener<T> {
 

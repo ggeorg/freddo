@@ -81,12 +81,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
   private static volatile Map<String, HttpRequestHandler> sRequestHandlers;
 
-  private final DTalkService dtalkService;
-  
-  public WebSocketServerHandler(DTalkService dtalkService) {
-    this.dtalkService = dtalkService;
-  }
-
   public static void addRequestHandler(String uri, HttpRequestHandler handler) {
     if (sRequestHandlers == null) {
       sRequestHandlers = new ConcurrentHashMap<String, HttpRequestHandler>();
@@ -153,7 +147,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         Channel channel = ctx.channel();
 
         // register anonymous channel
-        dtalkService.addChannel(channel);
+        DTalkService.getInstance().addChannel(channel);
 
         handshakers.put(channel, handshaker);
         handshaker.handshake(ctx.channel(), req);
@@ -207,7 +201,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     // Check for closing frame
     if (frame instanceof CloseWebSocketFrame) {
-      dtalkService.removeChannel(channel);
+      DTalkService.getInstance().removeChannel(channel);
 
       WebSocketServerHandshaker handshaker = handshakers.remove(channel);
       if (handshaker != null) {
@@ -240,7 +234,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
       JSONObject jsonMsg = new JSONObject(message);
 
-      String localServiceName = dtalkService.getLocalServiceInfo().getName();
+      String localServiceName = DTalkService.getInstance().getLocalServiceInfo().getName();
 
       String to = jsonMsg.optString(DTalk.KEY_TO, null);
       String from = jsonMsg.optString(DTalk.KEY_FROM, null);
@@ -286,7 +280,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
           // else: see DTalkDispatcher for message forwarding.
         } else {
           // replace anonymous channel
-          dtalkService.addChannel(from, channel);
+          DTalkService.getInstance().addChannel(from, channel);
         }
 
         LOG.d(TAG, "IncomingMessageEvent from: %s", from);

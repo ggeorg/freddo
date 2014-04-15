@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,6 +51,9 @@ import freddo.dtalk.util.LOG;
 public class DTalkService {
   private static final String TAG = LOG.tag(DTalkService.class);
 
+  /**
+   * {@code DTalkService} configuration object.
+   */
   public static interface Configuration {
     JmDNS getJmDNS();
 
@@ -68,102 +72,398 @@ public class DTalkService {
     int getPort();
   }
 
+  /**
+   * The {@code DTalkService} instance.
+   */
   private static volatile DTalkService sInstance = null;
 
   public static DTalkService getInstance() {
-    assert sInstance != null : "DTalkService not initialized";
+    if (sInstance == null) {
+      throw new IllegalStateException("DTalkService not initialized");
+    }
     return sInstance;
   }
 
-  public static DTalkService init(Configuration config) {
+  /**
+   * Create and initialize {@code DTalkConfiguration}.
+   * 
+   * @param config The {@link DTalkServiceConfiguration}.
+   * @return
+   */
+  public static void init(Configuration config) {
     LOG.v(TAG, ">>> init");
-    assert sInstance == null : "DTalkService already initialized";
-    return sInstance = new DTalkService(config);
+
+    if (sInstance == null) {
+      synchronized (DTalkService.class) {
+        if (sInstance == null) {
+          sInstance = new DTalkService(config);
+        }
+      }
+    } else {
+      throw new IllegalStateException("DTalkService already initialized");
+    }
   }
 
-  private final Configuration config;
+  // --------------------------------------------------------------------------
+  // Event listeners.
+  // --------------------------------------------------------------------------
 
-  private WebSocketServer webSocketServer;
-  private static final Object sDTalkServiceLock = new Object();
+  /**
+   * Listener for {@link OutgoingMessageEvent}s.
+   */
+  private final MessageBusListener<OutgoingMessageEvent> mOutgoingMsgEventListener = new MessageBusListener<OutgoingMessageEvent>() {
+    @Override
+    public void messageSent(String topic, final OutgoingMessageEvent message) {
+      mConfiguration.getThreadPool().execute(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            send(message);
+          } catch (Throwable t) {
+            LOG.e(TAG, "Unhandled exception in OutgoingMsgEventListener:", t);
+          }
+        }
+      });
+    }
+  };
 
-  private ServiceInfo localServiceInfo = null;
-
-  private DTalkDiscovery serviceDiscovery;
-
-  private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>();
-
-  private final MessageBusListener<WebPresenceEvent> webPresenceEventListener = new MessageBusListener<WebPresenceEvent>() {
+  /**
+   * Listener for {@link WebPresenceEvent}s.
+   */
+  private final MessageBusListener<WebPresenceEvent> mWebPresenceEventListener = new MessageBusListener<WebPresenceEvent>() {
     @Override
     public void messageSent(String topic, WebPresenceEvent message) {
-      if (!message.isOpen()) {
-        onWebPresenceClosed();
+      try {
+        if (!message.isOpen()) {
+          onWebPresenceClosed();
+        }
+      } catch (Throwable t) {
+        LOG.e(TAG, "Unhandled exception in OutgoingMsgEventListener:", t);
       }
     }
   };
 
-  private DTalkService(Configuration config) {
-    this.config = config;
+  // --------------------------------------------------------------------------
+
+  private final Configuration mConfiguration;
+  private final Map<String, Channel> mChannels; // thread safe
+  private final WebSocketServer mWebSocketServer;
+
+  private boolean mStarted = false;
+
+  private DTalkDiscovery mServiceDiscovery = null;
+  private volatile ServiceInfo mLocalServiceInfo = null;
+
+  /**
+   * {@code DTalkService} constructor.
+   * 
+   * @param configuration
+   */
+  private DTalkService(Configuration configuration) {
+    mConfiguration = configuration;
+    mChannels = new ConcurrentHashMap<String, Channel>();
+    mWebSocketServer = new WebSocketServer();
 
     // Start dispatcher...
     DTalkDispatcher.start();
   }
 
-  public Configuration getConfig() {
-    return config;
+  private boolean isStarted() {
+    return mStarted;
   }
 
-  public InetSocketAddress getWebSocketServerAddress() {
-    return webSocketServer.getAddress();
+  private void setStarted(boolean started) {
+    mStarted = started;
+
+    // TODO fire events?
+  }
+
+  public Configuration getConfiguration() {
+    return mConfiguration;
   }
 
   public ServiceInfo getLocalServiceInfo() {
-    return localServiceInfo;
+    synchronized (this) {
+      LOG.v(TAG, "mLocalServiceInfo: %s", mLocalServiceInfo);
+      return mLocalServiceInfo;
+    }
   }
 
-  public Channel getChannelByName(String serviceName) {
-    Channel ch = channels.get(serviceName);
-    if (ch != null) {
-      if (!ch.isOpen()) {
-        channels.remove(serviceName);
-        ch.close();
-        ch = null;
+  private static final Map<String, ServiceInfo> EMPTY_SERVICEINFO_MAP = Collections.unmodifiableMap(new HashMap<String, ServiceInfo>());
+
+  public Map<String, ServiceInfo> getServiceInfoMap() {
+    synchronized (this) {
+      return mServiceDiscovery != null ? Collections.unmodifiableMap(mServiceDiscovery.mServiceInfoMap) : EMPTY_SERVICEINFO_MAP;
+    }
+  }
+
+  /**
+   * Startup {@code DTalkService}.
+   */
+  public void startup() {
+    LOG.v(TAG, ">>> startup");
+
+    synchronized (this) {
+      if (isStarted()) {
+        return;
+      }
+      setStarted(true);
+
+      if (mServiceDiscovery != null) {
+        mServiceDiscovery.shutdown();
+        mServiceDiscovery = null;
+      }
+      mServiceDiscovery = new DTalkDiscovery();
+
+      LOG.d(TAG, "Subscribe for: %s", OutgoingMessageEvent.class.getName());
+      MessageBus.subscribe(OutgoingMessageEvent.class.getName(), mOutgoingMsgEventListener);
+
+      LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
+      MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
+
+      mConfiguration.getThreadPool().execute(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            // this will block execution until server is down...
+            mWebSocketServer.startup(new Runnable() {
+              @Override
+              public void run() {
+                // Publish DTalkService...
+                synchronized (DTalkService.this) {
+                  publishService();
+                }
+
+                // Start the service discovery...
+                if (mServiceDiscovery != null) {
+                  mServiceDiscovery.startup();
+                }
+
+                LOG.i(TAG, "DTalkService is started.");
+              }
+            });
+
+            // server is down...
+            shutdown();
+          } catch (Throwable t) {
+            LOG.e(TAG, "Uncaught exception in WebSocketServer startup: ", t);
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * Shutdown {@code DTalkService}.
+   */
+  public void shutdown() {
+    LOG.v(TAG, ">>> shutdown");
+
+    synchronized (this) {
+      if (!isStarted()) {
+        return;
+      }
+      setStarted(false);
+
+      try {
+        LOG.d(TAG, "Unsubscribe from: %s", OutgoingMessageEvent.class.getName());
+        MessageBus.unsubscribe(OutgoingMessageEvent.class.getName(), mOutgoingMsgEventListener);
+      } catch (Exception e) {
+        // ignore
+      }
+
+      try {
+        LOG.d(TAG, "Unsubscribe from: %s", WebPresenceEvent.class.getName());
+        MessageBus.unsubscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
+      } catch (Exception e) {
+        // ignore
+      }
+
+      // Shutdown service discovery...
+      if (mServiceDiscovery != null) {
+        mServiceDiscovery.shutdown();
+        mServiceDiscovery = null;
+      }
+
+      // Close client connections...
+      for (Map.Entry<String, Channel> entry : mChannels.entrySet()) {
+        Channel ch = entry.getValue();
+        if (ch != null && ch.isOpen()) {
+          LOG.d(TAG, "Closing connection to: %s", entry.getKey());
+          try {
+            ch.close();
+          } catch (Exception e) {
+            // ignore
+          }
+        }
+      }
+
+      LOG.d(TAG, "Clean up connections...");
+      mChannels.clear();
+
+      // Stop WebSocket server...
+      unpublishService();
+      mWebSocketServer.shutdown();
+    }
+
+    LOG.i(TAG, "DTalkService is down.");
+  }
+
+  /**
+   * Republish presence.
+   */
+  public void republishService() {
+    LOG.v(TAG, ">>> republishService");
+
+    synchronized (this) {
+      try {
+        unpublishService();
+      } finally {
+        publishService();
       }
     }
-    return ch;
   }
 
-  private static String hashCode(Channel ch) {
-    return String.valueOf(ch.hashCode());
+  // must be called from inside synchronized(this) {..} block
+  private void publishService() {
+    LOG.v(TAG, ">>> publishService");
+
+    String targetName = mConfiguration.getTargetName();
+    if (targetName == null || targetName.trim().length() == 0) {
+      return;
+    }
+
+    String deviceId = mConfiguration.getDeviceId();
+    if (deviceId != null && deviceId.trim().length() > 0) {
+      targetName += "@" + deviceId;
+    }
+
+    // register service on the allocated port
+    Map<String, String> props = new HashMap<String, String>();
+    props.put(DTalk.KEY_PRESENCE_DTALK, "1");
+    props.put(DTalk.KEY_PRESENCE_DTYPE, mConfiguration.getType());
+    // ...
+
+    try {
+      setServiceInfo(ServiceInfo.create(DTalk.SERVICE_TYPE, targetName, mWebSocketServer.getAddress().getPort(), 0, 0, props));
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
+  // must be called from inside synchronized(this) {..} block
+  private void unpublishService() {
+    LOG.v(TAG, ">>> unpublishService");
+
+    try {
+      setServiceInfo(null);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  // must be called from inside synchronized(this) {..} block
+  private synchronized void setServiceInfo(ServiceInfo serviceInfo) throws IOException {
+    if (mLocalServiceInfo != null) {
+
+      // Notify that DTalkService is about to unregister.
+      getConfiguration().getThreadPool().execute(new Runnable() {
+        @Override
+        public void run() {
+          MessageBus.sendMessage(new DTalkServiceEvent());
+        }
+      });
+
+      // Unregister service.
+      mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
+
+      // Disable WebPresence...
+      mConfiguration.getThreadPool().execute(new Runnable() {
+        @Override
+        public void run() {
+          enableWebPresence(false);
+        }
+      });
+    }
+
+    mLocalServiceInfo = serviceInfo;
+
+    if (mLocalServiceInfo != null) {
+
+      // Notify that DTalkService is ready to handle local connections.
+      getConfiguration().getThreadPool().execute(new Runnable() {
+        @Override
+        public void run() {
+          MessageBus.sendMessage(new DTalkServiceEvent(mLocalServiceInfo));
+        }
+      });
+
+      // Publish service.
+      mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
+
+      // Enable/disable WebPresence...
+      mConfiguration.getThreadPool().execute(new Runnable() {
+        @Override
+        public void run() {
+          enableWebPresence(mConfiguration.isWebPresence());
+        }
+      });
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Channel management.
+  // --------------------------------------------------------------------------
+
+  /**
+   * Add anonymous channel.
+   * 
+   * @param ch
+   */
   public void addChannel(Channel ch) {
     LOG.v(TAG, ">>> addChannel");
 
     addChannel(hashCode(ch), ch);
   }
 
+  /**
+   * Add named channel.
+   * 
+   * @param serviceName
+   * @param ch
+   */
   public void addChannel(String serviceName, Channel ch) {
     LOG.v(TAG, ">>> addChannel: %s", serviceName);
 
-    if (!channels.containsKey(serviceName)) {
-      channels.remove(hashCode(ch));
-      channels.put(serviceName, ch);
+    // If channel is new, register channel by name...
+    if (!mChannels.containsKey(serviceName)) {
+      // Remove any previous anonymous registration...
+      mChannels.remove(hashCode(ch));
+      // Register...
+      mChannels.put(serviceName, ch);
     }
   }
 
+  /**
+   * Remove channel.
+   * 
+   * @param ch
+   */
   public void removeChannel(Channel ch) {
     LOG.v(TAG, ">>> removeChannel");
 
     // first try to remove channel by hash code
     final String hashCode = hashCode(ch);
-    if (channels.containsKey(hashCode)) {
+    if (mChannels.containsKey(hashCode)) {
       removeChannel(hashCode);
       return;
     }
 
     // then try by instance
     String key = null;
-    for (Map.Entry<String, Channel> entry : channels.entrySet()) {
+    for (Map.Entry<String, Channel> entry : mChannels.entrySet()) {
       if (ch == entry.getValue()) {
         key = entry.getKey();
         break;
@@ -172,51 +472,54 @@ public class DTalkService {
     removeChannel(key);
   }
 
-  public void removeChannel(String key) {
-    if (key != null) {
-      channels.remove(key);
-      MessageBus.sendMessage(new DTalkChannelClosedEvent(key));
+  /**
+   * Remove channel by name.
+   * 
+   * @param serviceName
+   */
+  public void removeChannel(String serviceName) {
+    LOG.v(TAG, ">>> removeChannel: %s", serviceName);
+
+    if (serviceName != null) {
+      if (mChannels.remove(serviceName) != null) {
+        // Notify listeners that channel was closed...
+        MessageBus.sendMessage(new DTalkChannelClosedEvent(serviceName));
+      }
     }
   }
 
-  private final MessageBusListener<OutgoingMessageEvent> outgoingMsgEventListener = new MessageBusListener<OutgoingMessageEvent>() {
-    @Override
-    public void messageSent(String topic, final OutgoingMessageEvent message) {
-      config.getThreadPool().execute(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            send(message);
-          } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-        }
-      });
+  /**
+   * Get a channel by name.
+   * 
+   * @param serviceName
+   * @return
+   */
+  public Channel getChannelByName(String serviceName) {
+    Channel ch = mChannels.get(serviceName);
+    if (ch != null) {
+      if (!ch.isOpen()) {
+        mChannels.remove(serviceName);
+        ch.close();
+        ch = null;
+      }
     }
-  };
-
-  private boolean mStarted =  false;
-
-  public boolean isStarted() {
-    return mStarted;
-  }
-  
-  protected void setStarted(boolean started) {
-    mStarted = started;
+    return ch;
   }
 
-  public String getLocalDTalkServiceAddress() {
-    return getDTalkServiceAddress(getLocalServiceInfo());
+  /**
+   * Anonymous channels are mapped by hash code. This method simply calculates a
+   * hash code for a given channel.
+   * 
+   * @param ch the channel.
+   * @return hash code.
+   */
+  private static String hashCode(Channel ch) {
+    return String.valueOf(ch.hashCode());
   }
 
-  public String getDTalkServiceAddress(ServiceInfo info) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("ws://");
-    sb.append(getAddress(info)).append(':').append(info.getPort());
-    sb.append(WebSocketServer.WEBSOCKET_PATH);
-    return sb.toString();
-  }
+  // --------------------------------------------------------------------------
+  // OutgoingMsgEvent handler
+  // --------------------------------------------------------------------------
 
   /**
    * Send outgoing message.
@@ -243,10 +546,11 @@ public class DTalkService {
 
     if (ch == null) {
       // Get service info or recipient by name (recipient)
-      ServiceInfo remoteInfo = serviceDiscovery.getServiceInfoMap().get(to);
+      // We use direct access to the service map in service discovery instance.
+      ServiceInfo remoteInfo = mServiceDiscovery.mServiceInfoMap.get(to);
       if (remoteInfo != null) {
         try {
-          String dTalkServiceAddr = getDTalkServiceAddress(remoteInfo);
+          String dTalkServiceAddr = getServiceAddress(remoteInfo);
           LOG.i(TAG, "Connect to: %s", dTalkServiceAddr);
           ch = new WebSocketClient(new URI(dTalkServiceAddr)).connect();
           addChannel(to, ch);
@@ -284,189 +588,34 @@ public class DTalkService {
     });
   }
 
-  public void startup() {
-    LOG.v(TAG, ">>> startup");
+  // --------------------------------------------------------------------------
+  // WebPresence
+  // --------------------------------------------------------------------------
 
-    synchronized (sDTalkServiceLock) {
-      if (isStarted() ) {
-        return;
-      }
-      
-      setStarted(true);
-      
-      if (webSocketServer == null) {
-        webSocketServer = new WebSocketServer(this);
-      }
+  private volatile WebPresenceService mWebPresenceService = null;
 
-      if (serviceDiscovery != null) {
-        serviceDiscovery.shutdown();
-        serviceDiscovery = null;
-      }
-      serviceDiscovery = new DTalkDiscovery(this);
-
-      LOG.d(TAG, "Subscribe for: %s", OutgoingMessageEvent.class.getName());
-      MessageBus.subscribe(OutgoingMessageEvent.class.getName(), outgoingMsgEventListener);
-
-      LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
-      MessageBus.subscribe(WebPresenceEvent.class.getName(), webPresenceEventListener);
-
-      config.getThreadPool().execute(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            // this will block execution until server is down...
-            webSocketServer.startup(new Runnable() {
-              @Override
-              public void run() {
-                publishService();
-
-                // start the service discovery...
-                if (serviceDiscovery != null) {
-                  serviceDiscovery.startup();
-                }
-              }
-            });
-
-            // server is down...
-            unpublishService();
-          } catch (Exception e) {
-            LOG.e(TAG, "Exception in WebSocket server startup: ", e);
-          }
-        }
-      });
-    }
-  }
-
-  public void shutdown() throws Exception {
-    LOG.v(TAG, ">>> shutdown");
-
-    synchronized (sDTalkServiceLock) {
-      if (!isStarted()) {
-        return;
-      }
-      
-      try {
-        LOG.d(TAG, "Unsubscribe from: %s", OutgoingMessageEvent.class.getName());
-        MessageBus.unsubscribe(OutgoingMessageEvent.class.getName(), outgoingMsgEventListener);
-      } catch (Exception e) {
-        // ignore
-      }
-
-      try {
-        LOG.d(TAG, "Unsubscribe from: %s", WebPresenceEvent.class.getName());
-        MessageBus.unsubscribe(WebPresenceEvent.class.getName(), webPresenceEventListener);
-      } catch (Exception e) {
-        // ignore
-      }
-
-      if (serviceDiscovery != null) {
-        serviceDiscovery.shutdown();
-        serviceDiscovery = null;
-      }
-
-      // closing client connections...
-      for (Map.Entry<String, Channel> entry : channels.entrySet()) {
-        Channel ch = entry.getValue();
-        if (ch != null && ch.isOpen()) {
-          LOG.d(TAG, "Closing connection to: %s", entry.getKey());
-          try {
-            ch.close();
-          } catch (Exception e) {
-            // Ignore
-          }
+  private WebPresenceService getWebPresenceService() {
+    if (mWebPresenceService == null) {
+      synchronized (WebPresenceService.class) {
+        if (mWebPresenceService == null) {
+          mWebPresenceService = new WebPresenceService();
         }
       }
-
-      LOG.d(TAG, "Clean up connections...");
-      channels.clear();
-
-      // stop WebSocket server...
-      if (webSocketServer != null) {
-        unpublishService();
-        webSocketServer.shutdown();
-      }
-      
-      setStarted(false);
     }
+    return mWebPresenceService;
   }
 
-  /**
-   * NOTE: This event will not get fired after a call to {@link #shutdown()}.
-   */
-  protected void onWebPresenceClosed() {
-    config.getThreadPool().execute(new Runnable() {
-      @Override
-      public void run() {
-        try {
-          Thread.sleep(3333L);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-
-        // synchronized (sDTalkServiceLock) {
-        enableWebPresence(config.isWebPresence());
-        // }
-      }
-    });
-  }
-
-  public void publishService() {
-    LOG.v(TAG, ">>> publishService");
-
-    String targetName = config.getTargetName();
-    if (targetName == null || targetName.trim().length() == 0) {
-      return;
-    }
-
-    String deviceId = config.getDeviceId();
-    if (deviceId != null && deviceId.trim().length() > 0) {
-      targetName += "@" + deviceId;
-    }
-
-    // register service on the allocated port
-    Map<String, String> props = new HashMap<String, String>();
-    props.put(DTalk.KEY_PRESENCE_DTALK, "1");
-    props.put(DTalk.KEY_PRESENCE_DTYPE, config.getType());
-    // ...
-
-    try {
-      setServiceInfo(ServiceInfo.create(DTalk.SERVICE_TYPE, targetName, webSocketServer.getAddress().getPort(), 0, 0, props));
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
-  public void unpublishService() {
-    LOG.v(TAG, ">>> unpublishService");
-
-    try {
-      setServiceInfo(null);
-    } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
-
-  public void republishService() {
-    try {
-      unpublishService();
-    } finally {
-      publishService();
-    }
-  }
-
-  public void enableWebPresence(boolean webPresence) {
+  // to be run in a separate thread
+  private void enableWebPresence(boolean webPresence) {
     LOG.v(TAG, ">>> enableWebPresence: %b", webPresence);
 
     if (webPresence) {
       try {
-        String webPresenceURI = config.getWebPresenceURL();
+        final String webPresenceURI = mConfiguration.getWebPresenceURL();
         if (webPresenceURI == null || webPresenceURI.trim().length() == 0) {
           return;
         }
-        getWebPresenceService().publish(new URI(webPresenceURI), config.getJmDNS(), localServiceInfo);
+        getWebPresenceService().publish(new URI(webPresenceURI), mConfiguration.getJmDNS(), getLocalServiceInfo());
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -475,60 +624,60 @@ public class DTalkService {
       try {
         getWebPresenceService().unpublish();
       } catch (Exception e) {
-        // Ignore
+        // ignore
       }
     }
   }
 
-  public ServiceInfo getServiceInfo(String name) {
-    return getServiceInfoMap().get(name);
+  /**
+   * NOTE: This event will not get fired after a call to {@link #shutdown()}.
+   */
+  protected void onWebPresenceClosed() {
+    mConfiguration.getThreadPool().execute(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Thread.sleep(3333L);
+        } catch (InterruptedException e) {
+          // ignore
+        }
+
+        // WebPresence reconnection...
+        enableWebPresence(mConfiguration.isWebPresence());
+      }
+    });
   }
 
-  public Map<String, ServiceInfo> getServiceInfoMap() {
-    return serviceDiscovery != null ? serviceDiscovery.getServiceInfoMap() : new HashMap<String, ServiceInfo>();
+  // --------------------------------------------------------------------------
+  // Utility methods
+  // --------------------------------------------------------------------------
+
+  public InetSocketAddress getWebSocketServerAddress() {
+    return mWebSocketServer.getAddress();
   }
 
-  private WebPresenceService webPresenceService = null;
-
-  protected WebPresenceService getWebPresenceService() {
-    if (webPresenceService == null) {
-      webPresenceService = new WebPresenceService();
-    }
-    return webPresenceService;
+  public String getLocalServiceAddress() {
+    // NOTE: could be done with: getServiceAddress(getLocalServiceInfo())
+    // but, the getWebSocketServerAddress() alternative avoids locking.
+    final InetSocketAddress address = getWebSocketServerAddress();
+    StringBuilder sb = new StringBuilder();
+    sb.append("ws://");
+    sb.append(address.getHostString()).append(':').append(address.getPort());
+    sb.append(WebSocketServer.WEBSOCKET_PATH);
+    return sb.toString();
   }
 
-  private synchronized void setServiceInfo(ServiceInfo serviceInfo) throws IOException {
-    if (this.localServiceInfo != null) {
-
-      // Notify that DTalkService is about to unregister.
-      MessageBus.sendMessage(new DTalkServiceEvent());
-
-      // Unregister service.
-      config.getJmDNS().unregisterService(localServiceInfo);
-
-      // WebPresence...
-      enableWebPresence(false);
-    }
-
-    localServiceInfo = serviceInfo;
-
-    if (this.localServiceInfo != null) {
-
-      // Notify that DTalkService is ready to handle local connections.
-      MessageBus.sendMessage(new DTalkServiceEvent(localServiceInfo));
-
-      // Publish service.
-      config.getJmDNS().registerService(localServiceInfo);
-
-      // WebPresence...
-      enableWebPresence(config.isWebPresence());
-    }
+  public static String getServiceAddress(ServiceInfo info) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("ws://");
+    sb.append(getAddress(info)).append(':').append(info.getPort());
+    sb.append(WebSocketServer.WEBSOCKET_PATH);
+    return sb.toString();
   }
 
   public static final String getAddress(ServiceInfo info) {
     // NOTE: info.getServer() takes to long to resolve the IP address.
     String server = null; // info.getServer();
-    // if (server == null || server.trim().length() == 0) {
     InetAddress[] addresses = info.getInetAddresses();
     if (addresses.length > 0) {
       for (InetAddress address : addresses) {
@@ -536,13 +685,13 @@ public class DTalkService {
         break;
       }
     } else {
-      // fallback to info.getServer()
+      // fall back to info.getServer()
       server = info.getServer();
       if (server == null || server.trim().length() == 0) {
         LOG.w(TAG, "Can't get address from %s", info);
       }
     }
-    // }
     return server;
   }
+
 }
