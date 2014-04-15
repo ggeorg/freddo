@@ -26,7 +26,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import freddo.dtalk.DTalkService;
@@ -65,7 +64,7 @@ public class WebSocketServer {
       ch = bootstrap.bind(new InetSocketAddress(conf.getJmDNS().getInterface(), conf.getPort())).sync().channel();
       final InetSocketAddress address = (InetSocketAddress) ch.localAddress();
       LOG.i(TAG, "Web socket server started at port " + address.getPort() + '.');
-      LOG.i(TAG, "Open your browser and navigate to http://%s:%d/", address.getHostString(), address.getPort());
+      LOG.i(TAG, "Open your browser and navigate to http://%s:%d/", address.getAddress().getHostAddress(), address.getPort());
 
       if (onStartup != null) {
         onStartup.run();
