@@ -25,7 +25,6 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.events.IncomingMessageEvent;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 
@@ -94,15 +93,15 @@ public final class DTalkDispatcher {
 
     final JSONObject jsonMsg = message.getMsg();
     final String from = message.getFrom();
-    final String service = jsonMsg.optString(MessageEvent.KEY_BODY_SERVICE, null);
+    final String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
 
     // If 'service' is 'dtalk.Dispatcher' consume the event...
     if (DTalk.SERVICE_DTALK_DISPATCHER.equals(service)) {
       if (from != null) {
-        final String action = jsonMsg.optString(MessageEvent.KEY_BODY_ACTION, null);
+        final String action = jsonMsg.optString(DTalk.KEY_BODY_ACTION, null);
         if (DTalk.ACTION_SUBSCRIBE.equals(action)) {
           // Handle 'subscribe' request...
-          final String topic = jsonMsg.optString(MessageEvent.KEY_BODY_PARAMS, null);
+          final String topic = jsonMsg.optString(DTalk.KEY_BODY_PARAMS, null);
           if (topic != null) {
             LOG.d(TAG, "subscribe: %s (%s)", topic, from);
             if (!mSubscribers.containsKey(from + topic)) {
@@ -112,7 +111,7 @@ public final class DTalkDispatcher {
             } // XXX: reference counting?
           } // else: No topic to subscribe to, ignore event.
         } else if (DTalk.ACTION_UNSUBSCRIBE.equals(action)) {
-          final String topic = jsonMsg.optString(MessageEvent.KEY_BODY_PARAMS, null);
+          final String topic = jsonMsg.optString(DTalk.KEY_BODY_PARAMS, null);
           if (topic != null) {
             LOG.d(TAG, "unsubscribe: %s", topic);
             if (mSubscribers.containsKey(from + topic)) {
@@ -128,7 +127,7 @@ public final class DTalkDispatcher {
       // Dispatch message event...
       if (from != null) {
         try {
-          jsonMsg.put(MessageEvent.KEY_FROM, from);
+          jsonMsg.put(DTalk.KEY_FROM, from);
         } catch (JSONException e) {
           // Ignore
         }
@@ -152,13 +151,19 @@ public final class DTalkDispatcher {
 
     @Override
     public void messageSent(String topic, JSONObject message) {
+      // avoid cyclic broadcast messages...
+      final String from = message.optString(DTalk.KEY_FROM, null);
+      if (from != null && from.equals(recipient)) {
+        return;
+      }
+      
       try {
         // clone, cleanup to attribute and send it...
         JSONObject jsonMsg = new JSONObject(message.toString());
-        jsonMsg.remove(MessageEvent.KEY_TO);
+        jsonMsg.remove(DTalk.KEY_TO);
         // NOTE: don't change the 'from'
         // By keeping 'from' we do support event forwarding...
-        // jsonMsg.remove(MessageEvent.KEY_FROM);
+        // jsonMsg.remove(DTalk.KEY_FROM);
         MessageBus.sendMessage(new OutgoingMessageEvent(recipient, jsonMsg));
       } catch (JSONException e) {
         LOG.e(TAG, "JSON error: %s", e.getMessage());
