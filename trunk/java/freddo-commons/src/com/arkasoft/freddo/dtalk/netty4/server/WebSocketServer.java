@@ -61,10 +61,10 @@ public class WebSocketServer {
           });
       
       final Configuration conf = DTalkService.getInstance().getConfiguration();
-      ch = bootstrap.bind(new InetSocketAddress(conf.getJmDNS().getInterface(), conf.getPort())).sync().channel();
+      ch = bootstrap.bind(new InetSocketAddress(conf.getPort())).sync().channel();
       final InetSocketAddress address = (InetSocketAddress) ch.localAddress();
       LOG.i(TAG, "Web socket server started at port " + address.getPort() + '.');
-      LOG.i(TAG, "Open your browser and navigate to http://%s:%d/", address.getAddress().getHostAddress(), address.getPort());
+      //LOG.i(TAG, "Open your browser and navigate to http://%s:%d/", address.getAddress().getHostAddress(), address.getPort());
 
       if (onStartup != null) {
         onStartup.run();
