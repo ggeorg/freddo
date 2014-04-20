@@ -43,6 +43,10 @@ public class AppView extends Service {
   public void setUrl(String url) throws DTalkException {
     DTalkServiceAdapter.set(this, "url", url);
   }
+  
+  public void reload(boolean clearCache) throws DTalkException {
+    DTalkServiceAdapter.invoke(this, "reload", clearCache);
+  }
 
   public void dispatchKeyEvent(String event, int keyCode) throws DTalkException {
     try {
