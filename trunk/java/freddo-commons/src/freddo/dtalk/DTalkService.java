@@ -571,8 +571,9 @@ public class DTalkService {
     LOG.d(TAG, ">> sending: %s (%s)", ch.isActive(), message);
 
     // clone message and send...
-    JSONObject jsonMsg = new JSONObject(message.getMsg().toString());
-    if (!jsonMsg.has(MessageEvent.KEY_FROM)) {
+    final JSONObject jsonMsg = new JSONObject(message.getMsg().toString());
+    final String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
+    if (service != null && !service.startsWith("$") && !jsonMsg.has(MessageEvent.KEY_FROM)) {
       jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getName());
     }
     jsonMsg.put(MessageEvent.KEY_TO, message.getTo());
@@ -663,12 +664,16 @@ public class DTalkService {
   }
 
   public String getLocalServiceAddress() {
-    // NOTE: could be done with: getServiceAddress(getLocalServiceInfo())
-    // but, the getWebSocketServerAddress() alternative avoids locking.
+    // NOTE: uses locking
+    return getServiceAddress(getLocalServiceInfo());
+  }
+  
+  public String getServiceAddressForLocalhost() {
+    // NOTE: avoids locking.
     final InetSocketAddress address = getWebSocketServerAddress();
     StringBuilder sb = new StringBuilder();
-    sb.append("ws://");
-    sb.append(address.getHostString()).append(':').append(address.getPort());
+    sb.append("ws://localhost:");
+    sb.append(address.getPort());
     sb.append(WebSocketServer.WEBSOCKET_PATH);
     return sb.toString();
   }
