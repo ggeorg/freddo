@@ -15,10 +15,5 @@
   * How to create a topic listener
   * How to publish a topic
 
-=== DTalk Android API ===
-=== DTalk iOS API ===
-
-
-
 ==Web API==
   * [FdCompass Compass]
