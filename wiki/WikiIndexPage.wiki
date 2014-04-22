@@ -1,12 +1,13 @@
 #labels Featured
-==DTalk==
-===DTalk API===
+== DTalk ==
+=== DTalk API ===
   * How to connect to a WebSocket
   * How to send a Get message
   * How to send a Set message
   * How to execute an action
   * How to create a topic listener
   * How to publish a topic
+
  === DTalk Messaging ===
   * Basic message structure
   * DTalk message operations
