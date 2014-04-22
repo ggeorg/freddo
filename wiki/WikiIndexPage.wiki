@@ -1,6 +1,8 @@
 #labels Featured
 == DTalk Core ==
   * Basic message structure
+  ** Request 
+  ** Response
   * DTalk message operations
     ** Get
     ** Set
