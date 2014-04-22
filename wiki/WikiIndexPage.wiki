@@ -11,7 +11,7 @@
 === DTalk Android API ===
 === DTalk iOS API ===
 
- === DTalk Core ===
+=== DTalk Core ===
   * Basic message structure
   * DTalk message operations
     ** Get
