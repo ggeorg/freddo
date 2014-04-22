@@ -1,5 +1,13 @@
 #labels Featured
-== DTalk ==
+
+=== DTalk Core ===
+  * Basic message structure
+  * DTalk message operations
+    ** Get
+    ** Set
+    ** Action
+    ** Listeners
+
 === DTalk Javascript API ===
   * How to connect to a WebSocket
   * How to send a Get message
@@ -11,13 +19,7 @@
 === DTalk Android API ===
 === DTalk iOS API ===
 
-=== DTalk Core ===
-  * Basic message structure
-  * DTalk message operations
-    ** Get
-    ** Set
-    ** Action
-    ** Listeners
+
 
 ==Web API==
   * [FdCompass Compass]
