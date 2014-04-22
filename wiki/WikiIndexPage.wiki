@@ -16,4 +16,9 @@
   * How to publish a topic
 
 ==Web API==
+  * Presence
   * [FdCompass Compass]
+  * Geolocation
+  * Accelerometer
+  * Device
+  * Settings
