@@ -5,7 +5,7 @@
     ** Get
     ** Set
     ** Action
-    ** Listeners
+    ** Subscribe/Unsubscribe mapping
 == DTalk Implementations ==
 === DTalk Javascript API ===
   * How to connect to a WebSocket
