@@ -1,5 +1,5 @@
 #labels Featured
-=== DTalk Core ===
+== DTalk Core ==
   * Basic message structure
   * DTalk message operations
     ** Get
