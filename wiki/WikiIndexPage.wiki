@@ -1,13 +1,13 @@
 #labels Featured
 == DTalk Core ==
   * Basic message structure
-  ** Request 
-  ** Response
+    * Request 
+    * Response
   * DTalk message operations
-    ** Get
-    ** Set
-    ** Action
-    ** Subscribe/Unsubscribe mapping
+    * Get
+    * Set
+    * Action
+    * Subscribe/Unsubscribe mapping
 == DTalk Implementations ==
 === DTalk Javascript API ===
   * How to connect to a WebSocket
