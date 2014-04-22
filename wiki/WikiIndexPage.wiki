@@ -1,5 +1,4 @@
 #labels Featured
-
 === DTalk Core ===
   * Basic message structure
   * DTalk message operations
@@ -7,7 +6,7 @@
     ** Set
     ** Action
     ** Listeners
-
+== DTalk Implementations ==
 === DTalk Javascript API ===
   * How to connect to a WebSocket
   * How to send a Get message
