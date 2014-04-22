@@ -3,10 +3,10 @@
 
   * Basic message structure
   * DTalk message operations
-    # Get
-    # Set
-    # Action
-    # Listeners
+    ** Get
+    ** Set
+    ** Action
+    ** Listeners
   * How to send a Get message
   * How to send a Set message
   * How to execute an action
