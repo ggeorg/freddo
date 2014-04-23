@@ -38,7 +38,7 @@
                 };
 
                 var request = {
-                    dtalk: "1.0",
+                    dtalk: this.VERSION,
                     service: this.PRESENCE_SRV,
                     action: "get",
                     params: "list"
