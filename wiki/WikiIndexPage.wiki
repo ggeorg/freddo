@@ -18,8 +18,8 @@
   * How to publish a topic
 
 ==Web API==
-  * Presence
-    * [FdPresenceChanges  Listening to presence changes]
+  * [FdPresence Presence]
+    * [FdPresence  Listening to presence changes]
     * Getting the list of devices
   * [FdCompass Compass]
   * Geolocation
