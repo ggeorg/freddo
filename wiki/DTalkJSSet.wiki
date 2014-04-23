@@ -10,7 +10,7 @@
                 // do anything with the response
             };
 
-            var getrequest = {
+            var setrequest = {
                 dtalk: "1.0",
                 service: "dtalk.MyService",
                 action: "set",
@@ -19,7 +19,7 @@
                 }
             };
 
-            DTalk.sendRequest(getrequest, callback, 3000);
+            DTalk.sendRequest(setrequest, callback, 3000);
         }
     };
 
