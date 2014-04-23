@@ -1,7 +1,7 @@
 #labels Featured
 ==[WikiIndexPage Index]==
 
-== DTalk Core ==
+==DTalk Core==
   * Specification
   * DTalk message operations
     * Get
@@ -9,7 +9,7 @@
     * Action
     * Subscribe/Unsubscribe mapping
 
-=== DTalk Javascript API ===
+===DTalk Javascript API===
   * [DTalkJSConnect	How to connect to a WebSocket]
   * [DTalkJSGet How to send a Get message]
   * [DTalkJSSet How to send a Set message]
@@ -17,7 +17,7 @@
   * [DTalkJSTopicListen How to listen to a topic]
   * [DTalkJSTopicPublish How to publish a topic]
 
-==Web API==
+===Web API===
   * [FdPresence Presence]
     * [FdPresence#Listening_to_Presence_changes  Listening to presence changes]
     * [FdPresence#Listing_devices_in_the_network Getting the list of devices]
