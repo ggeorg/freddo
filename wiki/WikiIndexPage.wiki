@@ -1,4 +1,6 @@
 #labels Featured
+=[WikiIndexPage Index]=
+
 == DTalk Core ==
   * Specification
   * DTalk message operations
