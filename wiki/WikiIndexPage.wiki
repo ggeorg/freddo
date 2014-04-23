@@ -11,7 +11,7 @@
 == DTalk Implementations ==
 === DTalk Javascript API ===
   * [DTalkJSConnect	How to connect to a WebSocket]
-  * How to send a Get message
+  * [DTalkJSGet How to send a Get message]
   * How to send a Set message
   * How to execute an action
   * How to create a topic listener
