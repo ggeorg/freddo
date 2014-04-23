@@ -19,7 +19,7 @@
 
 ==Web API==
   * [FdPresence Presence]
-    * [FdPresence  Listening to presence changes]
+    * [FdPresence#Listening_for_Presence_changes  Listening to presence changes]
     * Getting the list of devices
   * [FdCompass Compass]
   * Geolocation
