@@ -19,6 +19,8 @@
 
 ==Web API==
   * Presence
+    * [FdPresenceChanges  Listening to presence changes]
+    * Getting the list of devices
   * [FdCompass Compass]
   * Geolocation
   * Accelerometer
