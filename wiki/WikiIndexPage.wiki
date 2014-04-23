@@ -15,7 +15,7 @@
   * [DTalkJSSet How to send a Set message]
   * [DTalkJSAction How to execute an action]
   * [DTalkJSTopicListen How to listen to a topic]
-  * How to publish a topic
+  * [DTalkJSTopicPublish How to publish a topic]
 
 ==Web API==
   * [FdPresence Presence]
