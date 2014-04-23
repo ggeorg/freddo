@@ -1,3 +1,70 @@
+== Listing devices in the network ==
+
+{{{
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Freddo</title>
+    <script src="dtalk.js"></script>
+</head>
+
+<body onload="DTalk.connect();">
+
+    <pre id="log"></pre>
+
+    <script>
+        var app = {
+
+            PRESENCE_SRV: "dtalk.service.Presence",
+            VERSION: "1.0",
+
+            startPresenceService: function() {
+                var evt = {
+                    dtalk: this.VERSION,
+                    service: this.SERVICES,
+                    action: "start",
+                    params: this.PRESENCE_SRV
+                };
+
+                DTalk.sendNotification(evt);
+            },
+
+            getList: function() {
+
+                var callback = function(evt) {
+                    document.getElementById("log").innerHTML = JSON.stringify(evt.data, null, 2);
+                };
+
+                var request = {
+                    dtalk: "1.0",
+                    service: this.PRESENCE_SRV,
+                    action: "get",
+                    params: "list"
+                };
+
+                DTalk.sendRequest(request, callback, 3000);
+            },
+
+            init: function() {
+                this.getList();
+                this.startPresenceService();
+
+
+            }
+        };
+
+        DTalk.onopen = function() {
+            app.init();
+        };
+    </script>
+
+</body>
+
+</html>
+}}}
+
 == Listening to Presence changes ==
 
 {{{
