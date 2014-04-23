@@ -8,7 +8,7 @@
     * Subscribe/Unsubscribe mapping
 == DTalk Implementations ==
 === DTalk Javascript API ===
-  * How to connect to a WebSocket
+  * [DTalkJSConnect	How to connect to a WebSocket]
   * How to send a Get message
   * How to send a Set message
   * How to execute an action
