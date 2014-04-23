@@ -1,4 +1,4 @@
-== Listening for Presence changes ==
+== Listening to Presence changes ==
 
 {{{
 <!doctype html>
