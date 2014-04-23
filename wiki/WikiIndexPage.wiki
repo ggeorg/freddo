@@ -13,7 +13,7 @@
   * [DTalkJSConnect	How to connect to a WebSocket]
   * [DTalkJSGet How to send a Get message]
   * [DTalkJSSet How to send a Set message]
-  * How to execute an action
+  * [DTalkJSAction How to execute an action]
   * How to create a topic listener
   * How to publish a topic
 
