@@ -48,8 +48,8 @@
             },
 
             init: function() {
-                this.getList();
                 this.startPresenceService();
+                this.getList();
             }
         };
 
