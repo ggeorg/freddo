@@ -1,0 +1,30 @@
+== Set Request ==
+
+{{{
+<script>
+    var app = {
+
+        sendSetRequest: function() {
+
+            var callback = function(evt) {
+                // do anything with the response
+            };
+
+            var getrequest = {
+                dtalk: "1.0",
+                service: "dtalk.MyService",
+                action: "set",
+                params: {
+                    "info": "connected"
+                }
+            };
+
+            DTalk.sendRequest(getrequest, callback, 3000);
+        }
+    };
+
+    DTalk.onopen = function() {
+        app.sendSetRequest();
+    };
+</script>
+}}}
