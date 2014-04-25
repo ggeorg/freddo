@@ -573,10 +573,17 @@ public class DTalkService {
     // clone message and send...
     final JSONObject jsonMsg = new JSONObject(message.getMsg().toString());
     final String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
-    if (service != null && !service.startsWith("$") && !jsonMsg.has(MessageEvent.KEY_FROM)) {
-      jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getName());
+    final String to = message.getTo();
+    if (service != null) {
+      if (service.startsWith("$")) {
+        if (to.startsWith("x-dtalk-") && !jsonMsg.has(MessageEvent.KEY_FROM)) {
+          jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getName());
+        }
+      } else if (!jsonMsg.has(MessageEvent.KEY_FROM)) {
+        jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getName());
+      }
     }
-    jsonMsg.put(MessageEvent.KEY_TO, message.getTo());
+    jsonMsg.put(MessageEvent.KEY_TO, to);
 
     LOG.d(TAG, "Message: %s", jsonMsg.toString());
     ch.writeAndFlush(new TextWebSocketFrame(jsonMsg.toString())).addListener(new GenericFutureListener<ChannelFuture>() {
