@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="lib/dd-plist.jar"/>
 	<classpathentry kind="lib" path="lib/freddo-commons-0.6.13.jar"/>
 	<classpathentry kind="lib" path="lib/freddo-airplay-server-0.3.9.jar"/>
-	<classpathentry kind="lib" path="lib/macosx.x86_64/org.eclipse.swt.cocoa.macosx.x86_64_3.102.1.v20140206-1358.jar"/>
+	<classpathentry kind="lib" path="lib/linux.x86/org.eclipse.swt.gtk.linux.x86_3.102.1.v20140206-1358.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
