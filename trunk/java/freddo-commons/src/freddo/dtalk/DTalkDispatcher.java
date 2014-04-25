@@ -140,7 +140,7 @@ public final class DTalkDispatcher {
   }
 
   /**
-   * Message broadcaster/gateway used by DTalkDispatcher. 
+   * Message broadcaster/gateway used by DTalkDispatcher.
    */
   private class _MessageBusListener implements MessageBusListener<JSONObject> {
     private final String recipient;
@@ -156,7 +156,7 @@ public final class DTalkDispatcher {
       if (from != null && from.equals(recipient)) {
         return;
       }
-      
+
       try {
         // clone, cleanup to attribute and send it...
         JSONObject jsonMsg = new JSONObject(message.toString());
