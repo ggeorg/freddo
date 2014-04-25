@@ -1,22 +1,85 @@
 <!doctype html>
 <html>
-<head>
-<title>FreddoTV</title>
-<script src="dtalk.js"></script>
-<style>
-html, body {
-	height: 100%;
-	margin: 0;
-}
-#x-dtalk-video {
-	background: #000;
-}
-</style>
-</head>
-<body>
-Hello, World!
-<script>
-DTalk.connect();
-</script>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<title>FreddoTV</title>
+		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojox/mobile/themes/holodark/holodark.css"></link>
+		<script src="dtalk.js"></script>
+		<style>
+			html, body { 
+				height: 100%; 
+				margin: 0; 
+				overflow: hidden;
+			}
+			* { 
+				outline: none;
+			}
+			body {
+				background: #000;
+				color: #eee; 
+			}
+			.mblView {
+				height: 100%;
+			}
+			#main {
+				background-color: #8db6e0 !important;
+				background-image: url("background.png");
+				background-position: center;
+				background-repeat: no-repeat;
+				background-size: 50%;
+				color: #eee; -visibility: hidden; 			
+			}
+			#video {
+				background: none !important;
+			}
+			#main-freddo-info {
+				position: absolute;
+				left:0;
+				bottom: 0;
+				padding: 1em;
+				text-shadow: 0px 1px 1px #4d4d4d;
+			}
+			#main-freddo-info .title {
+				font-size: 200%;
+				font-weight: bold;
+			}
+		</style>
+		<script type="text/javascript" src="dtalk.js"></script>
+		<script>
+			var dojoConfig = {
+				async : true,
+				packages : [ {
+					name : 'app',
+					location : location.pathname.replace(/\/[^/]+$/, '') + '/app'
+				}, {
+					name : 'freddo',
+					location : location.pathname.replace(/\/[^/]+$/, '') + '/dojo/freddo'
+				}]
+			};
+		</script>
+	</head>
+	<body>
+		<div id="main" data-dojo-type="dojox.mobile.View" selected>
+			<div id="main-freddo-info">
+				<div class="title">Freddo Player</div>
+				<div id="main-ws-label"></div>
+			</div>
+		</div>
+		<div id="video" data-dojo-type="dojox.mobile.View">
+			Video
+		</div>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojo/dojo.js"></script>
+		<script type="text/javascript">
+			require(["app/app",
+			         "dojo/ready",
+			         "dojox/mobile",
+			         "dojox/mobile/View",
+			         "dojo/domReady!"], 
+			function(app, ready) {
+				ready(function(){
+					app.init();
+				});
+			});
+		</script>
+	</body>
 </html>

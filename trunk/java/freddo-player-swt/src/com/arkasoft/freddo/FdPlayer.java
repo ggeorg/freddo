@@ -147,6 +147,14 @@ public class FdPlayer {
     if (mAppView != null) {
       try {
         mAppView.setUrl(url);
+        
+        mShell.open();
+        mShell.layout();
+
+        if (sAboutBox != null && sAboutBox.isVisible()) {
+          sAboutBox.close();
+        }
+        
       } catch (DTalkException e) {
         LOG.e(TAG, e.getMessage());
       }
@@ -161,13 +169,17 @@ public class FdPlayer {
     mShell.getDisplay().asyncExec(r);
   }
 
-  public boolean isVisible() {
-    return mShell.isVisible();
-  }
+//  public boolean isVisible() {
+//    return mShell.isVisible();
+//  }
 
-  public void setVisible(boolean visible) {
-    mShell.setVisible(true);
-  }
+//  public void setVisible(boolean visible) {
+//    if (visible) {
+//      mShell.setVisible(true);
+//    } else {
+//      
+//    }
+//  }
 
   // -----------------------------------------------------------------------
 
@@ -230,7 +242,7 @@ public class FdPlayer {
       System.out.println("The system tray is not available");
     } else {
       final TrayItem item = new TrayItem(tray, SWT.NONE);
-      item.setToolTipText("FreddoTV");
+      item.setToolTipText(getApplication().getName());
       item.addListener(SWT.Show, new Listener() {
         public void handleEvent(Event event) {
           LOG.v(TAG, ">>> handleEvent:SWT.Show");

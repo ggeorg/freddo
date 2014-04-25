@@ -31,15 +31,14 @@
 						}
 						self._startPositionPercent = 0;
 					}
-					
-					self._startTimer();
 					fireEvent("onprepared");
 				});
 				
 				this._video.addEventListener("ended", function(e) {
 					//alert("Event: ended");
-					fireEvent("oncompletion");
+					
 					self._stopTimer();
+					fireEvent("oncompletion");
 				});
 				
 				this._video.addEventListener("error", function(e) {
@@ -62,8 +61,8 @@
 						break;
 					}
 					console.debug("Error: " + msg);
-					fireEvent("onerror", msg);
 					self._stopTimer();
+					fireEvent("onerror", msg);
 				});
 			}
 		},
@@ -75,6 +74,7 @@
 			if (src) {
 				this._video.src = src;
 				this._video.load();
+				this._startTimer();
 			}
 		},
 		set_startPositionPercent: function(event) {
@@ -88,12 +88,13 @@
 		},
 		do_play: function() {
 			this._video.play();
+			//this._startTimer();
 		},
 		do_stop: function() {
 			this._video.pause();
 			//this._video.src = "";
-			fireEvent("oncompletion");
 			this._stopTimer();
+			fireEvent("oncompletion");
 		},
 		do_pause: function() {
 			this._video.pause();
@@ -105,9 +106,9 @@
 			var value = event.params;
 			if (!isNaN(value)) {
 				if (value === 0) {
-					this._video.pause();
+					this.do_pause();
 				} else {
-					this._video.play();
+					this.do_play();
 				}
 			}
 		},
@@ -137,6 +138,7 @@
 			if (this.timerH) {
 				this._sendStatus();
 				clearInterval(this.timerH);
+				this.timerH = null;
 			}
 		}
 	};
