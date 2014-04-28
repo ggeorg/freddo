@@ -50,6 +50,8 @@ import freddo.dtalk.util.LOG;
 
 public class DTalkService {
   private static final String TAG = LOG.tag(DTalkService.class);
+  
+  public static final String LOCAL_CHANNEL_PREFIX = "dtalk-";
 
   /**
    * {@code DTalkService} configuration object.
@@ -514,7 +516,7 @@ public class DTalkService {
    * @return hash code.
    */
   private static String hashCode(Channel ch) {
-    return String.valueOf(ch.hashCode());
+    return String.format("%s%d", LOCAL_CHANNEL_PREFIX, ch.hashCode());
   }
 
   // --------------------------------------------------------------------------

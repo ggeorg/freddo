@@ -153,7 +153,7 @@ public final class DTalkDispatcher {
     public void messageSent(String topic, JSONObject message) {
       // avoid cyclic broadcast messages...
       final String from = message.optString(DTalk.KEY_FROM, null);
-      if (from != null && from.equals(recipient)) {
+      if (from != null && !from.startsWith(DTalkService.LOCAL_CHANNEL_PREFIX) && from.equals(recipient)) {
         return;
       }
 

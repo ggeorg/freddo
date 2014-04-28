@@ -275,7 +275,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
           // anonymous message...
           if (service != null && !service.startsWith("$")) {
             // if its not a broadcast message add 'from'...
-            from = String.valueOf(channel.hashCode());
+            from = String.format("%s%d", DTalkService.LOCAL_CHANNEL_PREFIX, channel.hashCode());
           }
           // else: see DTalkDispatcher for message forwarding.
         } else {
