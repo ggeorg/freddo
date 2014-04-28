@@ -164,7 +164,9 @@ public abstract class FdServiceMgr<T> extends FdService<T> {
       }
     });
 
-    MessageBus.unsubscribe(DTalkChannelClosedEvent.class.getName(), chClosedEventH);
+    if (MessageBus.hasListener(DTalkChannelClosedEvent.class.getName(), chClosedEventH)) {
+      MessageBus.unsubscribe(DTalkChannelClosedEvent.class.getName(), chClosedEventH);
+    }
   }
 
 }

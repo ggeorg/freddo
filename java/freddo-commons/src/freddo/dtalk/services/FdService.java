@@ -259,7 +259,9 @@ public abstract class FdService<T> implements MessageBusListener<JSONObject> {
     disposed = true;
     reset();
 
-    MessageBus.unsubscribe(getName(), this);
+    if (MessageBus.hasListener(getName(), this)) {
+      MessageBus.unsubscribe(getName(), this);
+    }
   }
 
   private static String cap1stChar(String str) {
