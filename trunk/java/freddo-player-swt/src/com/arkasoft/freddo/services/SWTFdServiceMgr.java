@@ -2,16 +2,16 @@ package com.arkasoft.freddo.services;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.SWTFdPlayerMain;
+import com.arkasoft.freddo.SWTFdPlayer;
 import com.arkasoft.freddo.services.app.FdAppViewFactory;
 import com.arkasoft.freddo.services.presence.FdPresenceFactory;
 import com.arkasoft.freddo.services.video.FdVideoFactory;
 
 import freddo.dtalk.services.FdServiceMgr;
 
-public class SWTFdServiceMgr extends FdServiceMgr<SWTFdPlayerMain> {
+public class SWTFdServiceMgr extends FdServiceMgr<SWTFdPlayer> {
 
-  public SWTFdServiceMgr(SWTFdPlayerMain context, JSONObject options) {
+  public SWTFdServiceMgr(SWTFdPlayer context, JSONObject options) {
     super(context, options);
   }
 
