@@ -28,11 +28,12 @@ import com.arkasoft.freddo.services.SWTFdServiceMgr;
 import freddo.dtalk.AsyncCallback;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkService;
+import freddo.dtalk.DTalkService.Configuration;
 import freddo.dtalk.events.DTalkServiceEvent;
 import freddo.dtalk.services.clients.AppView;
 import freddo.dtalk.util.LOG;
 
-public abstract class SWTFdPlayer extends Application {
+public class SWTFdPlayer extends Application {
   private static final String TAG = LOG.tag(SWTFdPlayer.class);
 
   static {
@@ -119,6 +120,19 @@ public abstract class SWTFdPlayer extends Application {
         }
       }
     });
+  }
+
+  private SWTFdPlayerConfiguration mConfiguration = null;
+
+  @Override
+  protected Configuration getConfiguration() {
+    LOG.v(TAG, ">>> getConfiguration");
+
+    if (mConfiguration == null) {
+      mConfiguration = new SWTFdPlayerConfiguration();
+    }
+
+    return mConfiguration;
   }
 
   protected SWTFdServiceMgr createServiceMgr() {
@@ -280,4 +294,5 @@ public abstract class SWTFdPlayer extends Application {
     // call shutdown hook...
     sApplication.onShutdown();
   }
+
 }
