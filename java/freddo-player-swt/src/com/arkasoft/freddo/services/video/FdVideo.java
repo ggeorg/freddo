@@ -2,7 +2,7 @@ package com.arkasoft.freddo.services.video;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.FdPlayer;
+import com.arkasoft.freddo.SWTFdPlayerMain;
 import com.arkasoft.freddo.services.SWTFdService;
 
 import freddo.dtalk.util.LOG;
@@ -12,7 +12,7 @@ public class FdVideo extends SWTFdService {
 
   public static final String TYPE = SRV_PREFIX + "Video";
 
-  protected FdVideo(FdPlayer context, JSONObject options) {
+  protected FdVideo(SWTFdPlayerMain context, JSONObject options) {
     super(context, TYPE, options);
   }
 
