@@ -42,6 +42,7 @@ public class SWTFdPlayerMain extends Application {
   private final MessageBusListener<DTalkServiceEvent> mDTalkServiceEventHandler = new MessageBusListener<DTalkServiceEvent>() {
     @Override
     public void messageSent(String topic, DTalkServiceEvent event) {
+      LOG.v(TAG, ">>> MessageBusListener<DTalkServiceEvent>::messageSent");
       onDTalkServiceEvent(event);
     }
   };
@@ -94,6 +95,9 @@ public class SWTFdPlayerMain extends Application {
     // Initialize DTalk services
     mServiceMgr = new SWTFdServiceMgr(this, new JSONObject());
     mServiceMgr.start();
+    
+    // Subscribe to DTalkServiceEvent
+    MessageBus.subscribe(DTalkServiceEvent.class.getName(), mDTalkServiceEventHandler);
 
     mAppView = new AppView();
     mAppView.startService(new AsyncCallback<Boolean>() {
@@ -107,9 +111,9 @@ public class SWTFdPlayerMain extends Application {
         if (!result) {
           LOG.e(TAG, "AppView not started...");
         } else {
-          if (mServiceInfo != null) {
+          if (mServiceInfo == null) {
             // Subscribe to DTalkServiceEvent
-            MessageBus.subscribe(DTalkServiceEvent.class.getName(), mDTalkServiceEventHandler);
+            //MessageBus.subscribe(DTalkServiceEvent.class.getName(), mDTalkServiceEventHandler);
           } else {
             loadUrl();
           }
@@ -141,7 +145,13 @@ public class SWTFdPlayerMain extends Application {
 
   protected void loadUrl() {
     LOG.v(TAG, ">>> loadUrl");
-    loadUrl(getApplication().getIndexFileURI().toString());
+    
+    runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        loadUrl(getApplication().getIndexFileURI().toString());
+      }
+    });
   }
 
   // Has to run outside the UI thread.

@@ -124,7 +124,7 @@ function(declare, lang, array, query, on, aspect, touch, registry, WidgetBase, T
 				if (listItem) {
 					var item = videoControls.presence.roster.get(listItem.name);
 					if (item) {
-						var src = videoControls.
+						alert(JSON.stringify(item));
 					}
 				}
 			});
