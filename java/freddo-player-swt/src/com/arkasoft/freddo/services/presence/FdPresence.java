@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.SWTFdPlayerMain;
+import com.arkasoft.freddo.SWTFdPlayer;
 import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.services.SWTFdService;
 
@@ -24,7 +24,7 @@ public class FdPresence extends SWTFdService {
 
   private DTalkSubscribeHandle mPresenceHandle;
 
-  protected FdPresence(SWTFdPlayerMain context, JSONObject options) {
+  protected FdPresence(SWTFdPlayer context, JSONObject options) {
     super(context, TYPE, options);
   }
 

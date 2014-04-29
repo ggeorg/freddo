@@ -8,15 +8,15 @@ import java.io.InputStream;
 import org.eclipse.swt.browser.Browser;
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.SWTFdPlayerMain;
+import com.arkasoft.freddo.SWTFdPlayer;
 
 import freddo.dtalk.services.FdService;
 import freddo.dtalk.util.LOG;
 
-public abstract class SWTFdService extends FdService<SWTFdPlayerMain> {
+public abstract class SWTFdService extends FdService<SWTFdPlayer> {
   private static final String TAG = LOG.tag(SWTFdService.class);
 
-  protected SWTFdService(SWTFdPlayerMain context, String name, JSONObject options) {
+  protected SWTFdService(SWTFdPlayer context, String name, JSONObject options) {
     super(context, name, options);
   }
 

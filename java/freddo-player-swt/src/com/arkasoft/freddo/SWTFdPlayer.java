@@ -32,8 +32,8 @@ import freddo.dtalk.events.DTalkServiceEvent;
 import freddo.dtalk.services.clients.AppView;
 import freddo.dtalk.util.LOG;
 
-public class SWTFdPlayerMain extends Application {
-  private static final String TAG = LOG.tag(SWTFdPlayerMain.class);
+public abstract class SWTFdPlayer extends Application {
+  private static final String TAG = LOG.tag(SWTFdPlayer.class);
 
   static {
     LOG.setLogLevel(LOG.VERBOSE);
@@ -55,10 +55,8 @@ public class SWTFdPlayerMain extends Application {
   private ServiceInfo mServiceInfo;
 
   private AppView mAppView;
-  
-  private FdServiceConfiguration mServiceConfiguration = null;
 
-  public SWTFdPlayerMain(Shell shell) {
+  public SWTFdPlayer(Shell shell) {
     mShell = shell;
     mShell.setSize(1024, 720);
     mShell.setText(Application.getApplication().getName());
@@ -93,9 +91,9 @@ public class SWTFdPlayerMain extends Application {
     }
 
     // Initialize DTalk services
-    mServiceMgr = new SWTFdServiceMgr(this, new JSONObject());
+    mServiceMgr = createServiceMgr();
     mServiceMgr.start();
-    
+
     // Subscribe to DTalkServiceEvent
     MessageBus.subscribe(DTalkServiceEvent.class.getName(), mDTalkServiceEventHandler);
 
@@ -113,7 +111,8 @@ public class SWTFdPlayerMain extends Application {
         } else {
           if (mServiceInfo == null) {
             // Subscribe to DTalkServiceEvent
-            //MessageBus.subscribe(DTalkServiceEvent.class.getName(), mDTalkServiceEventHandler);
+            // MessageBus.subscribe(DTalkServiceEvent.class.getName(),
+            // mDTalkServiceEventHandler);
           } else {
             loadUrl();
           }
@@ -121,13 +120,11 @@ public class SWTFdPlayerMain extends Application {
       }
     });
   }
-  
-  @Override
-  protected DTalkService.Configuration getConfiguration() {
-    if (mServiceConfiguration == null) {
-      mServiceConfiguration = new FdServiceConfiguration();
-    }
-    return mServiceConfiguration;
+
+  protected SWTFdServiceMgr createServiceMgr() {
+    LOG.v(TAG, ">>> createServiceMgr");
+
+    return new SWTFdServiceMgr(this, new JSONObject());
   }
 
   protected void onDTalkServiceEvent(DTalkServiceEvent event) {
@@ -145,7 +142,7 @@ public class SWTFdPlayerMain extends Application {
 
   protected void loadUrl() {
     LOG.v(TAG, ">>> loadUrl");
-    
+
     runOnUiThread(new Runnable() {
       @Override
       public void run() {

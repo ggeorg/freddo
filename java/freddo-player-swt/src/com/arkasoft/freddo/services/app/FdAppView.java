@@ -9,7 +9,7 @@ import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.SWTFdPlayerMain;
+import com.arkasoft.freddo.SWTFdPlayer;
 import com.arkasoft.freddo.services.SWTFdService;
 
 import freddo.dtalk.DTalkService;
@@ -20,7 +20,7 @@ public class FdAppView extends SWTFdService {
 
   public static final String TYPE = SRV_PREFIX + "AppView";
 
-  protected FdAppView(SWTFdPlayerMain context, JSONObject options) {
+  protected FdAppView(SWTFdPlayer context, JSONObject options) {
     super(context, TYPE, options);
 
     Browser b = context.getBrowser();

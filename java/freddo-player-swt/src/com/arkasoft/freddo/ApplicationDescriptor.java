@@ -71,7 +71,7 @@ public class ApplicationDescriptor {
   }
 
   public String getmApplicationClassName() {
-    return mApplicationClassName != null ? mApplicationClassName : SWTFdPlayerMain.class.getName();
+    return mApplicationClassName != null ? mApplicationClassName : SWTFdPlayer.class.getName();
   }
 
   public String getId() {
