@@ -31,7 +31,9 @@ define([], function(declare) {
 
 		createEventWithParams: function(srv, action, params, to) {
 			var evt = this.createEvent(srv, action, to);
-			evt.params = params;
+			if (params) {
+				evt.params = params;
+			}
 			return evt;
 		},
 
@@ -58,7 +60,7 @@ define([], function(declare) {
 		invokeWithCallback: function(srv, action, params, callback, to, timeout) {
 			DTalk.sendRequest(this.createEventWithParams(srv, action, params, to), callback, timeout);
 		},
-		
+
 		subscribe: function(event, to) {
 			this.invoke("dtalk.Dispatcher", "subscribe", event, to);
 			

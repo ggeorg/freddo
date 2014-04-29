@@ -40,11 +40,11 @@ public class FdPresence extends SWTFdService {
           if (DTalk.ACTION_RESOLVED.equals(action)) {
             JSONObject params = event.getJSONObject(DTalk.KEY_BODY_PARAMS);
             LOG.d(TAG, "Presence resolved: %s", params);
-            FdPresence.this.fireEvent("resolved", params);
+            FdPresence.this.fireEvent("onresolved", params);
           } else if (DTalk.ACTION_REMOVED.equals(action)) {
             JSONObject params = event.getJSONObject(DTalk.KEY_BODY_PARAMS);
             LOG.d(TAG, "Presence resolved: %s", params);
-            FdPresence.this.fireEvent("removed", params);
+            FdPresence.this.fireEvent("onremoved", params);
           }
         } catch (JSONException e) {
           LOG.e(TAG, "JSON error parsing presense event", e);

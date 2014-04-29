@@ -1,0 +1,100 @@
+* { 
+	outline: none;
+}
+body {
+	background: #000 !important;
+	color: #eee !important;
+}
+.mblView {
+	height: 100%;
+	background: #000;
+	color: #eee !important;
+}
+#freddo-tv-main-view, #loadDiv {
+	background-color: #8db6e0 !important;
+	background-image: url("../images/background.png");
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 50%;
+	color: #eee; 			
+}
+#freddo-tv-video-view {
+	background: none !important;
+}
+#main-freddo-info {
+	position: absolute;
+	left:0;
+	bottom: 0;
+	padding: 1em;
+	text-shadow: 0px 1px 1px #4d4d4d;
+}
+#main-freddo-info .title {
+	font-size: 200%;
+	font-weight: bold;
+}
+#loadDiv {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+}
+#main-drop-zone {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	padding: 1em;
+	border: 1px dotted #ccc;
+	border-radius: 5px;
+	width: 75%;
+	height: 75%;
+	text-align: center;
+	color: transparent;
+	font-size: 80%;
+	
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box; /* Opera/IE 8+ */
+}
+#main-drop-zone:hover {
+	color: #eee;
+	text-shadow: 0px 1px 1px #4d4d4d;
+	
+	border: 1px dotted #eee;
+	background-color: rgba(0,0,0,0.1);
+}
+#main-drop-zone.dragover {
+	border: 1px dotted white;
+	background-color: rgba(255,0,0,0.1);
+}
+#videoControls {
+	opacity: 0;
+	overflow: hidden;
+	
+	-webkit-transition: opacity 1.3s ease-in-out;
+	-moz-transition: opacity 1.3s ease-in-out;
+	-ms-transition: opacity 1.3s ease-in-out;
+	-o-transition: opacity 1.3s ease-in-out;
+}
+#videoControls.visible,
+#videoControls:hover {
+	opacity: 0.75 !important;
+}
+#freddo-tv-main-view-icon-container {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 1em;
+}
+#freddo-tv-main-view-icon-container > img {
+	margin: 0 0 0 0.3em;
+	width: 32px;
+	height: 32px;
+}
+#freddo-tv-main-view-icon-container > img:hover {
+	background-color: rgba(255, 255, 255, 0.3);
+	border-radius: 0.3em;
+}

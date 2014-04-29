@@ -11,7 +11,10 @@ function(declare, lang, aspect, DTalkAdapter, ServiceMgr) {
 		_srvListener: null,
 		
 		target: null, // read only
+		
 		timeout: null, // read only
+		
+		subscribeToEvents: true, // read only
 
 		postscript: function(/*Object?*/ params) {
 			this.inherited(arguments);
@@ -46,6 +49,26 @@ function(declare, lang, aspect, DTalkAdapter, ServiceMgr) {
 		
 		onStartupError: function() {
 			
+		},
+		
+		get: function(property, callback) {
+			DTalkAdapter.get(this._srv, property, callback, this.target, this.timeout);
+		},
+		
+		set: function(params) {
+			DTalkAdapter.set(this._srv, params, this.target);
+		},
+		
+		invoke: function(action, params, callback) {
+			if (callback) {
+				DTalkAdapter.invokeWithCallback(this._srv, action, params, callback, this.target);
+			} else {
+				DTalkAdapter.invoke(this._srv, action, params, this.target);
+			}
+		},
+		
+		subscribe: function(event, callback) {
+			DTalkAdapter.subscribeWithCallback(this._srvListener + "." + event, callback, this.target, this.timeout);
 		},
 		
 		_targetFilter: function(message) {

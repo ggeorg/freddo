@@ -22,19 +22,23 @@ define(["dojo/_base/declare",
 			}));
 			
 			this.view.on("beforeTransitionIn", lang.hitch(this, function() {
+				//alert("beforeTransitionIn:"+this.view.id);
 				this.beforeTransitionIn();
 			}));
 			
 			this.view.on("afterTransitionIn", lang.hitch(this, function() {
-				this.beforeTransitionIn();
+				//alert("afterTransitionIn:"+this.view.id);
+				this.afterTransitionIn();
 			}));
 			
 			this.view.on("beforeTransitionOut", lang.hitch(this, function() {
-				this.beforeTransitionIn();
+				//alert("beforeTransitionOut:"+this.view.id);
+				this.beforeTransitionOut();
 			}));
 			
 			this.view.on("afterTransitionOut", lang.hitch(this, function() {
-				this.beforeTransitionIn();
+				//alert("afterTransitionOut:"+this.view.id);
+				this.afterTransitionOut();
 			}));
 		},
 		
@@ -69,6 +73,12 @@ define(["dojo/_base/declare",
 		activate: function(/*String*/transition) {
 			var showingView = this.view.getShowingView();
 			showingView.performTransition(this.view.id, 1, transition);
+			this._viewStack.push(showingView);
+		},
+		
+		activateView: function(/*String*/viewId, /*String*/transition) {
+			var showingView = this.view.getShowingView();
+			showingView.performTransition(viewId, 1, transition);
 			this._viewStack.push(showingView);
 		},
 		

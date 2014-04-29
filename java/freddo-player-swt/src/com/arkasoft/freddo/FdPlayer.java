@@ -1,5 +1,6 @@
 package com.arkasoft.freddo;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,6 +9,8 @@ import java.util.Properties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Image;
@@ -70,8 +73,8 @@ public class FdPlayer {
       @Override
       public void handleEvent(Event event) {
         LOG.v(TAG, ">>> handleEvent:SWT.Close");
-        mShell.setVisible(false);
-        event.doit = false;
+        // mShell.setVisible(false);
+        // event.doit = false;
       }
     });
 
@@ -147,14 +150,14 @@ public class FdPlayer {
     if (mAppView != null) {
       try {
         mAppView.setUrl(url);
-        
+
         mShell.open();
         mShell.layout();
 
         if (sAboutBox != null && sAboutBox.isVisible()) {
           sAboutBox.close();
         }
-        
+
       } catch (DTalkException e) {
         LOG.e(TAG, e.getMessage());
       }
@@ -169,17 +172,17 @@ public class FdPlayer {
     mShell.getDisplay().asyncExec(r);
   }
 
-//  public boolean isVisible() {
-//    return mShell.isVisible();
-//  }
+  // public boolean isVisible() {
+  // return mShell.isVisible();
+  // }
 
-//  public void setVisible(boolean visible) {
-//    if (visible) {
-//      mShell.setVisible(true);
-//    } else {
-//      
-//    }
-//  }
+  // public void setVisible(boolean visible) {
+  // if (visible) {
+  // mShell.setVisible(true);
+  // } else {
+  //
+  // }
+  // }
 
   // -----------------------------------------------------------------------
 
@@ -232,89 +235,60 @@ public class FdPlayer {
 
     final Display display = new Display();
     final Shell shell = new Shell(display);
+    @SuppressWarnings("unused")
     final FdPlayer window = new FdPlayer(shell, getApplication().getName());
 
     // final Image image = new Image(display, new
     // ImageData(FreddoTV.class.getResourceAsStream("/images/bulb.gif")));
     final Image image = new Image(display, getApplication().getFavicon());
-    final Tray tray = display.getSystemTray();
-    if (tray == null) {
-      System.out.println("The system tray is not available");
-    } else {
-      final TrayItem item = new TrayItem(tray, SWT.NONE);
-      item.setToolTipText(getApplication().getName());
-      item.addListener(SWT.Show, new Listener() {
-        public void handleEvent(Event event) {
-          LOG.v(TAG, ">>> handleEvent:SWT.Show");
-        }
-      });
-      item.addListener(SWT.Hide, new Listener() {
-        public void handleEvent(Event event) {
-          LOG.v(TAG, ">>> handleEvent:SWT.Hide");
-        }
-      });
-      item.addListener(SWT.Selection, new Listener() {
-        public void handleEvent(Event event) {
-          LOG.v(TAG, ">>> handleEvent:SWT.Selection");
-          window.mShell.open();
-          window.mShell.layout();
-
-          if (sAboutBox != null && sAboutBox.isVisible()) {
-            sAboutBox.close();
-          }
-        }
-      });
-      item.addListener(SWT.DefaultSelection, new Listener() {
-        public void handleEvent(Event event) {
-          LOG.v(TAG, ">>> handleEvent:SWT.DefaultSelection");
-        }
-      });
-
-      //
-      // The Menu
-      //
-
-      final Menu menu = new Menu(shell, SWT.POP_UP);
-
-      // About
-      MenuItem miAbout = new MenuItem(menu, SWT.PUSH);
-      miAbout.setText(String.format("About %s", getApplication().getName()));
-      miAbout.addListener(SWT.Selection, new Listener() {
-        @Override
-        public void handleEvent(Event arg0) {
-          if (sAboutBox == null) {
-            sAboutBox = new AboutBox(shell,
-                String.format("About %s", getApplication().getName()),
-                getApplication().getAboutFileURI().toString(),
-                image);
-          }
-          sAboutBox.open();
-        }
-      });
-
-      new MenuItem(menu, SWT.SEPARATOR);
-
-      // Exit
-      MenuItem miExit = new MenuItem(menu, SWT.PUSH);
-      miExit.setText("Exit");
-      miExit.addListener(SWT.Selection, new Listener() {
-        @Override
-        public void handleEvent(Event arg0) {
-          item.dispose();
-          System.exit(0);
-        }
-      });
-
-      item.addListener(SWT.MenuDetect, new Listener() {
-        public void handleEvent(Event event) {
-          LOG.v(TAG, ">>> handleEvent:SWT.MenuDetect");
-          menu.setVisible(true);
-        }
-      });
-
-      item.setImage(image);
-      shell.setImage(image);
-    }
+    shell.setImage(image);
+    /*
+     * final Tray tray = display.getSystemTray(); if (tray == null) {
+     * System.out.println("The system tray is not available"); } else { final
+     * TrayItem item = new TrayItem(tray, SWT.NONE);
+     * item.setToolTipText(getApplication().getName());
+     * item.addListener(SWT.Show, new Listener() { public void handleEvent(Event
+     * event) { LOG.v(TAG, ">>> handleEvent:SWT.Show"); } });
+     * item.addListener(SWT.Hide, new Listener() { public void handleEvent(Event
+     * event) { LOG.v(TAG, ">>> handleEvent:SWT.Hide"); } });
+     * item.addListener(SWT.Selection, new Listener() { public void
+     * handleEvent(Event event) { LOG.v(TAG, ">>> handleEvent:SWT.Selection");
+     * window.mShell.open(); window.mShell.layout();
+     * 
+     * if (sAboutBox != null && sAboutBox.isVisible()) { sAboutBox.close(); } }
+     * }); item.addListener(SWT.DefaultSelection, new Listener() { public void
+     * handleEvent(Event event) { LOG.v(TAG,
+     * ">>> handleEvent:SWT.DefaultSelection"); } });
+     * 
+     * // // The Menu //
+     * 
+     * final Menu menu = new Menu(shell, SWT.POP_UP);
+     * 
+     * // About MenuItem miAbout = new MenuItem(menu, SWT.PUSH);
+     * miAbout.setText(String.format("About %s", getApplication().getName()));
+     * miAbout.addListener(SWT.Selection, new Listener() {
+     * 
+     * @Override public void handleEvent(Event arg0) { if (sAboutBox == null) {
+     * sAboutBox = new AboutBox(shell, String.format("About %s",
+     * getApplication().getName()),
+     * getApplication().getAboutFileURI().toString(), image); }
+     * sAboutBox.open(); } });
+     * 
+     * new MenuItem(menu, SWT.SEPARATOR);
+     * 
+     * // Exit MenuItem miExit = new MenuItem(menu, SWT.PUSH);
+     * miExit.setText("Exit"); miExit.addListener(SWT.Selection, new Listener()
+     * {
+     * 
+     * @Override public void handleEvent(Event arg0) { item.dispose();
+     * System.exit(0); } });
+     * 
+     * item.addListener(SWT.MenuDetect, new Listener() { public void
+     * handleEvent(Event event) { LOG.v(TAG, ">>> handleEvent:SWT.MenuDetect");
+     * menu.setVisible(true); } });
+     * 
+     * item.setImage(image); }
+     */
 
     // Add shutdown hook
     Runtime.getRuntime().addShutdownHook(new Thread() {
