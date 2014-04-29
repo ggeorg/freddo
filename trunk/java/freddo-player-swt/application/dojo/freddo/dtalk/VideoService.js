@@ -6,7 +6,7 @@ define(["dojo/_base/declare",
 
 function(declare, lang, aspect, DTalkAdapter, DTalkService) {
 
-	return declare("freddo.dtalk.VideoService", [DTalkService], {
+	return declare("freddo.dtalk.VideoService", [ DTalkService ], {
 		_srv: "dtalk.service.Video",
 		_srvListener: "$dtalk.service.Video",
 		
@@ -23,30 +23,39 @@ function(declare, lang, aspect, DTalkAdapter, DTalkService) {
 		},
 		
 		onStartup: function() {
-			this.subscribeToVideoEvents();
+			var videoService = this;
+			
+			if (videoService.subscribeToEvents) {
+				videoService._subscribeToEvents();
+			}
 		},
 		
-		subscribeToVideoEvents: function() {			
-			this._onPreparedH = DTalkAdapter.subscribeWithCallback(this._srvListener + ".onprepared", lang.hitch(this, function(e) {
-				if (this._targetFilter(e.data)) {
-					this._onPrepared();
+		_subscribeToEvents: function() {
+			var videoService = this;
+			
+			videoService._onPreparedH = videoService.subscribe("onprepared", function(e) {
+				if (videoService._targetFilter(e.data)) {
+					videoService._onPrepared();
 				}
-			}), this.target);
-			this._onCompletionH = DTalkAdapter.subscribeWithCallback(this._srvListener + ".oncompletion", lang.hitch(this, function(e) {
-				if (this._targetFilter(e.data)) {
-					this._onCompletion();
+			});
+			
+			videoService._onCompletionH = videoService.subscribe("oncompletion", function(e) {
+				if (videoService._targetFilter(e.data)) {
+					videoService._onCompletion();
 				}
-			}), this.target);
-			this._onErrorH = DTalkAdapter.subscribeWithCallback(this._srvListener + ".onerror", lang.hitch(this, function(e) {
-				if (this._targetFilter(e.data)) {
-					this._onError();
+			});
+
+			videoService._onErrorH = videoService.subscribe("onerror", function(e) {
+				if (videoService._targetFilter(e.data)) {
+					videoService._onError();
 				}
-			}), this.target);
-			this._onStatusH = DTalkAdapter.subscribeWithCallback(this._srvListener + ".onstatus", lang.hitch(this, function(e) {
-				if (this._targetFilter(e.data)) {
-					this._onStatus(e.data.params);
+			});
+			
+			videoService._onStatusH = videoService.subscribe("onstatus", function(e) {
+				if (videoService._targetFilter(e.data)) {
+					videoService._onStatus(e.data.params);
 				}
-			}), this.target);
+			});
 		},
 		
 		_onPrepared: function() {
@@ -72,6 +81,27 @@ function(declare, lang, aspect, DTalkAdapter, DTalkService) {
 		onStatus: function(func) {
 			return aspect.after(this, "_onStatus", func, true);
 		},
+		
+		getSrc: function(callback) {
+			this.get("src", callback);
+		},
+		
+		setSrc: function(src) {
+			this.set({src: src});
+		},
+		
+		play: function() {
+			this.invoke("play");
+		},
+		pause: function() {
+			this.invoke("pause");
+		},
+		stop: function() {
+			this.invoke("stop");
+		},
+		seekTo: function(sec) {
+			this.invoke("seekTo", sec);
+		}
 	});
 	
 });

@@ -1,0 +1,37 @@
+<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+
+	<tr valign="bottom" align="center">
+		<td valign="middle" align="center" colspan="3">
+			<ul data-dojo-type="dojox/mobile/IconMenu" data-dojo-props='cols:6'>
+				<li data-dojo-attach-point="mediaRemoteCtrlBtn" data-dojo-type="dojox/mobile/IconMenuItem" data-dojo-props='label:"R-Ctrl", icon:"css/dojo/freddo/mobile/video-controls/icons/media-remote-ctrl.png"'></li>
+				<li data-dojo-attach-point="mediaSeekBackwardBtn" data-dojo-type="dojox/mobile/IconMenuItem" data-dojo-props='label:"-15s", icon:"css/dojo/freddo/mobile/video-controls/icons/media-seekbackward.png"'></li>
+				<li data-dojo-attach-point="mediaPlayPauseBtn" data-dojo-type="dojox/mobile/IconMenuItem" data-dojo-props='label:"Play", icon:"css/dojo/freddo/mobile/video-controls/icons/media-play.png"'></li>
+				<li data-dojo-attach-point="mediaStopBtn" data-dojo-type="dojox/mobile/IconMenuItem" data-dojo-props='label:"Stop", icon:"css/dojo/freddo/mobile/video-controls/icons/media-stop.png"'></li>
+				<li data-dojo-attach-point="mediaSeekForwardBtn" data-dojo-type="dojox/mobile/IconMenuItem" data-dojo-props='label:"+15s", icon:"css/dojo/freddo/mobile/video-controls/icons/media-seekforward.png"'></li>
+				<li data-dojo-attach-point="mediaPushToBtn" data-dojo-type="dojox/mobile/IconMenuItem" data-dojo-props='label:"Push", icon:"css/dojo/freddo/mobile/video-controls/icons/media-push-to.png"'></li>
+			</ul>
+			<div data-dojo-attach-point="deviceListDlg" data-dojo-type="dojox.mobile.SimpleDialog" 
+					data-dojo-props='closeButton:true,modal:true' style="min-width:33%;">
+				<div class="dlgTitle">
+					<span>Device List</span>
+				</div>
+				<hr>
+				<div data-dojo-type="dojox.mobile.ScrollablePane" data-dojo-props='height:"280px",roundCornerMask:true'>
+					<ul data-dojo-attach-point="deviceList" data-dojo-type="dojox.mobile.EdgeToEdgeStoreList"
+						data-dojo-props='itemMap:{displayName:"label", href:"moveTo", name:"name"}'>
+					</ul>
+				</div>
+				<div data-dojo-type="dojox.mobile.Button" label="Cancel"></div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td data-dojo-attach-point="position" align="left" style="padding-left:1em;">00:00:00</td>
+		<td valign="middle" align="center" width="99%">
+			<div class="mblSlider-wrapper">
+				<input data-dojo-attach-point="slider" data-dojo-type="dojox/mobile/Slider" min="0" max="100" value="0"></input>
+			</div>
+		</td>
+		<td data-dojo-attach-point="duration" align="right" style="padding-right:1em;">00:00:00</td>
+	</tr>
+</table>

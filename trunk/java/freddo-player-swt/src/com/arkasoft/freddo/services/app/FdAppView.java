@@ -74,7 +74,7 @@ public class FdAppView extends SWTFdService {
     String url = getString(options, "url");
     LOG.d(TAG, "Url: %s", url);
     if (url != null) {
-      String ws = URLEncoder.encode(DTalkService.getInstance().getLocalServiceAddress());
+      String ws = URLEncoder.encode(DTalkService.getInstance().getServiceAddressForLocalhost());
       if (url.contains("?")) {
         url = String.format("%s&ws=%s", url, ws);
       } else {

@@ -27,12 +27,12 @@ public class FdServiceConfiguration extends DTalkServiceConfigurationBase implem
 
 	@Override
 	public String getTargetName() {
-		return "FreddoTV";
+		return "Freddo Player";
 	}
 
 	@Override
 	public String getType() {
-		return "Renderer/1";
+		return "Renderer/1; FreddoPlayer/1";
 	}
 
 	@Override

@@ -21,6 +21,7 @@ public class FdVideo extends SWTFdService {
     LOG.v(TAG, ">>> start");
 
     try {
+      // TODO when application reloads this has to start again...
       injectJavascript("services/video.js");
     } catch (Throwable t) {
       LOG.e(TAG, "Error in injectJavascript", t);

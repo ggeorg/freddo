@@ -1,0 +1,31 @@
+.freddo-mobile-video-controls {
+	font-size: 80%;
+}
+
+.freddo-mobile-video-controls .mblSlider-wrapper {
+	position: relative;
+	padding: 0 1rem;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.freddo-mobile-video-controls .mblSlider {
+	width: 100%;
+	margin-left: -2px;
+}
+
+.freddo-mobile-video-controls .mblSliderProgressBar {
+	/*background: #cecded;*/
+}
+
+.freddo-mobile-video-controls .mblIconMenu {
+	background-image: none;
+	background: none !important;
+	width: 95%; /* TODO: fix layout issue of last item */
+}
+
+.freddo-mobile-video-controls .mblIconMenuItem {
+	border: none !important;
+	border-radius: 0.3em;
+}

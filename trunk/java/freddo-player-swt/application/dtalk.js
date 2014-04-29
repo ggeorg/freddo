@@ -473,7 +473,6 @@
 	
 	// iOS reconnect event...
 	DTalk.addEventListener("freddo.websocket.reconnect", function(event) {
-		alert(event.data.port);
 		DTalk.connect("ws://localhost:" + parseInt(event.data.port) + "/dtalksrv");
 	}, false);
 	

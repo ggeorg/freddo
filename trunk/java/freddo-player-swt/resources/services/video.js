@@ -61,8 +61,8 @@
 						break;
 					}
 					console.debug("Error: " + msg);
-					self._stopTimer();
 					fireEvent("onerror", msg);
+					self._stopTimer();
 				});
 			}
 		},
@@ -88,19 +88,21 @@
 		},
 		do_play: function() {
 			this._video.play();
-			//this._startTimer();
+			this._sendStatus();
+			this._startTimer();
 		},
 		do_stop: function() {
 			this._video.pause();
-			//this._video.src = "";
 			this._stopTimer();
 			fireEvent("oncompletion");
 		},
 		do_pause: function() {
 			this._video.pause();
+			this._sendStatus();
 		},
 		do_seekTo: function(event) {
 			this._video.currentTime = event.params;
+			this._sendStatus();
 		},
 		do_setRate: function(event) {
 			var value = event.params;
