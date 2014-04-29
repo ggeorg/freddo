@@ -11,28 +11,28 @@ import freddo.dtalk.util.LOG;
 public class FdServiceConfiguration extends DTalkServiceConfigurationBase implements AirPlayService.Configuration {
 	private static final String TAG = LOG.tag(FdServiceConfiguration.class);
 	
-	private JmDNS jmDNS = null;
+	private JmDNS mJmDNS = null;
 
 	@Override
 	public JmDNS getJmDNS() {
-		if (jmDNS == null) {
+		if (mJmDNS == null) {
 			try {
-				jmDNS = JmDNS.create();
+				mJmDNS = JmDNS.create();
 			} catch (IOException e) {
 				LOG.e(TAG, "Can't start JmDNS");
 			}
 		}
-		return jmDNS;
+		return mJmDNS;
 	}
 
 	@Override
 	public String getTargetName() {
-		return "Freddo Player";
+		return Application.getApplication().getName();
 	}
 
 	@Override
 	public String getType() {
-		return "Renderer/1; FreddoPlayer/1";
+		return Application.getApplication().getDType();
 	}
 
 	@Override

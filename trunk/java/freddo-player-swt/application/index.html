@@ -4,7 +4,8 @@
 		<meta charset="utf-8" />
 		<title>Freddo TV</title>
 		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojox/mobile/themes/blackberry/blackberry.css"></link>
-		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojox/mobile/themes/blackberry/blackberry-compat.css"></link>
+		<!-- <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojox/mobile/themes/blackberry/blackberry-compat.css"></link>-->
+		<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.9.3/dojox/mobile/themes/android/SimpleDialog.css"></link>
 		<link rel="stylesheet" type="text/css" href="css/dojo/freddo/mobile/video-controls/video-controls.css"></link>
 		<link rel="stylesheet" type="text/css" href="css/app.css"></link>
 		<style>
@@ -14,6 +15,8 @@
 				overflow: hidden;
 			}
 		</style>
+		<script src="http://ggeorg.arkasoft.com:8080/web-presence/x-dtalk.js"></script>
+		<script src="http://ggeorg.arkasoft.com:8080/web-presence/x-dtalk-video.js"></script>
 		<script type="text/javascript" src="dtalk.js"></script>
 		<script>
 			var dojoConfig = {
@@ -41,7 +44,7 @@
 				<img id="freddo-tv-main-view-info-btn" src="images/info.png"></img>
 			</div>
 		</div>
-		<div id="video" data-dojo-type="dojox.mobile.View">
+		<div id="freddo-tv-video-view" data-dojo-type="dojox.mobile.View" -selected>
 			<div id="videoControls" data-dojo-type="freddo.mobile.VideoControls" 
 				style="position: absolute; left:0; right: 0; bottom:0; margin: auto auto 2em auto; width: 50%; min-width: 25em; height: 7em; background: #000; border: 1px solid #eee; border-radius: 1em;">
 			</div>
