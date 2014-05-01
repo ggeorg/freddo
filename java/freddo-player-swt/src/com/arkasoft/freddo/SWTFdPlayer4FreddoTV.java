@@ -8,13 +8,13 @@ import com.arkasoft.freddo.service.airplay.AirPlayService.Configuration;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.util.LOG;
 
-public class SWTFdPLayer4FreddoTV extends SWTFdPlayer {
-  private static final String TAG = LOG.tag(SWTFdPLayer4FreddoTV.class);
+public class SWTFdPlayer4FreddoTV extends SWTFdPlayer {
+  private static final String TAG = LOG.tag(SWTFdPlayer4FreddoTV.class);
 
   private FreddoTVConfiguration mServiceConfiguration = null;
   private AirPlayService mAirPlayService = null;
 
-  public SWTFdPLayer4FreddoTV(Shell shell) {
+  public SWTFdPlayer4FreddoTV(Shell shell) {
     super(shell);
   }
   
