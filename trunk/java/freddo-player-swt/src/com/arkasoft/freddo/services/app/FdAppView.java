@@ -7,6 +7,8 @@ import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.ProgressEvent;
 import org.eclipse.swt.browser.ProgressListener;
+import org.eclipse.swt.browser.StatusTextEvent;
+import org.eclipse.swt.browser.StatusTextListener;
 import org.json.JSONObject;
 
 import com.arkasoft.freddo.SWTFdPlayer;
@@ -50,6 +52,25 @@ public class FdAppView extends SWTFdService {
       @Override
       public void completed(ProgressEvent event) {
         LOG.v(TAG, ">>> ProgressListener::completed");
+      }
+    });
+    b.addStatusTextListener(new StatusTextListener() {
+      @Override
+      public void changed(StatusTextEvent event) {
+        String m = event.text;
+        if (m == null) {
+          return;
+        }
+        
+        if (m.startsWith("D:")) {
+          LOG.d(TAG, m.substring(2));
+        } else if (m.startsWith("E:")) {
+          LOG.e(TAG, m.substring(2));
+        } else if (m.startsWith("W:")) {
+          LOG.w(TAG, m.substring(2));
+        } else if (m.startsWith("I:")) {
+          LOG.i(TAG, m.substring(2));
+        }
       }
     });
   }

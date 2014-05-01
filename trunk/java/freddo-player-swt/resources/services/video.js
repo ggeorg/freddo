@@ -1,5 +1,4 @@
 (function() {
-	
 	var DTalkVideoService = {
 		name: "dtalk.service.Video",
 		_video: null,
