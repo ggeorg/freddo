@@ -19,7 +19,7 @@ public class SWTFdPlayer4FreddoTV extends SWTFdPlayer {
   }
   
   @Override
-  protected DTalkService.Configuration getConfiguration() {
+  public DTalkService.Configuration getConfiguration() {
     if (mServiceConfiguration == null) {
       mServiceConfiguration = new FreddoTVConfiguration();
     }

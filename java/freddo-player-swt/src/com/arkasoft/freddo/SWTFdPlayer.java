@@ -56,6 +56,8 @@ public class SWTFdPlayer extends Application {
   private ServiceInfo mServiceInfo;
 
   private AppView mAppView;
+  
+  private SWTFdPlayerConfiguration mConfiguration = null;
 
   public SWTFdPlayer(Shell shell) {
     mShell = shell;
@@ -121,11 +123,13 @@ public class SWTFdPlayer extends Application {
       }
     });
   }
-
-  private SWTFdPlayerConfiguration mConfiguration = null;
+  
+  public Shell getShell() {
+    return mShell;
+  }
 
   @Override
-  protected Configuration getConfiguration() {
+  public Configuration getConfiguration() {
     LOG.v(TAG, ">>> getConfiguration");
 
     if (mConfiguration == null) {
