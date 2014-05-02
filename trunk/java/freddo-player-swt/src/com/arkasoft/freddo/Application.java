@@ -19,7 +19,7 @@ public abstract class Application {
     return sApplicationDescriptor;
   }
   
-  protected abstract DTalkService.Configuration getConfiguration();
+  public abstract DTalkService.Configuration getConfiguration();
   
   protected void onStartup(DTalkService.Configuration conf) {
     // startup hook
