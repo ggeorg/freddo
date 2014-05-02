@@ -238,10 +238,10 @@ public abstract class FdService<T> implements MessageBusListener<JSONObject> {
     }
   }
 
-  protected void fireEvent(String event, Object value) {
+  protected void fireEvent(String event, Object params) {
     try {
       JSONObject message = newEvent(event);
-      message.put(MessageEvent.KEY_BODY_PARAMS, value);
+      message.put(MessageEvent.KEY_BODY_PARAMS, params);
       MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
     } catch (JSONException e) {
       // TODO Auto-generated catch block
