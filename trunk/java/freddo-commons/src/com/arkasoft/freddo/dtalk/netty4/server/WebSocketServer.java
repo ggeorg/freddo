@@ -37,10 +37,12 @@ public class WebSocketServer {
 
   public static final String WEBSOCKET_PATH = "/dtalksrv";
 
-  private Channel ch = null;
+  private Channel mChannel = null;
 
   public InetSocketAddress getAddress() {
-    return ch != null && ch.isOpen() ? (InetSocketAddress) ch.localAddress() : null;
+    LOG.v(TAG, ">>> getAddress");
+    
+    return (InetSocketAddress) mChannel.localAddress();
   }
 
   public void startup(Runnable onStartup) throws Exception {
@@ -61,8 +63,8 @@ public class WebSocketServer {
           });
       
       final Configuration conf = DTalkService.getInstance().getConfiguration();
-      ch = bootstrap.bind(new InetSocketAddress(conf.getPort())).sync().channel();
-      final InetSocketAddress address = (InetSocketAddress) ch.localAddress();
+      mChannel = bootstrap.bind(new InetSocketAddress(conf.getPort())).sync().channel();
+      final InetSocketAddress address = (InetSocketAddress) mChannel.localAddress();
       LOG.i(TAG, "Web socket server started at port " + address.getPort() + '.');
       //LOG.i(TAG, "Open your browser and navigate to http://%s:%d/", address.getAddress().getHostAddress(), address.getPort());
 
@@ -72,7 +74,7 @@ public class WebSocketServer {
 
       // WebSocketServerHandler will close the connection when the client
       // responds to the CloseWebSocketFrame.
-      ch.closeFuture().sync();
+      mChannel.closeFuture().sync();
     } finally {
       LOG.i(TAG, "Shutdown gracefully...");
       bossGroup.shutdownGracefully();
@@ -83,19 +85,19 @@ public class WebSocketServer {
   public void shutdown() {
     LOG.v(TAG, "shutdown()");
 
-    if (ch != null) {
-      if (ch.isOpen()) {
-        ch.flush();
-        ch.close();
+    if (mChannel != null) {
+      if (mChannel.isOpen()) {
+        mChannel.flush();
+        mChannel.close();
       }
-      ch = null;
+      mChannel = null;
     }
   }
 
   @Deprecated
   public boolean isRunning() {
     synchronized (this) {
-      return ch != null && ch.isOpen();
+      return mChannel != null && mChannel.isOpen();
     }
   }
 
