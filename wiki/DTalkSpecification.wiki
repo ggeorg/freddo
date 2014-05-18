@@ -30,3 +30,23 @@ When the action request completes, the service must reply with a response object
 || *service* || <li>This member is REQUIRED.</li><li>It MUST be the same as the value of the 'id' member in the request object.</li><li>If there was an error in detecting the id in the request object (e.g. parse error) the response is ignored. (???)</li> ||
 || *result* || <li>This member is REQUIRED on success.</li><li>This member MUST NOT exist if there was an error invoking the action.</li><li>The value of this member is determined by the requested action.</li> ||
 || *error* || <li>This member is REQUIRED on error.</li><li>This member MUST NOT exist if there was no error triggered during invocation.</li><li>The value for this member MUST be an object as defined below</li> ||
+
+Either the result member or error member MUST be included, but both members MUST NOT be included.
+
+=== Error Object ===
+
+When a DTalk request encounters an error, the response object MUST contain the error member with a value that is an object with the following members:
+
+|| *code* || A number that indicates the error type that occured.<br>This MUST be an integer. ||
+|| *message* || A string providing a short description of the error. ||
+|| *data* || A primitive os structured value that contains additional information about the error.<br>This may be omitted.<br>The value of this member is defined by the service (e.g. detailed error information, nested errors etc.). ||
+
+The error codes from and including -32768 to -32000 are reserved for pre-defined errors. Any code within this range, but not defined explicitly below is reserved for future use.
+
+|| *code* || *message* || *meaning* ||
+|| -32700 || Parse error || Invalid JSON was received by the service.<br>An error occurred on the server while parsing the JSON text. ||
+|| -32600 || Invalid Request || The JSON sent is not a valid request object. ||
+|| -32601 || Action not found || The action does not exists / is not available. ||
+|| -32602 || Invalid params || Invalid action parameter(s). ||
+|| -32603 || Internal error || Internal DTalk error. ||
+|| -32000 to -32099 || Server error || Reserved for implementation-defined server-errors. ||
