@@ -26,4 +26,26 @@ public interface MessageEvent {
   static String KEY_BODY_PARAMS = "params"; //$NON-NLS-1$
   static String KEY_BDOY_RESULT = "result"; //$NON-NLS-1$
   static String KEY_BODY_ERROR = "error"; //$NON-NLS-1$
+  
+  static String KEY_ERROR_CODE = "code"; //$NON-NLS-1$
+  static String KEY_ERROR_MESSAGE = "message"; //$NON-NLS-1$
+  static String KEY_ERROR_DATA = "data"; //$NON-NLS-1$
+  
+  /** Invalid JSON. */
+  static int ERROR_PARSE_ERROR = -32700;
+  
+  /** The JSON sent is not a valid request object. */
+  static int ERROR_INVALID_REQUEST = -32600;
+  
+  /** The action does not exist / is not available. */
+  static int ERROR_ACTION_NOT_FOUND = -32601;
+  
+  /** Invalid method parameter(s). */
+  static int ERROR_INVALID_PARAMS = -326002;
+  
+  /** Internal DTalk error. */
+  static int ERROR_INTERNAL_ERROR = -326003;
+  
+  /** Server error. */
+  static int ERROR_SERVER_ERROR = -32000;
 }

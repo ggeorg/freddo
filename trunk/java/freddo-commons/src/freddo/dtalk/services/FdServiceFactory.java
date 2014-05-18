@@ -17,8 +17,10 @@ package freddo.dtalk.services;
 
 import org.json.JSONObject;
 
-public interface FdServiceFactory<T> {
-  FdService<T> create(T context, JSONObject options);
+import freddo.dtalk.DTalkServiceContext;
+
+public interface FdServiceFactory {
+  FdService create(DTalkServiceContext context, JSONObject options);
 
   String getType();
 }

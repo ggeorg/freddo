@@ -28,22 +28,29 @@ import org.json.JSONObject;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
+import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.DTalkChannelClosedEvent;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.LOG;
 
-public abstract class FdServiceMgr<T> extends FdService<T> {
+public abstract class FdServiceMgr extends FdService {
   private static final String TAG = LOG.tag(FdServiceMgr.class);
-  
+
+  /**
+   * DTalk service name.
+   */
   public static final String TYPE = "dtalk.Services";
 
+  /**
+   * Channel closed event Handler.
+   */
   private final MessageBusListener<DTalkChannelClosedEvent> chClosedEventH = new MessageBusListener<DTalkChannelClosedEvent>() {
     @Override
     public void messageSent(String topic, DTalkChannelClosedEvent message) {
       String channel = message.getName();
       List<String> srvList = new ArrayList<String>();
-      for (Map.Entry<String, FdService<T>> e : services.entrySet()) {
-        FdService<T> service = e.getValue();
+      for (Map.Entry<String, FdService> e : services.entrySet()) {
+        FdService service = e.getValue();
         if (service.refCntMap.containsKey(channel)) {
           srvList.add(e.getKey());
         }
@@ -53,18 +60,20 @@ public abstract class FdServiceMgr<T> extends FdService<T> {
       }
     }
   };
+  
+  // --------------------------------------------------------------------------
 
-  private final Map<String, FdService<T>> services;
-  private final Map<String, FdServiceFactory<T>> factories;
+  private final Map<String, FdService> services;
+  private final Map<String, FdServiceFactory> factories;
 
-  protected FdServiceMgr(T context, JSONObject options) {
+  public FdServiceMgr(DTalkServiceContext context, JSONObject options) {
     super(context, TYPE, options);
-    services = new ConcurrentHashMap<String, FdService<T>>();
-    factories = new ConcurrentHashMap<String, FdServiceFactory<T>>();
+    services = new ConcurrentHashMap<String, FdService>();
+    factories = new ConcurrentHashMap<String, FdServiceFactory>();
     MessageBus.subscribe(DTalkChannelClosedEvent.class.getName(), chClosedEventH);
   }
 
-  protected void registerService(FdServiceFactory<T> factory) {
+  protected void registerService(FdServiceFactory factory) {
     factories.put(factory.getType(), factory);
   }
 
@@ -110,14 +119,14 @@ public abstract class FdServiceMgr<T> extends FdService<T> {
   private boolean registerService(String from, String name) {
     LOG.v(TAG, ">>> registerService: %s", name);
 
-    FdService<T> service = services.get(name);
+    FdService service = services.get(name);
     if (service != null) {
       LOG.d(TAG, "Service '%s' already started", name);
       service.refCntMap.put(from, from);
       return true;
     }
 
-    FdServiceFactory<T> factory = factories.get(name);
+    FdServiceFactory factory = factories.get(name);
     if (factory != null) {
       service = factory.create(getContext(), new JSONObject()); // options???
       if (service != null) {
@@ -138,7 +147,7 @@ public abstract class FdServiceMgr<T> extends FdService<T> {
   private void unregisterService(String from, String name) {
     LOG.v(TAG, ">>> unregisterService: (%s) %s", from, name);
 
-    FdService<T> service = services.get(name);
+    FdService service = services.get(name);
     if (service != null) {
       service.refCntMap.remove(from);
       if (service.refCntMap.size() == 0) {
@@ -155,9 +164,9 @@ public abstract class FdServiceMgr<T> extends FdService<T> {
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        Iterator<Map.Entry<String, FdService<T>>> serviceIter = services.entrySet().iterator();
+        Iterator<Map.Entry<String, FdService>> serviceIter = services.entrySet().iterator();
         while (serviceIter.hasNext()) {
-          FdService<T> service = serviceIter.next().getValue();
+          FdService service = serviceIter.next().getValue();
           serviceIter.remove();
           service.dispose();
         }

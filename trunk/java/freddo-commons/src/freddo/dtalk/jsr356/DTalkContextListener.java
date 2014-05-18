@@ -15,9 +15,6 @@
  */
 package freddo.dtalk.jsr356;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,15 +26,27 @@ import org.json.JSONObject;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
+import freddo.dtalk.DTalkDispatcher;
+import freddo.dtalk.DTalkService;
+import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 
-public abstract class DTalkContextListener implements ServletContextListener {
+public abstract class DTalkContextListener implements ServletContextListener, DTalkServiceContext {
   private static final String TAG = LOG.tag(DTalkContextListener.class);
 
-  private final Map<String, DTalkConnection> connections = new ConcurrentHashMap<String, DTalkConnection>();
+  private final Map<String, DTalkConnection> mConnections = new ConcurrentHashMap<String, DTalkConnection>();
+
+  public DTalkContextListener() {
+    // Start dispatcher...
+    try {
+      DTalkDispatcher.start();
+    } catch (Throwable t) {
+      t.printStackTrace();
+    }
+  }
 
   /** DTalkConnectionEvent listener. */
   private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
@@ -77,20 +86,31 @@ public abstract class DTalkContextListener implements ServletContextListener {
       }
     }
   };
-  
+
   protected void addConnection(DTalkConnection conn) {
     LOG.v(TAG, ">>> addConnection: %s", conn);
-    connections.put(conn.getSession().getId(), conn);
+    mConnections.put(conn.getSession().getId(), conn);
   }
 
   protected void removeConnection(DTalkConnection conn) {
     LOG.v(TAG, ">>> removeConnection: %s", conn);
-    connections.remove(conn.getSession().getId());
+    mConnections.remove(conn.getSession().getId());
   }
 
   protected void resetConnections() {
     LOG.v(TAG, ">>> resetConnection");
-    connections.clear();
+    mConnections.clear();
+  }
+
+  public DTalkConnection getConnection(String id) {
+    LOG.v(TAG, ">>> getConnection: %s", id);
+
+    // remove prefix (we added in DTalkConnection).
+    if (id.startsWith(DTalkService.LOCAL_CHANNEL_PREFIX)) {
+      id = id.substring(DTalkService.LOCAL_CHANNEL_PREFIX.length());
+    }
+
+    return mConnections.get(id);
   }
 
   protected void sendMessage(OutgoingMessageEvent message) throws Exception {
@@ -99,16 +119,17 @@ public abstract class DTalkContextListener implements ServletContextListener {
     JSONObject jsonMsg = message.getMsg();
     sendMessage(to, jsonMsg.toString());
   }
-  
+
   protected void sendMessage(String to, String message) {
     LOG.v(TAG, ">>> sendMessage to: %s, message: %s", to, message);
     if (to != null) { // TODO message validation
-      DTalkConnection conn = connections.get(to);
+      DTalkConnection conn = getConnection(to);
       if (conn != null) {
         conn.sendMessage(message);
       } else {
         LOG.w(TAG, "Connection %s not found!", to);
       }
+
     } else {
       // TODO broadcast?
     }
@@ -123,37 +144,37 @@ public abstract class DTalkContextListener implements ServletContextListener {
     }
   }
 
-  private List<Service> serviceList = new ArrayList<Service>();
+  // private List<Service> serviceList = new ArrayList<Service>();
 
-  protected final void addService(String topic, Service service) {
-    synchronized (serviceList) {
-      MessageBus.subscribe(topic, service);
-      serviceList.add(service);
-      service.start();
-    }
-  }
+  // protected final void addService(String topic, Service service) {
+  // synchronized (serviceList) {
+  // MessageBus.subscribe(topic, service);
+  // serviceList.add(service);
+  // service.start();
+  // }
+  // }
 
   private void stopServices() {
-    synchronized (serviceList) {
-      for (Iterator<Service> iter = serviceList.iterator(); iter.hasNext();) {
-        Service c = iter.next();
-        try {
-          c.stop();
-        } catch (Exception e) {
-          // Ignore
-        } finally {
-          iter.remove();
-        }
-      }
-    }
+    // synchronized (serviceList) {
+    // for (Iterator<Service> iter = serviceList.iterator(); iter.hasNext();) {
+    // Service c = iter.next();
+    // try {
+    // c.stop();
+    // } catch (Exception e) {
+    // // Ignore
+    // } finally {
+    // iter.remove();
+    // }
+    // }
+    // }
   }
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     LOG.v(TAG, "contextInitialized");
-    
+
     resetConnections();
-    
+
     MessageBus.subscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
     MessageBus.subscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
     MessageBus.subscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
@@ -162,13 +183,13 @@ public abstract class DTalkContextListener implements ServletContextListener {
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
     LOG.v(TAG, "contextDestroyed");
-    
+
     stopServices();
-    
+
     MessageBus.unsubscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
     MessageBus.unsubscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
     MessageBus.unsubscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
-    
+
     resetConnections();
   }
 }

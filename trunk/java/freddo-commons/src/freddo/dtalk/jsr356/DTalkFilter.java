@@ -27,11 +27,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpSession;
 
 import freddo.dtalk.util.LOG;
 
 public class DTalkFilter implements Filter {
   private static final String TAG = LOG.tag(DTalkFilter.class);
+  
+  public static final String DTALK_REMOTE_ADDRESS_KEY = "dtalk-remote-address";
 
   private FilterConfig filterConfig = null;
 
@@ -54,14 +57,20 @@ public class DTalkFilter implements Filter {
     if (filterConfig == null) {
       return;
     }
+    
+    // Create HttpSession if not already done so.
+    HttpSession session = ((HttpServletRequest) request).getSession();
+    LOG.d(TAG, "HTTPSession ID: %s", session.getId());
 
+    // For each request replace the default HttpServletRequest with a custom
+    // one that adds the remote address into the request parameters.
     chain.doFilter(new HttpServletRequestWrapper((HttpServletRequest) request) {
       private Map<String, String[]> requestParams = null;
 
       public Map<String, String[]> getParameterMap() {
         if (requestParams == null) {
           requestParams = new ConcurrentHashMap<String, String[]>(super.getParameterMap());
-          requestParams.put("dtalk-remote-address", new String[] {getRemoteAddr()});
+          requestParams.put(DTALK_REMOTE_ADDRESS_KEY, new String[] {getRemoteAddr()});
           // map.put("dtalk-remote-host", new String[] {getRemoteHost()});
         }
         return requestParams;

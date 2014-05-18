@@ -30,7 +30,10 @@ import org.json.JSONObject;
 
 import com.arkasoft.freddo.messagebus.MessageBus;
 
+import freddo.dtalk.DTalk;
+import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.IncomingMessageEvent;
+import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.LOG;
 
 @ServerEndpoint(value = "/dtalksrv", configurator = DTalkConfigurator.class)
@@ -41,50 +44,81 @@ public class DTalkConnection {
     LOG.setLogLevel(LOG.VERBOSE);
   }
 
-  private Session session;
-
-  private HandshakeRequest request;
+  private EndpointConfig mConfig;
+  private Session mSession;
 
   public Session getSession() {
-    return session;
+    return mSession;
+  }
+
+  public EndpointConfig getConfig() {
+    return mConfig;
   }
 
   public HandshakeRequest getHandshakeRequest() {
-    return request;
+    return (HandshakeRequest) mConfig.getUserProperties().get(DTalkConfigurator.DTALK_HANDSHAKE_REQUEST_KEY);
   }
 
   @OnOpen
   public void onOpen(Session session, EndpointConfig config) {
-    LOG.v(TAG, ">>> ================================================ onOpen: %s", session.getId());
-    
-    request = (HandshakeRequest) config.getUserProperties().get("handshake-req");
-    // Map<String, List<String>> headers = req.getHeaders();
-    //
-    // LOG.e(TAG, "====================" + req.getParameterMap());
-    // LOG.e(TAG, "==================x=" + headers);
+    LOG.v(TAG, ">>> onOpen: %s", session.getId());
 
-    this.session = session;
+    mSession = session;
+    mConfig = config;
 
     MessageBus.sendMessage(new DTalkConnectionEvent(this, true));
   }
 
   @OnClose
   public void onClose() {
-    LOG.v(TAG, ">>> ------------------------------------------------ onClose %s", session.getId());
-    
+    LOG.v(TAG, ">>> onClose: %s", mSession.getId());
+
     MessageBus.sendMessage(new DTalkConnectionEvent(this, false));
 
     // DTalkContextListener.removeConnection(session.getId());
-    this.session = null;
+    mSession = null;
   }
 
   @OnMessage
   public void onMessage(String message) {
     try {
       JSONObject jsonMsg = new JSONObject(message);
+
+      @SuppressWarnings("unused")
+      String to = jsonMsg.optString(DTalk.KEY_TO, null);
+      String from = jsonMsg.optString(DTalk.KEY_FROM, null);
+      String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
+
+      // clean up message
+      jsonMsg.remove(MessageEvent.KEY_FROM);
+      jsonMsg.remove(MessageEvent.KEY_TO);
+
       JSONObject jsonBody = jsonMsg;
-      // TODO jsonMsg validation
-      MessageBus.sendMessage(new IncomingMessageEvent(session.getId(), jsonBody));
+
+      if (service == null) {
+        LOG.w(TAG, "Invalid Message");
+        JSONObject _jsonBody = jsonBody;
+        jsonBody = new JSONObject();
+        jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
+        jsonBody.put(MessageEvent.KEY_BODY_PARAMS, _jsonBody);
+      }
+
+      //
+      // incoming message
+      //
+
+      if (from == null) {
+        // anonymous message...
+        if (service != null && !service.startsWith("$")) {
+          // if its not a broadcast message add 'from'...
+          from = String.format("%s%s", DTalkService.LOCAL_CHANNEL_PREFIX, mSession.getId());
+        }
+        // else: see DTalkDispatcher for message forwarding.
+      }
+
+      LOG.d(TAG, "IncomingMessageEvent from: %s", from);
+      MessageBus.sendMessage(new IncomingMessageEvent(from, jsonBody));
+
     } catch (Throwable t) {
       LOG.e(TAG, "Error in %s", message);
       t.printStackTrace();
@@ -106,13 +140,13 @@ public class DTalkConnection {
   void sendMessage(String msg) {
     LOG.v(TAG, ">>> sendMessage: %s", msg);
     try {
-      //if (session.isOpen()) {
-      session.getBasicRemote().sendText(msg);
-      //}
+      // if (session.isOpen()) {
+      mSession.getBasicRemote().sendText(msg);
+      // }
     } catch (Exception e) {
-      LOG.e(TAG, "%s... Closing %s", e.getMessage(), session.getId());
+      LOG.e(TAG, "%s... Closing %s", e.getMessage(), mSession.getId());
       try {
-        session.close();
+        mSession.close();
       } catch (IOException e1) {
         // Ignore
       }
@@ -124,21 +158,21 @@ public class DTalkConnection {
    * 
    * @param pm Ignored.
    */
-//  @OnMessage
-//  public void echoPongMessage(PongMessage pm) {
-//    LOG.v(TAG, ">>> echoPongMessage");
-//  }
+  // @OnMessage
+  // public void echoPongMessage(PongMessage pm) {
+  // LOG.v(TAG, ">>> echoPongMessage");
+  // }
 
   @Override
   public String toString() {
-    return "DTalkConnection [Id=" + session.getId() + "]";
+    return "DTalkConnection [Id=" + mSession.getId() + "]";
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((session == null) ? 0 : session.getId().hashCode());
+    result = prime * result + ((mSession == null) ? 0 : mSession.getId().hashCode());
     return result;
   }
 
@@ -151,10 +185,10 @@ public class DTalkConnection {
     if (getClass() != obj.getClass())
       return false;
     DTalkConnection other = (DTalkConnection) obj;
-    if (session == null) {
-      if (other.session != null)
+    if (mSession == null) {
+      if (other.mSession != null)
         return false;
-    } else if (!session.getId().equals(other.session.getId()))
+    } else if (!mSession.getId().equals(other.mSession.getId()))
       return false;
     return true;
   }
