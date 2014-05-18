@@ -2,13 +2,13 @@
 
 = Introduction =
 
-DTalk arose from a need to allow a mobile app developer to access native device services such as the camera or accelerometer from JavaScript as well as device-to-device communication.
+DTalk messaging protocol arose from a need to allow a mobile app developer to access native device services such as the camera or accelerometer from JavaScript as well as device-to-device communication.
 
 Over time DTalk has matured into a protocol which can be used past these simple use cases, but still maintains its core design principles of simplicity and interoperability.
 
-= Details =
+DTalk messaging protocol is similar to [http://www.jsonrpc.org/specification JSON-RPC], based on WebSocket which provides a reliable 2-way streaming network work protocol.
 
-DTalk is similar to [http://www.jsonrpc.org/specification JSON-RPC].
+= Details =
 
 The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response.
 
