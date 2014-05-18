@@ -1,4 +1,4 @@
-#summary DTalk messaging protocol is a simple JSON-based messaging protocol designed for working with message-oriented middleware over WebSocket.
+#summary DTalk messaging protocol is a simple JSON-based messaging protocol designed for working with message-oriented middleware.
 
 = Introduction =
 
@@ -6,7 +6,7 @@ DTalk messaging protocol arose from a need to allow a mobile app developer to ac
 
 Over time DTalk has matured into a protocol which can be used past these simple use cases, but still maintains its core design principles of simplicity and interoperability.
 
-DTalk messaging protocol is similar to [http://www.jsonrpc.org/specification JSON-RPC], based on WebSocket which provides a reliable 2-way streaming network work protocol.
+DTalk messaging protocol is similar to [http://www.jsonrpc.org/specification JSON-RPC]. DTalk messaging protocol is transport agnostic in that the concepts can be used within the same process, over sockets, or in many various reliable 2-way streaming protocols.
 
 = Details =
 
