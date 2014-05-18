@@ -27,6 +27,6 @@ A remote action is requested by sending a request object to a remote service. Th
 When the action request completes, the service must reply with a response object. The response is expresses as a single JSON object, with the following members:
 
 || *dtalk* || A string specifying the version of the DTalk protocol (currently "1.0"). ||
-|| *service* || ||
+|| *service* || <li>This member is REQUIRED.</li><li>It MUST be the same as the value of the 'id' member in the request object.</li><li>If there was an error in detecting the id in the request object (e.g. parse error) the response is ignored. (???)</li> ||
 || *result* || <li>This member is REQUIRED on success.</li><li>This member MUST NOT exist if there was an error invoking the action.</li><li>The value of this member is determined by the requested action.</li> ||
 || *error* || <li>This member is REQUIRED on error.</li><li>This member MUST NOT exist if there was no error triggered during invocation.</li><li>The value for this member MUST be an object as defined below</li> ||
