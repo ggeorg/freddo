@@ -8,7 +8,7 @@ Over time DTalk has matured into a protocol which can be used past these simple 
 
 = Details =
 
-DTalk is similar to JSON-RPC.
+DTalk is similar to [http://www.jsonrpc.org/specification JSON-RPC].
 
 The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response.
 
