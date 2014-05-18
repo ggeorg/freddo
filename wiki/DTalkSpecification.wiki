@@ -2,7 +2,7 @@
 
 = Introduction =
 
-DTalk arose from a need to allow a mobile app developer to access native device services such as the camera or accelerometer from JavaScript.
+DTalk arose from a need to allow a mobile app developer to access native device services such as the camera or accelerometer from JavaScript as well as device-to-device communication.
 
 Over time DTalk has matured into a protocol which can be used past these simple use cases, but still maintains its core design principles of simplicity and interoperability.
 
