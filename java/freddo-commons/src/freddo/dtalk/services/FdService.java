@@ -28,16 +28,17 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.DTalk;
+import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 
-public abstract class FdService<T> implements MessageBusListener<JSONObject> {
+public abstract class FdService implements MessageBusListener<JSONObject> {
   private static final String TAG = LOG.tag(FdService.class);
 
   protected static final String SRV_PREFIX = "dtalk.service.";
 
-  private final T context;
+  private final DTalkServiceContext context;
   private final String name;
   protected final String replyName;
 
@@ -45,7 +46,7 @@ public abstract class FdService<T> implements MessageBusListener<JSONObject> {
 
   final Map<String, String> refCntMap = new ConcurrentHashMap<String, String>();
 
-  protected FdService(T context, String name, final JSONObject options) {
+  protected FdService(DTalkServiceContext context, String name, final JSONObject options) {
     this.context = context;
     this.name = name;
     this.replyName = '$' + name;
@@ -57,7 +58,7 @@ public abstract class FdService<T> implements MessageBusListener<JSONObject> {
 
   protected abstract void reset();
 
-  protected T getContext() {
+  protected DTalkServiceContext getContext() {
     return context;
   }
 
@@ -77,7 +78,9 @@ public abstract class FdService<T> implements MessageBusListener<JSONObject> {
     });
   }
 
-  protected abstract void runOnUiThread(Runnable r);
+  protected void runOnUiThread(Runnable r) {
+    getContext().runOnUiThread(r);
+  }
 
   @SuppressWarnings("unchecked")
   private boolean onMessage(String topic, JSONObject message) {
@@ -177,6 +180,21 @@ public abstract class FdService<T> implements MessageBusListener<JSONObject> {
         response.put(MessageEvent.KEY_BODY_ERROR, error);
         sendResponse(response);
       }
+    } catch (JSONException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  protected static void sendErrorResponse(JSONObject request, int code, String message, JSONObject data) {
+    JSONObject error = new JSONObject();
+    try {
+      error.put(DTalk.KEY_ERROR_CODE, code);
+      error.put(DTalk.KEY_ERROR_MESSAGE, message);
+      if (data != null) {
+        error.put(DTalk.KEY_ERROR_DATA, data);
+      }
+      sendErrorResponse(request, error);
     } catch (JSONException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

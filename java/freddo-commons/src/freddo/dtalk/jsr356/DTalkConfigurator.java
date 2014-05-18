@@ -19,13 +19,20 @@ import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 
+/**
+ * An implementation of {@link javax.websocket.server.ServerEndpointConfig} for
+ * use in Freddo applications.
+ * <p>
+ * This configurator stores the {@link javax.websocket.server.HandshakeRequest}
+ * object into the user properties for later use.
+ */
 public class DTalkConfigurator extends ServerEndpointConfig.Configurator {
+  public static final String DTALK_HANDSHAKE_REQUEST_KEY = "dtalk-handshake-req";
 
   @Override
   public void modifyHandshake(ServerEndpointConfig conf, HandshakeRequest req, HandshakeResponse resp) {
-    conf.getUserProperties().put("handshake-req", req);
-    
-    
+    super.modifyHandshake(conf, req, resp);
+    conf.getUserProperties().put(DTALK_HANDSHAKE_REQUEST_KEY, req);
   }
 
 }
