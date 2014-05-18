@@ -28,5 +28,8 @@ When the action request completes, the service must reply with a response object
 
 || *dtalk* || A string specifying the version of the DTalk protocol (currently "1.0"). ||
 || *service* || ||
-|| *result* || * This member is REQUIRED on success. * This member MUST NOT exist if there was an error invoking the action. * The value of this member is determined by the action invoked. ||
+|| *result* || 
+* This member is REQUIRED on success. 
+* This member MUST NOT exist if there was an error invoking the action. 
+* The value of this member is determined by the action invoked. ||
 || *error* || ||
