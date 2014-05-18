@@ -50,3 +50,8 @@ The error codes from and including -32768 to -32000 are reserved for pre-defined
 || -32602 || Invalid params || Invalid action parameter(s). ||
 || -32603 || Internal error || Internal DTalk error. ||
 || -32000 to -32099 || Server error || Reserved for implementation-defined server-errors. ||
+
+== Examples ==
+
+|| --> || data sent to remote service ||
+|| <-- || data sent to client ||
