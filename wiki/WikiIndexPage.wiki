@@ -2,7 +2,7 @@
 ==[WikiIndexPage Index]==
 
 ===DTalk Core===
-  * Specification
+  * [DTalkSpecification Specification]
   * DTalk message operations
     * Get
     * Set
