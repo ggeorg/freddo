@@ -87,8 +87,9 @@ Sending a response to a request is easy, get the "id" member of the request and 
 
 To use the internal message broker and define other high level protocols this is possible by sending "subscribe"/"unsubscribe" requests to the "dtalk.Dispatcher" service.
 
-= Related Protocols =
+= See Also =
 
  # DTalk messaging protocol derived from [http://www.jsonrpc.org/specification JSON-RPC].
  # [http://stefaniuk.github.io/json-service/]
+ # [http://en.wikipedia.org/wiki/JSON-WSP]
  
