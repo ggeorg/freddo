@@ -2,28 +2,31 @@
 ==[WikiIndexPage Index]==
 
 ===DTalk Core===
+
  * [DTalkSpecification Specification]
  * [MessagingProtocol Messaging protocol]
  * DTalk message operations
-   * Get
-   * Set
-   * Action
-   * Subscribe/Unsubscribe mapping
+  * Get
+  * Set
+  * Action
+  * Subscribe/Unsubscribe mapping
 
 ===DTalk Javascript API===
-  * [DTalkJSConnect	How to connect to a WebSocket]
-  * [DTalkJSGet How to send a Get message]
-  * [DTalkJSSet How to send a Set message]
-  * [DTalkJSAction How to execute an action]
-  * [DTalkJSTopicListen How to listen to a topic]
-  * [DTalkJSTopicPublish How to publish a topic]
+
+ * [DTalkJSConnect	How to connect to a WebSocket]
+ * [DTalkJSGet How to send a Get message]
+ * [DTalkJSSet How to send a Set message]
+ * [DTalkJSAction How to execute an action]
+ * [DTalkJSTopicListen How to listen to a topic]
+ * [DTalkJSTopicPublish How to publish a topic]
 
 ===Web API===
-  * [FdPresence Presence]
-    * [FdPresence#Listening_to_Presence_changes  Listening to presence changes]
-    * [FdPresence#Listing_devices_in_the_network Getting the list of devices]
-  * [FdCompass Compass]
-  * Geolocation
-  * Accelerometer
-  * Device
-  * Settings
+
+ * [FdPresence Presence]
+  * [FdPresence#Listening_to_Presence_changes  Listening to presence changes]
+  * [FdPresence#Listing_devices_in_the_network Getting the list of devices]
+ * [FdCompass Compass]
+ * Geolocation
+ * Accelerometer
+ * Device
+ * Settings
