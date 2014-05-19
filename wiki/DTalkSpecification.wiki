@@ -6,7 +6,7 @@
 
 = Introduction =
 
-This specification is similar to [http://xmpp.org/extensions/xep-0174.html Link-Local XMPP]. The specification defines how to communicate over local or wide-area networks using the principles of zero-configuration for endpoint discovery and the syntax of JSON objects and JSON based messaging for real time communication. DTalk uses DNS-based Service Discovery and Multicast DNS to discover entities that support the protocol, including their IP addresses and preferred ports.
+This specification is similar to [http://xmpp.org/extensions/xep-0174.html Link-Local XMPP]. The specification defines how to communicate over local or wide-area networks using the principles of zero-configuration for endpoint discovery and the syntax of JSON objects and [MessagingProtocol JSON based messaging] for real time communication. DTalk uses DNS-based Service Discovery and Multicast DNS to discover entities that support the protocol, including their IP addresses and preferred ports.
 
 Serverless messaging is typically restricted to a local network (or ad-hoc wide-area network) because of how zero-configuration works.
 
