@@ -12,21 +12,27 @@ Serverless messaging is typically restricted to a local network (or ad-hoc wide-
 
 = Details =
 
-This section provides a friendly introduction to DTalk.
+DTalk supports three fundamental operations, each of which is a necessary part of zed-configuration network services:
+
+ * Publication (advertising a service)
+ * Discovery (browsing for available services)
+ * Resolution (translating service instance names to addresses and port numbers for use)
+
+These operations are discussed in detail in the following sections.
 
 == Publication ==
 
 To publish a service, an application or device must register the service with a Multicast DNS responder. When a service is registered, three related DNS records are created: a service (SRV) record, a pointer (PTR) record, and a text (TXT) records. TXT record contains additional data needed to resolve or use the service, although it s also often empty.
 
-For a concrete example, consider a hypothetical device that shares music over a local network - an IP - enabled jukebox. Suppose that its transport protocol is TCP and its application protocol goes by the name "music". When someone plugs the device into an Ethernet hub, a number of things happen, as show in figure 1.
+For a concrete example, consider a hypothetical device that shares music over a local network - an IP - enabled jukebox. Suppose that its transport protocol is TCP and its application protocol goes by the name `music.`. When someone plugs the device into an Ethernet hub, a number of things happen, as show in figure 1.
 
-In step 1, the device randomly selects the link-local IP address 169.254.150.84, randomly selected from IPv4 link-local range 169.254.0.0 with a subnet mask of 255.255.0.0, and announces it to the network. Because no devices respond to the announcement, the device takes the address as its own.
+In step 1, the device randomly selects the link-local IP address `169.254.150.84`, randomly selected from IPv4 link-local range `169.254.0.0` with a subnet mask of `255.255.0.0`, and announces it to the network. Because no devices respond to the announcement, the device takes the address as its own.
 
-In step 2, it starts up its own Multicast DNS responder, requests the host name "eds-musicbox.local.", verifies its availability, and takes the name as its own.
+In step 2, it starts up its own Multicast DNS responder, requests the host name `eds-musicbox.local.`, verifies its availability, and takes the name as its own.
 
-In step 3, the device starts up a music sharing service on TCP port 1010.
+In step 3, the device starts up a music sharing service on TCP port `1010`.
 
-In step 4, finally, it publishes the service, of type _music._tcp, under the name "Ed’s Party Mix", in the "local." domain, first making sure that no service exists under the same name. This creates two records:
+In step 4, finally, it publishes the service, of type `_music._tcp`, under the name `Ed’s Party Mix`, in the `local.` domain, first making sure that no service exists under the same name. This creates two records:
 
  * An SRV record named `_Ed's Party Mix._music._tcp.local.` that points to `eds-musicbox.local.` on TCP port `1010`.
  * An PTR record named `_music._tcp.local.` that points to the `_Ed's Party Mix._music._tcp.local.` service.
