@@ -12,6 +12,8 @@ Over time DTalk messaging protocol has matured into a protocol which can be used
 
 DTalk is based on WebSocket protocol which provides the reliable 2-way streaming protocol. But, DTalk messaging protocol is transport agnostic in that the concepts can be used within the same process, over sockets, or in many various bidirectional streaming protocols.
 
+[Table_of_Contents]
+
 = Details =
 
 The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer or publish events. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response. Events are published to topics, which interested parts can subscribe to.
