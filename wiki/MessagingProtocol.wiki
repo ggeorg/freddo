@@ -1,5 +1,7 @@
 #summary DTalk messaging protocol is a simple JSON-based messaging protocol designed for working with message-oriented middleware.
 
+<wiki:toc max_depth="1" />
+
 = Introduction =
 
 DTalk messaging protocol arose from a need to allow a mobile app developer to access native device services such as the camera or accelerometer from JavaScript as well as device-to-device communication.
