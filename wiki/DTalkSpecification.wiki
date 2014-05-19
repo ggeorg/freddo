@@ -55,6 +55,20 @@ https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServic
 
 Figure 2 illustrates a client application browsing for music sharing services. In step 1, the client application issues a query for services of type `_music._tcp` in the `local.` domain to the standard multicast address `224.0.0.251`. Every Multicast DNS responder on the network hears the request, but only the music sharing device responds with a PRT record (in step 2).  The resulting PTR record holds the service instance name `Ed's Party Mix._music._tcp.local.` in this case. The client app can then extract service instance name from PTR record and add it to an onscreen list of music servers.
 
+== Resolution ==
+
+Service discovery typically takes place only once in a while - for example, when a user first selects a printer. This operation saves the service instance name, the intended stable identifier for any given instance of a service. Port numbers, IP addresses, and even host names can change from day to day, but a user should not need to reselect a printer every time this happens. Accordingly, resolution from a service name to socket information does not happen until the service is actually used.
+
+To resolve a service, an application performs a DNS lookup for a SRV record with the name of the service. The Multicast DNS responder responds with the SRV record containing the current information.
+
+Figure 3 illustrates service resolution in the music sharing example. The resolution process with a DNS query to the multicast address `224.0.0.251` asking for the `Ed's Party Mix.music._tcp.local.` SRV record (step 1). In step 2, this query returns the service's host name and port number (eds-musicbox.local., 1010). In step 3, the client sends out a multicast request for the IP address. In step 4, this request resolves to the IP address `169.254.150.84`. Then the client can use the IP address and port number to connect to the service. This process takes place each time the service is used, thereby always finding the service’s most current address and port number.
+
+*Figure 3.* Resolving a music sharing service instance.
+----
+
+https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_03resolve_2x.png
+
+
 = See Also =
 
  # [http://www.xmpp.org/extensions/xep-0174.html]
