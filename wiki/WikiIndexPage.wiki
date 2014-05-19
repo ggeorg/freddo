@@ -2,12 +2,13 @@
 ==[WikiIndexPage Index]==
 
 ===DTalk Core===
-  * [MessagingProtocol Messaging protocol]
-  * DTalk message operations
-    * Get
-    * Set
-    * Action
-    * Subscribe/Unsubscribe mapping
+ * [DTalkSpecification Specification]
+ * [MessagingProtocol Messaging protocol]
+ * DTalk message operations
+   * Get
+   * Set
+   * Action
+   * Subscribe/Unsubscribe mapping
 
 ===DTalk Javascript API===
   * [DTalkJSConnect	How to connect to a WebSocket]
