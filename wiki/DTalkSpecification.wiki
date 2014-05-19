@@ -14,6 +14,10 @@ Serverless messaging is typically restricted to a local network (or ad-hoc wide-
 
 This section provides a friendly introduction to DTalk.
 
+== Publication ==
+
+To publish a service, an application or device must register the service with a Multicast DNS responder. When a service is registered, three related DNS records are created: a service (SRV) record, a pointer (PTR) record, and a text (TXT) records. TXT record contains additional data needed to resolve or use the service, although it s also often empty.
+
 For a concrete example, consider a hypothetical device that shares music over a local network - an IP - enabled jukebox. Suppose that its transport protocol is TCP and its application protocol goes by the name "music". When someone plugs the device into an Ethernet hub, a number of things happen, as show in figure 1.
 
 In step 1, the device randomly selects the link-local IP address 169.254.150.84, randomly selected from IPv4 link-local range 169.254.0.0 with a subnet mask of 255.255.0.0, and announces it to the network. Because no devices respond to the announcement, the device takes the address as its own.
@@ -32,7 +36,18 @@ In step 4, finally, it publishes the service, of type _music._tcp, under the nam
 
 https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_01publish_2x.png
 
+== Discovery ==
 
+Service discovery makes use of the DNS records registered during service publication to find all named instances of a particular type of service. To do this, an application performs a query for PTR records matching a service type, such as `_http._tcp`.
+
+The Multicast DNS responders running on each device return PTR records with service instance names.
+
+*Figure 2.* Discovering music sharing services.
+----
+
+https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_02discover_2x.png
+
+Figure 2 illustrates a client application browsing for music sharing services. In step 1, the client application issues a query for services of type `_music._tcp` in the `local.` domain to the standard multicast address `224.0.0.251`. Every Multicast DNS responder on the network hears the request, but only the music sharing device responds with a PRT record (in step 2).  The resulting PTR record holds the service instance name `Ed's Party Mix._music._tcp.local.` in this case. The client app can then extract service instance name from PTR record and add it to an onscreen list of music servers.
 
 = See Also =
 
