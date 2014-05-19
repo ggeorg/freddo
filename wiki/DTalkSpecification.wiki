@@ -1,4 +1,4 @@
-#summary TODO
+#summary Discover-and-Talk is a server less messaging protocol similar to [http://www.xmpp.org/extensions/xep-0174.html Link-Local Messaging] which allows any two entities to negotiate a server less connection in order to exchange JSON messages.
 
 = DTalk Specification =
 
