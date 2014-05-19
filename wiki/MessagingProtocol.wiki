@@ -1,6 +1,6 @@
 #summary DTalk messaging protocol is a simple JSON-based messaging protocol designed for working with message-oriented middleware.
 
-<wiki:toc max_depth="1" />
+<wiki:toc/>
 
 = Introduction =
 
