@@ -12,7 +12,7 @@ Over time DTalk messaging protocol has matured into a protocol which can be used
 
 DTalk is based on WebSocket protocol which provides the reliable 2-way streaming protocol. But, DTalk messaging protocol is transport agnostic in that the concepts can be used within the same process, over sockets, or in many various bidirectional streaming protocols.
 
-'[ [MessagingProtocol#Messaging_Protocol Table of Contents] ']
+`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
 
 = Details =
 
