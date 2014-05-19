@@ -12,13 +12,9 @@ Over time DTalk messaging protocol has matured into a protocol which can be used
 
 DTalk is based on WebSocket protocol which provides the reliable 2-way streaming protocol. But, DTalk messaging protocol is transport agnostic in that the concepts can be used within the same process, over sockets, or in many various bidirectional streaming protocols.
 
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
-
 = Details =
 
 The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer or publish events. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response. Events are published to topics, which interested parts can subscribe to.
-
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
 
 == Request Object ==
 
@@ -35,15 +31,11 @@ In case of device-to-device communication two additional members are used:
 || *to* || The device name, where the remote service is running. ||
 || "from* || The device name where the sender is running. ||
 
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
-
 == Notification Object ==
 
 A notification is a special request object without an "id" member. A request object that is a notification signifies the client's lack of interest in the corresponding response object, and as such no response object needs to be returned to the client.
 
 Notifications are not confirmable by definition, since they do not have a response object to be returned. As such, the client would not be aware of any errors.
-
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
 
 == Event Object ==
 
@@ -60,8 +52,6 @@ var subscribeReq = {
 DTalk.sendNotification(subscribeReq);
 }}}
 
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
-
 == Response Object ==
 
 When the action request completes, the service must reply with a response object. The response is expresses as a single JSON object, with the following members:
@@ -72,8 +62,6 @@ When the action request completes, the service must reply with a response object
 || *error* || This member is REQUIRED on error.<br>This member MUST NOT exist if there was no error triggered during invocation.<br>The value for this member MUST be an object as defined below. ||
 
 Either the result member or error member MUST be included, but both members MUST NOT be included.
-
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
 
 === Error Object ===
 
@@ -93,8 +81,6 @@ The error codes from and including -32768 to -32000 are reserved for pre-defined
 || -32603 || Internal error || Internal DTalk error. ||
 || -32000 to -32099 || Server error || Reserved for implementation-defined server-errors. ||
 
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
-
 == Message-Broker ==
 
 Out of the box, a "simple" message broker is used to send messages to subscribers. In fact DTalk messaging protocol is build on top of a pub/subscribe message bus. 
@@ -105,12 +91,8 @@ Sending a response to a request is easy, get the "id" member of the request and 
 
 To use the internal message broker and define other high level protocols this is possible by sending "subscribe"/"unsubscribe" requests to the "dtalk.Dispatcher" service.
 
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
-
 = See Also =
 
  # DTalk messaging protocol derived from [http://www.jsonrpc.org/specification JSON-RPC].
  # [http://stefaniuk.github.io/json-service/]
  # [http://en.wikipedia.org/wiki/JSON-WSP]
-
-`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]` 
