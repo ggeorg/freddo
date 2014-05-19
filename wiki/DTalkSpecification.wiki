@@ -76,7 +76,7 @@ Now, consider that `Ed's Party Mix.music._tcp.local.` is plugged into the ethern
 
 Now its time to exchange messages by using a reliable full-duplex network protocol. In DTalk we choose WebSocket.
 
-The WebSocket protocol [http://tools.ietf.org/html/rfc6455 RFC 6455] defines an important new capability for web applications: full-duplex, two-way communication between client and server.
+The WebSocket protocol [http://tools.ietf.org/html/rfc6455 RFC 6455] defines new very important capabilities for web applications: full-duplex, two-way communication between client and server.
 
 A proper introduction of the WebSocket protocol is beyond the scope of this document. At a minimum however it’s important to understand that HTTP is used only for the initial handshake, which relies on a mechanism built into HTTP to request a protocol upgrade (or in this case a protocol switch) to which the server can respond with HTTP status 101 (switching protocols) if it agrees. Assuming the handshake succeeds the TCP socket underlying the HTTP upgrade request remains open and both client and server can use it to send messages to each other.
 
