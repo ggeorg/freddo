@@ -1,4 +1,4 @@
-#summary Discover-and-Talk is a server less messaging protocol similar to [http://www.xmpp.org/extensions/xep-0174.html Link-Local Messaging] which allows any two entities to negotiate a server less connection in order to exchange JSON messages.
+#summary Discover-and-Talk is a server less messaging protocol that allows any two entities to negotiate a server less connection in order to exchange messages.
 
 = DTalk Specification =
 
@@ -6,12 +6,17 @@
 
 = Introduction =
 
-TODO
+This specification is similar to [http://xmpp.org/extensions/xep-0174.html Link-Local XMPP]. The specification defines how to communicate over local or wide-area networks using the principles of zero-configuration for endpoint discovery and the syntax of JSON objects and JSON based messaging for real time communication. DTalk uses DNS-based Service Discovery and Multicast DNS to discover entities that support the protocol, including their IP addresses and preferred ports.
 
+Serverless messaging is typically restricted to a local network (or ad-hoc wide-area network) because of how zero-configuration works.
 
 = Details =
 
-TODO
+This section provides a friendly introduction to DTalk.
+
+For a concrete example, consider a hypothetical device that shares music over a local network - an IP - enabled jukebox. Suppose that its transport protocol is TCP and its application protocol goes by the name "music". When someone plugs the device into an Ethernet hub, a number of things happen, as show in figure below:
+
+https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_01publish_2x.png
 
 = See Also =
 
