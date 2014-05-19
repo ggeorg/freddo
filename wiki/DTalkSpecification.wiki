@@ -25,7 +25,7 @@ These operations are discussed in detail in the following sections.
 
 To publish a service, an application or device must register the service with a Multicast DNS responder. When a service is registered, three related DNS records are created: a service (SRV) record, a pointer (PTR) record, and a text (TXT) records. TXT record contains additional data needed to resolve or use the service, although it s also often empty.
 
-For a concrete example, consider a hypothetical device that shares music over a local network - an IP - enabled jukebox. Suppose that its transport protocol is TCP and its application protocol goes by the name `music.`. When someone plugs the device into an Ethernet hub, a number of things happen, as show in figure 1.
+For a concrete example, consider a hypothetical device that shares music over a local network - an IP - enabled jukebox. Suppose that its transport protocol is TCP and its application protocol goes by the name `music`. When someone plugs the device into an Ethernet hub, a number of things happen, as show in figure 1.
 
 In step 1, the device randomly selects the link-local IP address `169.254.150.84`, randomly selected from IPv4 link-local range `169.254.0.0` with a subnet mask of `255.255.0.0`, and announces it to the network. Because no devices respond to the announcement, the device takes the address as its own.
 
