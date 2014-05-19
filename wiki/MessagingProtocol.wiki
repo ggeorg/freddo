@@ -29,7 +29,7 @@ A remote action is requested by sending a request object to a remote service. Th
 In case of device-to-device communication two additional members are used:
 
 || *to* || The device name, where the remote service is running. ||
-|| "from* || The device name where the sender is running. ||
+|| *from* || The device name where the sender is running. ||
 
 == Notification Object ==
 
