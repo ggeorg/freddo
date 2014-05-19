@@ -70,6 +70,12 @@ Figure 3 illustrates service resolution in the music sharing example. The resolu
 https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_03resolve_2x.png
 
 
+== Messaging ==
+
+Now, consider that `Ed's Party Mix.music._tcp.local.` is plugged into the ethernet hub, and that your applications successfully discovered and resolved `Ed's Party Mix.music._tcp.local.`. Now its time to exchange messages.
+
+DTalk is using ...
+
 = See Also =
 
  # [http://www.xmpp.org/extensions/xep-0174.html]
