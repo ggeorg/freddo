@@ -6,13 +6,11 @@ DTalk messaging protocol arose from a need to allow a mobile app developer to ac
 
 Over time DTalk messaging protocol has matured into a protocol which can be used past these simple use cases, but still maintains its core design principles of simplicity and interoperability.
 
-DTalk messaging protocol derived from [http://www.jsonrpc.org/specification JSON-RPC] concepts. 
-
 DTalk is based on WebSocket protocol which provides the reliable 2-way streaming protocol. But, DTalk messaging protocol is transport agnostic in that the concepts can be used within the same process, over sockets, or in many various bidirectional streaming protocols.
 
 = Details =
 
-The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer or publish events. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response. Events are published to topics, which interested parts can subscribe to.
+The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer or publish events. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response. Events are published to topics, which interested parts can subscribe to[#1].
 
 == Request Object ==
 
@@ -88,4 +86,8 @@ The "service" member in the request object defines the topic where the message i
 Sending a response to a request is easy, get the "id" member of the request and publish the response to that topic. The value of the "service" member in the response object MUST be the value of the "id" member in the request object. This pattern is using a temporary queue, once the client receives the response the temporary queue is destroyed.
 
 To use the internal message broker and define other high level protocols this is possible by sending "subscribe"/"unsubscribe" requests to the "dtalk.Dispatcher" service.
+
+= References =
+
+1. DTalk messaging protocol derived from [http://www.jsonrpc.org/specification JSON-RPC] concepts.
  
