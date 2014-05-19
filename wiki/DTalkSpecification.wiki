@@ -12,7 +12,7 @@ Serverless messaging is typically restricted to a local network (or ad-hoc wide-
 
 = Details =
 
-DTalk supports three fundamental operations, each of which is a necessary part of zed-configuration network services:
+DTalk supports three fundamental operations, each of which is a necessary part of zero-configuration network services:
 
  * Publication (advertising a service)
  * Discovery (browsing for available services)
