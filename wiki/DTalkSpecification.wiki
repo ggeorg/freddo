@@ -74,15 +74,9 @@ https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServic
 
 Now, consider that `Ed's Party Mix.music._tcp.local.` is plugged into the ethernet hub, and that your applications successfully discovered and resolved `Ed's Party Mix.music._tcp.local.`.
 
-Now its time to exchange messages by using a reliable full-duplex network protocol. In DTalk we choose WebSocket.
+Now its time to exchange messages by using a reliable full-duplex network protocol. In DTalk we choose the WebSocket protocol [http://tools.ietf.org/html/rfc6455 RFC 6455].
 
-The WebSocket protocol [http://tools.ietf.org/html/rfc6455 RFC 6455] defines new very important capabilities for web applications: full-duplex, two-way communication between client and server.
-
-A proper introduction of the WebSocket protocol is beyond the scope of this document. At a minimum however it’s important to understand that HTTP is used only for the initial handshake, which relies on a mechanism built into HTTP to request a protocol upgrade (or in this case a protocol switch) to which the server can respond with HTTP status 101 (switching protocols) if it agrees. Assuming the handshake succeeds the TCP socket underlying the HTTP upgrade request remains open and both client and server can use it to send messages to each other.
-
-=== Messaging Protocol ===
-
-WebSocket does imply a messaging architecture but does not mandate the use of any specific messaging protocol. It is a very thin layer over TCP that transforms a stream of bytes into a stream of messages (either text or binary) and not much more. It is up to applications to interpret the meaning of a message.
+The WebSocket does imply a messaging architecture but does not mandate the use of any specific messaging protocol. It is a very thin layer over TCP that transforms a stream of bytes into a stream of messages (either text or binary) and not much more. It is up to applications to interpret the meaning of a message.
 
 For this reason the WebSocket RFC defines the use of sub-protocols. During the handshake, client and server can use the header Sec-WebSocket-Protocol to agree on a sub-protocol, i.e. a higher, application-level protocol to use. The use of a sub-protocol is not required, but even if not used, applications will still need to choose a message format that both client and server can understand. That format can be custom, framework-specific, or a standard messaging protocol.
 
