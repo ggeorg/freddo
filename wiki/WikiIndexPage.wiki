@@ -5,13 +5,14 @@
 
  * [DTalkSpecification Specification]
  * [MessagingProtocol Messaging protocol]
+
+<wiki:comment>
+
  * DTalk message operations
   * Get
   * Set
   * Action
   * Subscribe/Unsubscribe mapping
-
-<wiki:comment>
 
 ===DTalk Javascript API===
 
