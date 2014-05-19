@@ -12,11 +12,12 @@ Serverless messaging is typically restricted to a local network (or ad-hoc wide-
 
 = Details =
 
-DTalk supports three fundamental operations, each of which is a necessary part of zero-configuration network services:
+DTalk supports four fundamental operations, each of which is a necessary part of zero-configuration network services and server less messaging:
 
  * Publication (advertising a service)
  * Discovery (browsing for available services)
  * Resolution (translating service instance names to addresses and port numbers for use)
+ * Messaging (exchange of messages between two entities)
 
 These operations are discussed in detail in the following sections.
 
