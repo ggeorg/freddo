@@ -37,12 +37,12 @@ An event is a special notification object send to subscribed parties. The event 
 To subscribe to a topic interested parties have to send a "subscribe" request to "dtalk.Dispatcher" service:
 
 {{{
-							var subscribeReq = {
-								service : "dtalk.Dispatcher",
-								action : "subscribe",
-								params : topic
-							};
-							DTalk.sendNotification(subscribeReq);
+var subscribeReq = {
+   service : "dtalk.Dispatcher",
+   action : "subscribe",
+   params : topic
+};
+DTalk.sendNotification(subscribeReq);
 }}}
 
 == Response Object ==
