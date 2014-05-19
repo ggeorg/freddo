@@ -18,7 +18,7 @@ For a concrete example, consider a hypothetical device that shares music over a 
 
 *Figure 1* Publishing a music sharing service.
 
-https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_01publish_2x.png
+<img style="width:50%;" src="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/NetServices/Art/rendarch_01publish_2x.png">
 
 = See Also =
 
