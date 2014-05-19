@@ -11,6 +11,8 @@
   * Action
   * Subscribe/Unsubscribe mapping
 
+<wiki:comment>
+
 ===DTalk Javascript API===
 
  * [DTalkJSConnect	How to connect to a WebSocket]
@@ -19,6 +21,8 @@
  * [DTalkJSAction How to execute an action]
  * [DTalkJSTopicListen How to listen to a topic]
  * [DTalkJSTopicPublish How to publish a topic]
+
+</wiki:comment>
 
 ===Web API===
 
