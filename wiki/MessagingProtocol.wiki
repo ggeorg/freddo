@@ -18,6 +18,8 @@ DTalk is based on WebSocket protocol which provides the reliable 2-way streaming
 
 The general mechanism consists of two peers establishing a data connection. During the lifetime of a connection, peers may invoke actions provided by the other peer or publish events. To invoke a remote action, a request is sent. Unless the request is a notification it must be replied to with a response. Events are published to topics, which interested parts can subscribe to.
 
+`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
+
 == Request Object ==
 
 A remote action is requested by sending a request object to a remote service. The request object has the following members:
@@ -70,6 +72,8 @@ When the action request completes, the service must reply with a response object
 || *error* || This member is REQUIRED on error.<br>This member MUST NOT exist if there was no error triggered during invocation.<br>The value for this member MUST be an object as defined below. ||
 
 Either the result member or error member MUST be included, but both members MUST NOT be included.
+
+`[`[MessagingProtocol#Messaging_Protocol Table of Contents]`]`
 
 === Error Object ===
 
