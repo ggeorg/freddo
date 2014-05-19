@@ -89,5 +89,5 @@ To use the internal message broker and define other high level protocols this is
 
 = References =
 
-1. DTalk messaging protocol derived from [http://www.jsonrpc.org/specification JSON-RPC] concepts.
+1. DTalk messaging protocol derived from [http://www.jsonrpc.org/specification JSON-RPC].
  
