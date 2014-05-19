@@ -76,11 +76,9 @@ Now, consider that `Ed's Party Mix.music._tcp.local.` is plugged into the ethern
 
 Now its time to exchange messages by using a reliable full-duplex network protocol. In DTalk we choose the WebSocket protocol [http://tools.ietf.org/html/rfc6455 RFC 6455].
 
-The WebSocket does imply a messaging architecture but does not mandate the use of any specific messaging protocol. It is a very thin layer over TCP that transforms a stream of bytes into a stream of messages (either text or binary) and not much more. It is up to applications to interpret the meaning of a message.
+The WebSocket protocol It is a very thin layer over TCP that transforms a stream of bytes into a stream of messages (either text or binary) and not much more. The WebSocket does imply a messaging architecture but does not mandate the use of any specific messaging protocol.
 
-For this reason the WebSocket RFC defines the use of sub-protocols. During the handshake, client and server can use the header Sec-WebSocket-Protocol to agree on a sub-protocol, i.e. a higher, application-level protocol to use. The use of a sub-protocol is not required, but even if not used, applications will still need to choose a message format that both client and server can understand. That format can be custom, framework-specific, or a standard messaging protocol.
-
-DTalk provides its own [MessagingProtocol messaging protocol] described that is similar to JSON-RPC.
+DTalk provides its own [MessagingProtocol messaging protocol] over WebSocket that is similar to JSON-RPC.
 
 = See Also =
 
