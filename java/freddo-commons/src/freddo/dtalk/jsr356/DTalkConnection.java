@@ -16,7 +16,9 @@
 package freddo.dtalk.jsr356;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
+import javax.servlet.http.HttpSession;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -65,6 +67,28 @@ public class DTalkConnection {
 
     mSession = session;
     mConfig = config;
+    
+    if (LOG.isLoggable(LOG.VERBOSE)) {
+      HandshakeRequest req = getHandshakeRequest();
+      LOG.v(TAG, "=================================");
+      LOG.v(TAG, "QueryString   : %s", req.getQueryString());
+      LOG.v(TAG, "RequestURI    : %s", req.getRequestURI());
+      LOG.v(TAG, "Headers       : %s", req.getHeaders());
+      LOG.v(TAG, "UserPrincipal : %s", req.getUserPrincipal());
+      LOG.v(TAG, "ParameterMap  : %s", req.getParameterMap());
+      HttpSession httpSession = (HttpSession) req.getHttpSession();
+      if (httpSession != null) {
+        Enumeration<String> e = httpSession.getAttributeNames();
+        while(e.hasMoreElements()) {
+          final String attr = e.nextElement();
+          LOG.v(TAG, "Session[%s]: %s", attr, httpSession.getAttribute(attr));
+        }
+      }
+      LOG.v(TAG, "=================================");
+      LOG.v(TAG, "================================= %s", session.getUserPrincipal().getName());
+      //LOG.v(TAG, "================================= %s", req.isUserInRole(arg0));
+      LOG.v(TAG, "=================================");
+    }
 
     MessageBus.sendMessage(new DTalkConnectionEvent(this, true));
   }

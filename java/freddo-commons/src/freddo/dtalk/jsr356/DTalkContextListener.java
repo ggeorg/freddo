@@ -99,6 +99,7 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 
   protected void resetConnections() {
     LOG.v(TAG, ">>> resetConnection");
+    
     mConnections.clear();
   }
 
@@ -144,34 +145,30 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
     }
   }
 
-  // private List<Service> serviceList = new ArrayList<Service>();
+  protected abstract void stopServices();
 
-  // protected final void addService(String topic, Service service) {
+  // {
   // synchronized (serviceList) {
-  // MessageBus.subscribe(topic, service);
-  // serviceList.add(service);
-  // service.start();
+  // for (Iterator<Service> iter = serviceList.iterator(); iter.hasNext();) {
+  // Service c = iter.next();
+  // try {
+  // c.stop();
+  // } catch (Exception e) {
+  // // Ignore
+  // } finally {
+  // iter.remove();
   // }
   // }
-
-  private void stopServices() {
-    // synchronized (serviceList) {
-    // for (Iterator<Service> iter = serviceList.iterator(); iter.hasNext();) {
-    // Service c = iter.next();
-    // try {
-    // c.stop();
-    // } catch (Exception e) {
-    // // Ignore
-    // } finally {
-    // iter.remove();
-    // }
-    // }
-    // }
-  }
+  // }
+  // }
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    LOG.v(TAG, "contextInitialized");
+    LOG.v(TAG, ">>> contextInitialized");
+
+    //
+    // TODO read configuration settings
+    //
 
     resetConnections();
 
@@ -182,13 +179,15 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 
   @Override
   public void contextDestroyed(ServletContextEvent sce) {
-    LOG.v(TAG, "contextDestroyed");
+    LOG.v(TAG, ">>> contextDestroyed");
 
-    stopServices();
-
-    MessageBus.unsubscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
-    MessageBus.unsubscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
-    MessageBus.unsubscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
+    try {
+      stopServices();
+    } finally {
+      MessageBus.unsubscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
+      MessageBus.unsubscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
+      MessageBus.unsubscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
+    }
 
     resetConnections();
   }
