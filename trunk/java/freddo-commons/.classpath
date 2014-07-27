@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/json-20090211.jar"/>
 	<classpathentry kind="lib" path="lib/provided/servlet-api.jar"/>
 	<classpathentry kind="lib" path="lib/provided/websocket-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/optional/javassist.jar"/>
 	<classpathentry kind="lib" path="lib/provided/android.jar"/>
+	<classpathentry kind="lib" path="lib/provided/org.json-20120521.jar"/>
+	<classpathentry kind="lib" path="lib/netty-all-4.0.21.Final.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-android-1.5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
