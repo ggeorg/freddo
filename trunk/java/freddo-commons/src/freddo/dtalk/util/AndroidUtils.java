@@ -23,7 +23,6 @@ import android.content.DialogInterface;
  * A collection of utility methods, all static.
  */
 public class AndroidUtils {
-
   public static final void showErrorAndExit(Context context, String title, String errorString, String btnText) {
     AlertDialog dlg = new AlertDialog.Builder(context).setTitle(title).setMessage(errorString).setPositiveButton(btnText, new DialogInterface.OnClickListener() {
       @Override
