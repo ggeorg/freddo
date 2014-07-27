@@ -8,7 +8,6 @@
             android:key="pref_target_name"
             android:summary="The name that will show up when trying to connect to Fd Player"
             android:title="Target Name" />
-
         <CheckBoxPreference
             android:key="pref_auto_startup"
             android:summary="Should Fd Player service automatically start at boot time?"
@@ -17,25 +16,6 @@
             android:key="pref_web_presence"
             android:summary="Allow web pages to discover Fd Player?"
             android:title="Web Presence" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="AIR PLAY" >
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="pref_enable_airplay"
-            android:summary="Should Fd Player enable AirPlay?"
-            android:title="Enable AirPlay" />
-        <CheckBoxPreference
-            android:enabled="false"
-            android:key="enable_airplay_passwd_pref"
-            android:summary="When a device connects, it will need to enter a password"
-            android:title="Require a Password" />
-
-        <EditTextPreference
-            android:dialogTitle="AirPlay Password"
-            android:enabled="false"
-            android:key="airplay_password_pref"
-            android:summary="Enter the password here..."
-            android:title="Password" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/prefs_developer_options" >
         <EditTextPreference
@@ -50,7 +30,6 @@
             android:key="pref_web_presence_url"
             android:summary="The Web Presence service URL"
             android:title="Web Presence URL" />
-
         <ListPreference
             android:dialogTitle="Debug Level"
             android:entries="@array/debugLevels"
