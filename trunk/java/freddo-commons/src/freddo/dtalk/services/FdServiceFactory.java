@@ -20,7 +20,9 @@ import org.json.JSONObject;
 import freddo.dtalk.DTalkServiceContext;
 
 public interface FdServiceFactory {
+  
   FdService create(DTalkServiceContext context, JSONObject options);
 
   String getType();
+
 }

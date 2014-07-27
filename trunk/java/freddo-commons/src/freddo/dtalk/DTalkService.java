@@ -50,7 +50,7 @@ import freddo.dtalk.util.LOG;
 
 public class DTalkService {
   private static final String TAG = LOG.tag(DTalkService.class);
-  
+
   public static final String LOCAL_CHANNEL_PREFIX = "dtalk-";
 
   /**
@@ -67,7 +67,7 @@ public class DTalkService {
 
     ExecutorService getThreadPool();
 
-    boolean isWebPresence();
+    boolean isWebPresenceEnabled();
 
     String getWebPresenceURL();
 
@@ -79,18 +79,26 @@ public class DTalkService {
    */
   private static volatile DTalkService sInstance = null;
 
+  /**
+   * 
+   * @throws IllgalStateException if {@code DTalkService} was not initialized
+   *           before.
+   */
   public static DTalkService getInstance() {
     if (sInstance == null) {
-      throw new IllegalStateException("DTalkService not initialized");
+      throw new IllegalStateException("DTalkService not initialized.");
     }
+
     return sInstance;
   }
 
   /**
-   * Create and initialize {@code DTalkConfiguration}.
+   * Create and initialize {@code DTalkService}.
    * 
    * @param config The {@link DTalkServiceConfiguration}.
-   * @return
+   * 
+   * @throws IllgalStateException if {@code DTalkService} is already
+   *           initialized.
    */
   public static void init(Configuration config) {
     LOG.v(TAG, ">>> init");
@@ -99,11 +107,12 @@ public class DTalkService {
       synchronized (DTalkService.class) {
         if (sInstance == null) {
           sInstance = new DTalkService(config);
+          return;
         }
       }
-    } else {
-      throw new IllegalStateException("DTalkService already initialized");
     }
+
+    throw new IllegalStateException("DTalkService already initialized.");
   }
 
   // --------------------------------------------------------------------------
@@ -170,16 +179,6 @@ public class DTalkService {
     DTalkDispatcher.start();
   }
 
-  private boolean isStarted() {
-    return mStarted;
-  }
-
-  private void setStarted(boolean started) {
-    mStarted = started;
-
-    // TODO fire events?
-  }
-
   public Configuration getConfiguration() {
     return mConfiguration;
   }
@@ -206,10 +205,11 @@ public class DTalkService {
     LOG.v(TAG, ">>> startup");
 
     synchronized (this) {
-      if (isStarted()) {
+      if (mStarted) {
+        LOG.w(TAG, "DTalkService already started.");
         return;
       }
-      setStarted(true);
+      mStarted = true; // TODO move it to the end
 
       if (mServiceDiscovery != null) {
         mServiceDiscovery.shutdown();
@@ -262,10 +262,11 @@ public class DTalkService {
     LOG.v(TAG, ">>> shutdown");
 
     synchronized (this) {
-      if (!isStarted()) {
+      if (!mStarted) {
+        LOG.w(TAG, "DTalkService not started.");
         return;
       }
-      setStarted(false);
+      mStarted = false; // move this to the end
 
       try {
         LOG.d(TAG, "Unsubscribe from: %s", OutgoingMessageEvent.class.getName());
@@ -326,7 +327,7 @@ public class DTalkService {
     }
   }
 
-  // must be called from inside synchronized(this) {..} block
+  // NOTE: must be called from inside synchronized(this) {..} block
   private void publishService() {
     LOG.v(TAG, ">>> publishService");
 
@@ -347,42 +348,39 @@ public class DTalkService {
     // ...
 
     try {
-      setServiceInfo(ServiceInfo.create(DTalk.SERVICE_TYPE, targetName, mWebSocketServer.getAddress().getPort(), 0, 0, props));
+      updateServiceInfo(ServiceInfo.create(DTalk.SERVICE_TYPE, targetName, mWebSocketServer.getAddress().getPort(), 0, 0, props));
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  // must be called from inside synchronized(this) {..} block
+  // NOTE: must be called from inside synchronized(this) {..} block
   private void unpublishService() {
     LOG.v(TAG, ">>> unpublishService");
 
     try {
-      setServiceInfo(null);
+      updateServiceInfo(null);
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  // must be called from inside synchronized(this) {..} block
-  private synchronized void setServiceInfo(ServiceInfo serviceInfo) throws IOException {
+  // NOTE: must be called from inside synchronized(this) {..} block
+  private synchronized void updateServiceInfo(ServiceInfo serviceInfo) throws IOException {
+    ExecutorService threadPool = getConfiguration().getThreadPool();
+
     if (mLocalServiceInfo != null) {
 
       // Notify that DTalkService is about to unregister.
-      getConfiguration().getThreadPool().execute(new Runnable() {
-        @Override
-        public void run() {
-          MessageBus.sendMessage(new DTalkServiceEvent());
-        }
-      });
+      MessageBus.sendMessage(new DTalkServiceEvent(), threadPool);
 
       // Unregister service.
       mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
 
       // Disable WebPresence...
-      mConfiguration.getThreadPool().execute(new Runnable() {
+      threadPool.execute(new Runnable() {
         @Override
         public void run() {
           enableWebPresence(false);
@@ -395,21 +393,16 @@ public class DTalkService {
     if (mLocalServiceInfo != null) {
 
       // Notify that DTalkService is ready to handle local connections.
-      getConfiguration().getThreadPool().execute(new Runnable() {
-        @Override
-        public void run() {
-          MessageBus.sendMessage(new DTalkServiceEvent(mLocalServiceInfo));
-        }
-      });
+      MessageBus.sendMessage(new DTalkServiceEvent(mLocalServiceInfo), threadPool);
 
       // Publish service.
       mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
 
       // Enable/disable WebPresence...
-      mConfiguration.getThreadPool().execute(new Runnable() {
+      threadPool.execute(new Runnable() {
         @Override
         public void run() {
-          enableWebPresence(mConfiguration.isWebPresence());
+          enableWebPresence(mConfiguration.isWebPresenceEnabled());
         }
       });
     }
@@ -620,6 +613,7 @@ public class DTalkService {
    * <p>
    * NOTE: to be run in a separate thread.
    * </p>
+   * 
    * @param webPresence
    */
   public void enableWebPresence(boolean webPresence) {
@@ -659,7 +653,7 @@ public class DTalkService {
         }
 
         // WebPresence reconnection...
-        enableWebPresence(mConfiguration.isWebPresence());
+        enableWebPresence(mConfiguration.isWebPresenceEnabled());
       }
     });
   }
@@ -676,7 +670,7 @@ public class DTalkService {
     // NOTE: uses locking
     return getServiceAddress(getLocalServiceInfo());
   }
-  
+
   public String getServiceAddressForLocalhost() {
     // NOTE: avoids locking.
     final InetSocketAddress address = getWebSocketServerAddress();
