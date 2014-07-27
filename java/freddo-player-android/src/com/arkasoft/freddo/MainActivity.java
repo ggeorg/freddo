@@ -30,25 +30,24 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 
-import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 import com.arkasoft.freddo.services.AndroidFdServiceMgr;
 
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.events.DTalkServiceEvent;
+import freddo.dtalk.nsd.NsdServiceInfo;
 import freddo.dtalk.services.clients.AppView;
 import freddo.dtalk.util.LOG;
 
 @SuppressLint({"CutPasteId", "InlinedApi", "NewApi"})
-public class MainActivity extends FdActivity implements OnSharedPreferenceChangeListener {
+public class MainActivity extends FdPlayerActivity implements OnSharedPreferenceChangeListener {
   private static final String TAG = LOG.tag(MainActivity.class);
 
   // --------------------------------------------------------------------------
@@ -98,7 +97,7 @@ public class MainActivity extends FdActivity implements OnSharedPreferenceChange
     }
   };
 
-  private ServiceInfo serviceInfo = null;
+  private NsdServiceInfo mServiceInfo = null;
 
   // --------------------------------------------------------------------------
   private AndroidFdServiceMgr serviceMgr = null;
@@ -175,9 +174,9 @@ public class MainActivity extends FdActivity implements OnSharedPreferenceChange
     // Start the spinner...
     // spinnerStart("", "Loading...");
 
-    FdPlayer app = (FdPlayer) getApplication();
+    FdPlayerApplication app = (FdPlayerApplication) getApplication();
     if (app.getServiceInfo() != null) {
-      this.serviceInfo = app.getServiceInfo();
+      mServiceInfo = app.getServiceInfo();
       loadUrl();
     }
   }
@@ -189,7 +188,7 @@ public class MainActivity extends FdActivity implements OnSharedPreferenceChange
 
   private void loadUrl() {
     LOG.v(TAG, ">>> loadUrl");
-    if (serviceInfo != null) {
+    if (mServiceInfo != null) {
       SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
       // final String url = sharedPrefs.getString("pref_url",
       // "http://dev.arkasoft.com/fd-test-api/index.html");
@@ -207,9 +206,9 @@ public class MainActivity extends FdActivity implements OnSharedPreferenceChange
   }
 
   // FIXME fix project with targetName change
-  protected void setServiceInfo(ServiceInfo serviceInfo) {
-    if (this.serviceInfo != serviceInfo) {
-      this.serviceInfo = serviceInfo;
+  protected void setServiceInfo(NsdServiceInfo serviceInfo) {
+    if (mServiceInfo != serviceInfo) {
+      mServiceInfo = serviceInfo;
       loadUrl();
     }
   }

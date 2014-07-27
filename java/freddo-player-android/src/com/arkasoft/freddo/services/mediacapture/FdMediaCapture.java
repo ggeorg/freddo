@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import com.arkasoft.freddo.FdActivity;
-import com.arkasoft.freddo.FdActivityResultCallback;
+import com.arkasoft.freddo.FdPlayerActivity;
+import com.arkasoft.freddo.FdPlayerActivityResultCallback;
 
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.services.FdService;
@@ -18,7 +18,7 @@ import freddo.dtalk.util.LOG;
  * This class launches the camera view, allows the user to take a picture,
  * closes the camera view, and returns the captured image.
  */
-public class FdMediaCapture extends FdService implements FdActivityResultCallback {
+public class FdMediaCapture extends FdService implements FdPlayerActivityResultCallback {
   private static final String TAG = LOG.tag(FdMediaCapture.class);
 
   public static final String TYPE = SRV_PREFIX + "MediaCapture";
@@ -44,7 +44,7 @@ public class FdMediaCapture extends FdService implements FdActivityResultCallbac
   public void doCaptureAudio(JSONObject message) {
     LOG.v(TAG, ">>> doCaptureAudio");
     Intent intent = new Intent(android.provider.MediaStore.Audio.Media.RECORD_SOUND_ACTION);
-    ((FdActivity)getContext()).startActivityForResult(this, intent, CAPTURE_AUDIO);
+    ((FdPlayerActivity)getContext()).startActivityForResult(this, intent, CAPTURE_AUDIO);
   }
 
   public void doCaptureImage(JSONObject message) {
@@ -55,14 +55,14 @@ public class FdMediaCapture extends FdService implements FdActivityResultCallbac
     //File photo = new File(DirectoryManager.getTempDirectoryPath(((FdActivity)getContext())), "Capture.jpg");
     //intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(photo));
     
-    ((FdActivity)getContext()).startActivityForResult(this, intent, CAPTURE_IMAGE);
+    ((FdPlayerActivity)getContext()).startActivityForResult(this, intent, CAPTURE_IMAGE);
   }
 
   public void doCaptureVideo(JSONObject message) {
     LOG.v(TAG, ">>> doCaptureVideo");
     Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
     // intent.putExtra("android.intent.extra.durationLimit", duration);
-    ((FdActivity)getContext()).startActivityForResult(this, intent, CAPTURE_VIDEO);
+    ((FdPlayerActivity)getContext()).startActivityForResult(this, intent, CAPTURE_VIDEO);
   }
 
   /**

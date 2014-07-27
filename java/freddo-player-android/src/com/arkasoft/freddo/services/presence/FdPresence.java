@@ -1,13 +1,12 @@
 package com.arkasoft.freddo.services.presence;
 
-import java.util.Enumeration;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
@@ -15,6 +14,7 @@ import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.MessageEvent;
+import freddo.dtalk.nsd.NsdServiceInfo;
 import freddo.dtalk.services.FdService;
 import freddo.dtalk.util.LOG;
 
@@ -53,22 +53,21 @@ public class FdPresence extends FdService {
   public void getList(JSONObject request) {
     LOG.v(TAG, ">>> getList");
     
-    Map<String, ServiceInfo> map = DTalkService.getInstance().getServiceInfoMap();
+    Map<String, NsdServiceInfo> map = DTalkService.getInstance().getServiceInfoMap();
     JSONArray result = new JSONArray();
     for (String key : map.keySet()) {
-      ServiceInfo info = map.get(key);
+      NsdServiceInfo info = map.get(key);
       try {
         JSONObject r = new JSONObject();
         
-        Enumeration<String> pNames = info.getPropertyNames();
-        while(pNames.hasMoreElements()) {
-          String property = pNames.nextElement();
-          r.put(property, info.getPropertyString(property));
+        Set<String> pNames = info.getTxtRecords().keySet();
+        for (String property : pNames) {
+          r.put(property, info.getTxtRecordValue(property));
         }
         
-        r.put(DTalk.KEY_NAME, info.getName());
-        r.put(DTalk.KEY_SERVER, info.getServer());
-        r.put(DTalk.KEY_PORT, info.getPort());
+        r.put(DTalk.KEY_NAME, info.getServiceName());
+        //r.put(DTalk.KEY_SERVER, info.getServer());
+        //r.put(DTalk.KEY_PORT, info.getPort());
         
         result.put(r);
       } catch (JSONException e) {

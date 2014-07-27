@@ -34,7 +34,7 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.util.Log;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 
 /**
  * An implementation of {@link ContactAccessor} that uses current Contacts API.

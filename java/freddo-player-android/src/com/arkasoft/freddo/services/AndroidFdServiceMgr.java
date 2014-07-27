@@ -2,7 +2,7 @@ package com.arkasoft.freddo.services;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 import com.arkasoft.freddo.services.accelerometer.FdAccelerometerFactory;
 import com.arkasoft.freddo.services.app.FdAppViewFactory;
 import com.arkasoft.freddo.services.compass.FdCompassFactory;
@@ -21,7 +21,7 @@ import freddo.dtalk.services.FdServiceMgr;
 
 public class AndroidFdServiceMgr extends FdServiceMgr  {
 
-  public AndroidFdServiceMgr(FdActivity context, JSONObject options) {
+  public AndroidFdServiceMgr(FdPlayerActivity context, JSONObject options) {
     super(context, options);
   }
   

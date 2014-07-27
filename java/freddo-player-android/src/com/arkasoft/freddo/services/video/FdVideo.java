@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 import com.arkasoft.freddo.R;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
@@ -75,8 +75,8 @@ public class FdVideo extends  FdService {
   public FdVideo(DTalkServiceContext activity, JSONObject options) {
     super(activity, TYPE, options);
 
-    mVideoView = (VideoView) ((FdActivity)getContext()).findViewById(R.id.videoView);
-    mImageView = (ImageView) ((FdActivity)getContext()).findViewById(R.id.imageView);
+    mVideoView = (VideoView) ((FdPlayerActivity)getContext()).findViewById(R.id.videoView);
+    mImageView = (ImageView) ((FdPlayerActivity)getContext()).findViewById(R.id.imageView);
 
     mVideoView.setOnCompletionListener(new OnCompletionListener() {
       @Override
@@ -155,7 +155,7 @@ public class FdVideo extends  FdService {
 
     fireEvent("onprepared");
 
-    ((FdActivity)getContext()).spinnerStop();
+    ((FdPlayerActivity)getContext()).spinnerStop();
   }
 
   protected void onCompletion() {
@@ -177,11 +177,11 @@ public class FdVideo extends  FdService {
 
     String msg = "";
     if (extra == MediaPlayer.MEDIA_ERROR_TIMED_OUT) {
-      msg = ((FdActivity)getContext()).getString(R.string.video_error_media_load_timeout);
+      msg = ((FdPlayerActivity)getContext()).getString(R.string.video_error_media_load_timeout);
     } else if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
-      msg = ((FdActivity)getContext()).getString(R.string.video_error_server_unaccessible);
+      msg = ((FdPlayerActivity)getContext()).getString(R.string.video_error_server_unaccessible);
     } else {
-      msg = ((FdActivity)getContext()).getString(R.string.video_error_unknown_error);
+      msg = ((FdPlayerActivity)getContext()).getString(R.string.video_error_unknown_error);
     }
 
     JSONObject error = new JSONObject();
@@ -196,8 +196,8 @@ public class FdVideo extends  FdService {
 
     setVideoViewVisibility(View.INVISIBLE);
 
-    Toast.makeText(((FdActivity)getContext()), msg, Toast.LENGTH_SHORT).show();
-    ((FdActivity)getContext()).spinnerStop();
+    Toast.makeText(((FdPlayerActivity)getContext()), msg, Toast.LENGTH_SHORT).show();
+    ((FdPlayerActivity)getContext()).spinnerStop();
   }
 
   private void setVideoViewVisibility(int visibility) {
@@ -270,7 +270,7 @@ public class FdVideo extends  FdService {
   private Object getVolume() {
     // LOG.v(TAG, ">>> getVolume");
 
-    AudioManager audioManager = (AudioManager) ((FdActivity)getContext()).getSystemService(Context.AUDIO_SERVICE);
+    AudioManager audioManager = (AudioManager) ((FdPlayerActivity)getContext()).getSystemService(Context.AUDIO_SERVICE);
     return (double) audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         / (double) audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
   }
@@ -381,7 +381,7 @@ public class FdVideo extends  FdService {
     LOG.v(TAG, ">>> setVolume: %f", value);
 
     if (value >= 0D && value <= 1D) {
-      AudioManager audioManager = (AudioManager) ((FdActivity)getContext()).getSystemService(Context.AUDIO_SERVICE);
+      AudioManager audioManager = (AudioManager) ((FdPlayerActivity)getContext()).getSystemService(Context.AUDIO_SERVICE);
       audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
           (int) (audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) * value),
           AudioManager.FLAG_SHOW_UI);
@@ -457,7 +457,7 @@ public class FdVideo extends  FdService {
     }
 
     if (mPlaybackState == PlaybackState.BUFFERING) {
-      ((FdActivity)getContext()).spinnerStart();
+      ((FdPlayerActivity)getContext()).spinnerStart();
     }
   }
 

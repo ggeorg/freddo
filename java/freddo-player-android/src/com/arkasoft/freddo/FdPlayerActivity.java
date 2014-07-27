@@ -12,10 +12,10 @@ import freddo.dtalk.services.clients.AppView;
 import freddo.dtalk.util.AndroidUtils;
 import freddo.dtalk.util.LOG;
 
-public abstract class FdActivity extends Activity implements DTalkServiceContext {
-  private static final String TAG = LOG.tag(FdActivity.class);
+public abstract class FdPlayerActivity extends Activity implements DTalkServiceContext {
+  private static final String TAG = LOG.tag(FdPlayerActivity.class);
 
-  private FdActivityResultCallback activityResultCallback;
+  private FdPlayerActivityResultCallback activityResultCallback;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public abstract class FdActivity extends Activity implements DTalkServiceContext
     runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        AndroidUtils.showErrorAndExit(FdActivity.this, title, errMessage, btnText);
+        AndroidUtils.showErrorAndExit(FdPlayerActivity.this, title, errMessage, btnText);
       }
     });
   }
@@ -66,7 +66,7 @@ public abstract class FdActivity extends Activity implements DTalkServiceContext
    * @param requestCode The request code that is passed to callback to identify
    *          the activity
    */
-  public void startActivityForResult(FdActivityResultCallback callback, Intent intent, int requestCode) {
+  public void startActivityForResult(FdPlayerActivityResultCallback callback, Intent intent, int requestCode) {
     LOG.v(TAG, ">>> startActivityForResult");
 
     activityResultCallback = callback;
@@ -95,7 +95,7 @@ public abstract class FdActivity extends Activity implements DTalkServiceContext
     LOG.v(TAG, ">>> onActivityResult (requestCode=%d)", requestCode);
     super.onActivityResult(requestCode, resultCode, data);
 
-    FdActivityResultCallback callback = activityResultCallback;
+    FdPlayerActivityResultCallback callback = activityResultCallback;
     if (callback != null) {
       LOG.d(TAG, "We have a callback to send this result to");
       callback.onActivityResult(requestCode, resultCode, data);

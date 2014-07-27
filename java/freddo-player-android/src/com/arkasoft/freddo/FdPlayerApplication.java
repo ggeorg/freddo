@@ -2,6 +2,7 @@ package com.arkasoft.freddo;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,67 +15,47 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.arkasoft.freddo.jmdns.JmDNS;
-import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.DTalkServiceEvent;
+import freddo.dtalk.nsd.NsdServiceInfo;
 import freddo.dtalk.util.AndroidLogger;
 import freddo.dtalk.util.LOG;
 
-public class FdPlayer extends Application {
-  private static final String TAG = LOG.tag(FdPlayer.class);
+public class FdPlayerApplication extends Application {
+  private static final String TAG = LOG.tag(FdPlayerApplication.class);
 
   static {
     LOG.setLogger(new AndroidLogger());
     LOG.setLogLevel(LOG.VERBOSE);
   }
 
-  private final MessageBusListener<DTalkServiceEvent> dtalkServiceEventHandler = new MessageBusListener<DTalkServiceEvent>() {
+  private final MessageBusListener<DTalkServiceEvent> mDtalkServiceEventHandler = new MessageBusListener<DTalkServiceEvent>() {
     @Override
     public void messageSent(String topic, DTalkServiceEvent message) {
       setServiceInfo(message.getServiceInfo());
     }
   };
 
-  // -----------------------------------------------------------------------
-
-//  private final MessageBusListener<JSONObject> appLauncherEventHandler =
-//      new MessageBusListener<JSONObject>() {
-//        @Override
-//        public void messageSent(String topic, JSONObject message) {
-//          // String serviceName = message.optString("serviceName");
-//          String action = message.optString("action");
-//          JSONObject params = message.optJSONObject("params");
-//          if ("launch".equals(action) && params != null && params.has("url")) {
-//            String url = params.optString("url");
-//            if (url != null) {
-//              Intent i = new Intent(Intent.ACTION_VIEW);
-//              i.setData(Uri.parse(url + "?ws=" + serviceInfo.getPort()));
-//              i.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-//              i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//              startActivity(i);
-//              // TODO wait for web app started and notify sender...
-//            }
-//          }
-//        }
-//      };
-
   // ------------------------------------------------------------------------
 
-  private ExecutorService threadPool;
+  private final ExecutorService mThreadPool;
 
-  private ServiceInfo serviceInfo = null;
+  private NsdServiceInfo mServiceInfo = null;
 
   private WifiManager.MulticastLock multicastLock;
 
   private JmDNS jmDNS = null;
   private static final Object sJmDNSLock = new Object();
-  
+
   private final FdServiceConfiguration configuration;
 
-  public FdPlayer() {
+  public FdPlayerApplication() {
+    // Create application's thread pool.
+    mThreadPool = Executors.newCachedThreadPool();
+    
     // Initialize DTalkService
     DTalkService.init(configuration = new FdServiceConfiguration(this));
   }
@@ -86,28 +67,22 @@ public class FdPlayer extends Application {
   @Override
   public void onCreate() {
     LOG.v(TAG, ">>> onCreate()");
-
     super.onCreate();
-
-    // Create application's thread pool.
-    threadPool = Executors.newCachedThreadPool();
 
     // Sets the default values.
     PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-    // Subscribe for DTalkServiceEvent, that indicates when the app is ready to
-    // get loaded.
-    MessageBus.subscribe(DTalkServiceEvent.class.getName(), dtalkServiceEventHandler);
-
-    // Subscribe for app launcher events
-    // MessageBus.subscribe("freddotv.AppLauncher", appLauncherEventHandler);
+    // Subscribe for DTalkServiceEvent, that indicates when the application is
+    // ready to get loaded.
+    MessageBus.subscribe(DTalkServiceEvent.class.getName(), mDtalkServiceEventHandler);
   }
 
   @Override
   public void onTerminate() {
     LOG.v(TAG, ">>> onTerminate()");
 
-    MessageBus.unsubscribe(DTalkServiceEvent.class.getName(), dtalkServiceEventHandler);
+    // Unsubscribe from DTalkServiceEvent.
+    MessageBus.unsubscribe(DTalkServiceEvent.class.getName(), mDtalkServiceEventHandler);
 
     synchronized (sJmDNSLock) {
       try {
@@ -135,17 +110,24 @@ public class FdPlayer extends Application {
       multicastLock.release();
     }
 
-    if (threadPool != null) {
-      threadPool.shutdown();
-      threadPool = null;
-    }
+    // Shutdown thread pool...
+    mThreadPool.shutdown();
 
+    // Always call at the end!!!
     super.onTerminate();
   }
 
-  synchronized JmDNS getJmDNS() {
+  /**
+   * 
+   * @see FdServiceConfiguration#getJmDNS()
+   */
+  protected JmDNS getJmDNS() {
+    LOG.v(TAG, ">>> getJmDNS");
+
     synchronized (sJmDNSLock) {
       if (jmDNS == null) {
+
+        LOG.d(TAG, "Getting wifi manager");
         WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 
         if (multicastLock == null) {
@@ -176,34 +158,71 @@ public class FdPlayer extends Application {
     }
   }
 
-  String getTargetName() {
+  protected InetAddress getInetAddress() throws UnknownHostException {
+    LOG.d(TAG, "Getting wifi manager");
+
+    WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+    if (wifiManager.getWifiState() != WifiManager.WIFI_STATE_ENABLED) {
+      Log.d(TAG, "Wifi state is not enabled");
+      return null;
+    }
+
+    WifiInfo connInfo = wifiManager.getConnectionInfo();
+    int ipAddress = connInfo.getIpAddress();
+
+    byte[] byteaddr = new byte[] {
+        (byte) (ipAddress & 0xff),
+        (byte) (ipAddress >> 8 & 0xff),
+        (byte) (ipAddress >> 16 & 0xff),
+        (byte) (ipAddress >> 24 & 0xff)};
+
+    return InetAddress.getByAddress(byteaddr);
+  }
+
+  /**
+   * 
+   * @see FdServiceConfiguration#getTargetName()
+   */
+  protected String getTargetName() {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     String targetName = sharedPreferences.getString(Constants.PREF_TARGET_NAME, getResources().getString(R.string.app_name));
     return targetName;
   }
 
-  boolean isWebPresence() {
+  /**
+   * 
+   * @see FdServiceConfiguration#isWebPresenceEnabled()
+   */
+  protected boolean isWebPresenceEnabled() {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     boolean webPresence = sharedPreferences.getBoolean(Constants.PREF_WEB_PRESENCE, false);
     return webPresence;
   }
 
-  String getWebPresenceURL() {
+  /**
+   * 
+   * @see FdServiceConfiguration#getWebPresenceURL()
+   */
+  protected String getWebPresenceURL() {
     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     String webPresenceURL = sharedPreferences.getString(Constants.PREF_WEB_PRESENCE_URL, null);
     return webPresenceURL;
   }
 
-  ExecutorService getThreadPool() {
-    return threadPool;
+  /**
+   * 
+   * @return FdServiceConfiguration#getThreadPool()
+   */
+  protected ExecutorService getThreadPool() {
+    return mThreadPool;
   }
 
-  ServiceInfo getServiceInfo() {
-    return serviceInfo;
+  NsdServiceInfo getServiceInfo() {
+    return mServiceInfo;
   }
 
-  protected void setServiceInfo(ServiceInfo serviceInfo) {
-    this.serviceInfo = serviceInfo;
+  protected void setServiceInfo(NsdServiceInfo serviceInfo) {
+    mServiceInfo = serviceInfo;
   }
 
 }
