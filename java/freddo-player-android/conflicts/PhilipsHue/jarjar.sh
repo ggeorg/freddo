@@ -1,2 +1,0 @@
-java -jar ../jarjar-1.4.jar process jarjar.rules sdkresources.jar ../../libs/sdkresources-modified.jar
-java -jar ../jarjar-1.4.jar process jarjar.rules huelocalsdk.jar ../../libs/huelocalsdk-modified.jar
