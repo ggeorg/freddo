@@ -17,6 +17,7 @@ package com.arkasoft.freddo.messagebus;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Provides support for basic intra-application message passing.
@@ -110,6 +111,39 @@ public class MessageBus {
    */
   public static <T> void sendMessage(T message) {
     sendMessage(message.getClass().getName(), message);
+  }
+
+  /**
+   * Sends an asynchronous message to subscribed topic listeners by using the
+   * provided {@code ExecutorService}.
+   * 
+   * @param topic
+   * @param message
+   * @param threadPool
+   */
+  public static <T> void sendMessage(final String topic, final T message, ExecutorService threadPool) {
+    threadPool.execute(new Runnable() {
+      @Override
+      public void run() {
+        MessageBus.sendMessage(topic, message);
+      }
+    });
+  }
+
+  /**
+   * Sends an asynchronous message to subscribed topic listeners by using the
+   * provided {@code ExecutorService}.
+   * 
+   * @param message
+   * @param threadPool
+   */
+  public static <T> void sendMessage(final T message, ExecutorService threadPool) {
+    threadPool.execute(new Runnable() {
+      @Override
+      public void run() {
+        sendMessage(message.getClass().getName(), message);
+      }
+    });
   }
 
 }
