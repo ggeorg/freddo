@@ -20,6 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provides support for basic intra-application message passing.
+ * <p>
+ * Keep in mind that message bus events are handled synchronously. So, you want
+ * to take case that any events handled in this fashion are handled quickly.
+ * Otherwise, your application's performance could be negatively impacted.
  */
 public class MessageBus {
   private static final Map<String, ListenerList<MessageBusListener<?>>> messageTopics =
@@ -60,9 +64,9 @@ public class MessageBus {
       messageTopics.remove(topic);
     }
   }
-  
+
   /**
-   * Tests the existence of a listener.
+   * Tests the existence of a listener for a topic.
    * 
    * @param topic
    * @param messageListener
@@ -74,7 +78,7 @@ public class MessageBus {
     if (topicListeners != null) {
       return topicListeners.contains(messageListener);
     }
-    
+
     return false;
   }
 
