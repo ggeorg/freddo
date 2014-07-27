@@ -2,7 +2,7 @@ package com.arkasoft.freddo.services.geolocation;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.services.FdService;

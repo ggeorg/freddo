@@ -10,7 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Vibrator;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.services.FdService;
@@ -47,7 +47,7 @@ public class FdNotification extends FdService {
 
   public void beep(long count) {
     Uri ringtone = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-    Ringtone notification = RingtoneManager.getRingtone(((FdActivity) getContext()).getBaseContext(), ringtone);
+    Ringtone notification = RingtoneManager.getRingtone(((FdPlayerActivity) getContext()).getBaseContext(), ringtone);
 
     // If phone is not set to silent mode
     if (notification != null) {
@@ -75,7 +75,7 @@ public class FdNotification extends FdService {
     if (time == 0) {
       time = 500;
     }
-    Vibrator vibrator = (Vibrator) ((FdActivity) getContext()).getSystemService(Context.VIBRATOR_SERVICE);
+    Vibrator vibrator = (Vibrator) ((FdPlayerActivity) getContext()).getSystemService(Context.VIBRATOR_SERVICE);
     vibrator.vibrate(time);
   }
 

@@ -44,7 +44,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 import com.arkasoft.freddo.R;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
@@ -201,11 +201,11 @@ public class FdAppView extends FdService {
   }
 
   protected void onPageStarted(String url) {
-    ((FdActivity) getContext()).spinnerStart();
+    ((FdPlayerActivity) getContext()).spinnerStart();
   }
 
   protected void onPageFinished(String url) {
-    ((FdActivity) getContext()).spinnerStop();
+    ((FdPlayerActivity) getContext()).spinnerStop();
   }
 
   // --------------------------------------------------------------------------
@@ -230,7 +230,7 @@ public class FdAppView extends FdService {
   }
 
   public void doSpinnerStart(JSONObject message) {
-    FdActivity activity = (FdActivity) getContext();
+    FdPlayerActivity activity = (FdPlayerActivity) getContext();
     JSONObject params = message.optJSONObject(MessageEvent.KEY_BODY_PARAMS);
     String spinnerTitle = params.optString("title");
     String spinnerMsg = params.optString("message");
@@ -238,7 +238,7 @@ public class FdAppView extends FdService {
   }
 
   public void doSpinnerStop(JSONObject message) {
-    FdActivity activity = (FdActivity) getContext();
+    FdPlayerActivity activity = (FdPlayerActivity) getContext();
     activity.spinnerStop();
   }
 
@@ -272,9 +272,9 @@ public class FdAppView extends FdService {
     public void onProgressChanged(WebView view, int progress) {
       // The progress meter will automatically disappear when we reach 100%
       if (progress == 100) {
-        ((FdActivity) getContext()).spinnerStop();
+        ((FdPlayerActivity) getContext()).spinnerStop();
       } else {
-        ((FdActivity) getContext()).spinnerStart();
+        ((FdPlayerActivity) getContext()).spinnerStart();
       }
     }
 
@@ -809,7 +809,7 @@ public class FdAppView extends FdService {
       // TODO this.appView.postMessage("onReceivedError", data);
 
       Toast.makeText(((Activity) getContext()), description, Toast.LENGTH_SHORT).show();
-      ((FdActivity) getContext()).spinnerStop();
+      ((FdPlayerActivity) getContext()).spinnerStop();
     }
 
     /**

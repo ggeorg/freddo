@@ -1,7 +1,5 @@
 package com.arkasoft.freddo;
 
-import java.io.File;
-
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
@@ -52,7 +50,6 @@ public class FdPlayerService extends Service implements OnSharedPreferenceChange
   @Override
   public void onDestroy() {
     LOG.v(TAG, ">>> onDestroy");
-    super.onDestroy();
 
     SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
     sharedPrefs.unregisterOnSharedPreferenceChangeListener(this);
@@ -63,7 +60,8 @@ public class FdPlayerService extends Service implements OnSharedPreferenceChange
       e.printStackTrace();
     }
 
-    System.exit(0);
+    super.onDestroy();
+    // System.exit(0);
   }
 
   @Override
@@ -74,7 +72,7 @@ public class FdPlayerService extends Service implements OnSharedPreferenceChange
 
     // Set required system properties...
     String targetName = config.getTargetName();
-    boolean webPresence = config.isWebPresence();
+    boolean webPresence = config.isWebPresenceEnabled();
 
     LOG.d(TAG, "TargetName: %s, WebPresence: %b", targetName, webPresence);
 
@@ -100,12 +98,8 @@ public class FdPlayerService extends Service implements OnSharedPreferenceChange
     Configuration config = DTalkService.getInstance().getConfiguration();
 
     try {
-      if (config.getJmDNS() != null) {
+      if (config.getNsdManager() != null) {
         DTalkService.getInstance().startup();
-
-        if (isAirPlay()) {
-          startAirPlayService();
-        }
       }
     } catch (Exception e) {
       LOG.e(TAG, "Failed to start services services!", e);
@@ -122,22 +116,6 @@ public class FdPlayerService extends Service implements OnSharedPreferenceChange
     }
   }
 
-  public boolean isAirPlay() {
-    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-    return sharedPreferences.getBoolean(Constants.PREF_ENABLE_AIRPLAY, false);
-  }
-
-  protected void startAirPlayService() {
-    LOG.v(TAG, ">>> startAirPlayServive");
-
-    FdServiceConfiguration config = (FdServiceConfiguration) DTalkService.getInstance().getConfiguration();
-
-    if (config.getJmDNS() != null) {
-      File file = getExternalFilesDir(null);
-      System.setProperty("user.dir", file.getPath());
-    }
-  }
-
   @Override
   public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     LOG.d(TAG, ">>> onSharedPreferenceChanged: %s", key);
@@ -148,10 +126,8 @@ public class FdPlayerService extends Service implements OnSharedPreferenceChange
       String targetName = config.getTargetName();
       onTargetNameChanged();
     } else if (key.equalsIgnoreCase(Constants.PREF_WEB_PRESENCE) || key.equalsIgnoreCase(Constants.PREF_WEB_PRESENCE_URL)) {
-      boolean webPresence = config.isWebPresence();
+      boolean webPresence = config.isWebPresenceEnabled();
       enableWebPresence(webPresence);
-    } else if (key.equalsIgnoreCase(Constants.PREF_ENABLE_AIRPLAY)) {
-      boolean enableAirPlay = sharedPreferences.getBoolean(key, false);
     }
   }
 

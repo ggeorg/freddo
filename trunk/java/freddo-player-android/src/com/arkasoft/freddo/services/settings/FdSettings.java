@@ -11,7 +11,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
-import com.arkasoft.freddo.FdActivity;
+import com.arkasoft.freddo.FdPlayerActivity;
 import com.arkasoft.freddo.FdPreferencesActivity;
 
 import freddo.dtalk.DTalkServiceContext;
@@ -27,7 +27,7 @@ public class FdSettings extends FdService {
   }
 
   private Object get(String property) {
-    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(((FdActivity)getContext()));
+    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(((FdPlayerActivity)getContext()));
     Map<String, ?> values = sharedPrefs.getAll();
     Object value = values.get(property);
     return value;
@@ -35,7 +35,7 @@ public class FdSettings extends FdService {
 
   private boolean set(JSONObject options) {
     boolean result = false;
-    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(((FdActivity)getContext()));
+    SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(((FdPlayerActivity)getContext()));
     Editor editor = sharedPrefs.edit();
     Iterator<?> itr = options.keys();
     while (itr.hasNext()) {
@@ -74,8 +74,8 @@ public class FdSettings extends FdService {
 
   public void doLaunch(JSONObject message) {
     Intent intent = new Intent();
-    intent.setClass(((FdActivity)getContext()), FdPreferencesActivity.class);
-    ((FdActivity)getContext()).startActivity(intent);
+    intent.setClass(((FdPlayerActivity)getContext()), FdPreferencesActivity.class);
+    ((FdPlayerActivity)getContext()).startActivity(intent);
   }
 
   @Override

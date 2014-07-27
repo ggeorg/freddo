@@ -6,8 +6,8 @@ import org.json.JSONObject;
 import android.provider.Settings;
 import android.util.Log;
 
-import com.arkasoft.freddo.FdActivity;
-import com.arkasoft.freddo.FdPlayer;
+import com.arkasoft.freddo.FdPlayerActivity;
+import com.arkasoft.freddo.FdPlayerApplication;
 
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkServiceContext;
@@ -43,12 +43,12 @@ public class FdDevice extends FdService {
   }
 
   public String getType() {
-    final FdPlayer player = (FdPlayer) ((FdActivity) getContext()).getApplication();
+    final FdPlayerApplication player = (FdPlayerApplication) ((FdPlayerActivity) getContext()).getApplication();
     return player.getConfiguration().getType();
   }
 
   public String getUuid() {
-    return Settings.Secure.getString(((FdActivity) getContext()).getContentResolver(),
+    return Settings.Secure.getString(((FdPlayerActivity) getContext()).getContentResolver(),
         android.provider.Settings.Secure.ANDROID_ID);
   }
 
