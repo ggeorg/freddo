@@ -1,0 +1,1 @@
+rule org.json.** org._json.@1

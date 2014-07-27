@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+    <head>
+    	<meta charset="utf-8">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"></meta>
+        <title>Fd Player</title>
+        <style>
+        	/* Hide Android WebView Highlight Border */
+			* {
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+			}
+            body {
+                background: none;
+            }
+            #logo {
+            	float: right;
+            	font-size: 100%;
+            	color: #ccc;
+            	text-shadow: 0px 0px 5px #333;
+            	text-decoration: none;
+            }
+        </style>
+       	<script type="text/javascript">
+        	function shutdown() {
+        		if (DTalk.getReadyState() == 1) {
+
+        			var event = {
+                   		dtalk: "1.0",
+                   	    service: "dtalk.Services",
+                   	    action: "stop",
+                   	    params: "dtalk.service.Settings"
+                  	};
+                       
+                	DTalk.sendNotification(event);
+        		}
+        	}
+            function startup() {
+                DTalk.onopen = function() {
+                    //status.innerHTML = "<span style='color:green;'>OPEN</span>";
+                    //runBtn.disabled = urlInput.disabled = settingsBtn.disabled = false;
+                    
+                    var event = {
+                   	    dtalk: "1.0",
+                   	    service: "dtalk.Services",
+                   	    action: "start",
+                   	    params: "dtalk.service.Settings"
+                   	};
+                    
+                    DTalk.sendNotification(event);
+                }
+                
+                DTalk.onclose = function() {
+                    //status.innerHTML = "<span style='color:red;'>CLOSED</span>";
+                    //settingsBtn.disabled = true;
+                }
+
+                DTalk.connect();
+            }
+            
+            function openSettings(event) {
+            	if (DTalk.getReadyState() == 1) {
+            		
+            		var event = {
+                  		dtalk: "1.0",
+                   	    service: "dtalk.service.Settings",
+                   	    action: "launch"
+                   	};
+            		
+            		DTalk.sendNotification(event);
+            	}
+            	
+            	//event.preventDefault();
+            }
+        </script>
+        <script type="text/javascript" src="dtalk.js"></script>
+    </head>
+    <body onload="startup();" onunload="shutdown()">
+		<a id="logo" href="#" onclick="openSettings(event);">Freddo TV</a>
+    </body>
+</html>

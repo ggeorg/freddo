@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="GENERAL SETTINGS" >
+        <EditTextPreference
+            android:defaultValue="Fd Player"
+            android:dialogTitle="Target Name"
+            android:key="pref_target_name"
+            android:summary="The name that will show up when trying to connect to Fd Player"
+            android:title="Target Name" />
+
+        <CheckBoxPreference
+            android:key="pref_auto_startup"
+            android:summary="Should Fd Player service automatically start at boot time?"
+            android:title="Automatically Start" />
+        <CheckBoxPreference
+            android:key="pref_web_presence"
+            android:summary="Allow web pages to discover Fd Player?"
+            android:title="Web Presence" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="AIR PLAY" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="pref_enable_airplay"
+            android:summary="Should Fd Player enable AirPlay?"
+            android:title="Enable AirPlay" />
+        <CheckBoxPreference
+            android:enabled="false"
+            android:key="enable_airplay_passwd_pref"
+            android:summary="When a device connects, it will need to enter a password"
+            android:title="Require a Password" />
+
+        <EditTextPreference
+            android:dialogTitle="AirPlay Password"
+            android:enabled="false"
+            android:key="airplay_password_pref"
+            android:summary="Enter the password here..."
+            android:title="Password" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/prefs_developer_options" >
+        <EditTextPreference
+            android:defaultValue="file:///android_asset/www/blank.html"
+            android:dialogTitle="@string/prefs_developer_options_url"
+            android:key="pref_url"
+            android:summary="@string/prefs_developer_options_url_description"
+            android:title="URL" />
+        <EditTextPreference
+            android:defaultValue="ws://ggeorg.arkasoft.com:8080/web-presence/dtalksrv"
+            android:dialogTitle="Web Presence URL"
+            android:key="pref_web_presence_url"
+            android:summary="The Web Presence service URL"
+            android:title="Web Presence URL" />
+
+        <ListPreference
+            android:dialogTitle="Debug Level"
+            android:entries="@array/debugLevels"
+            android:entryValues="@array/debugLevelValues"
+            android:key="pref_debug_level"
+            android:summary="Fd Player Debug Level"
+            android:title="Debug Level" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/about_app" >
+        <EditTextPreference
+            android:enabled="false"
+            android:key="app_version"
+            android:persistent="false"
+            android:selectable="false"
+            android:shouldDisableView="false"
+            android:title="@string/version" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

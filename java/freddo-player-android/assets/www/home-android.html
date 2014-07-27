@@ -1,0 +1,87 @@
+<!doctype html>
+<html -manifest="cache.appcache">
+    <head>
+    	<meta name="viewport" 
+			content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Freddo Main</title>
+        <link rel="stylesheet" type="text/css" href="dojox/mobile/themes/holodark/holodark.css"></link>
+        <link rel="stylesheet" type="text/css" href="themes/android.css"/>
+        <link rel="stylesheet" type="text/css" href="app.css"/>
+        <style>
+			html, body { height: 100%; overflow: hidden; position: relative; }
+			* { outline: none; }
+		</style>
+    </head>
+    <body>
+		<div id="splitter" dojoType="dojox.mobile.FixedSplitter" orientation="H">
+			<div id="leftPane" dojoType="dojox.mobile.Container">
+				<h1 id="leftHeader" dojoType="dojox.mobile.Heading" fixed="top">
+					<div style="height:42px;float: left;margin-left:6px"></div>
+					<span id="leftHeaderLabel">Showcase</span>
+				</h1>
+				<div id="navigation" dojoType="dojox.mobile.ScrollableView"></div>
+			</div>
+			<div dojoType="dojox.mobile.Container">
+				<h1 id="header" dojoType="dojox.mobile.Heading" fixed="top">
+					<button id="navButton" dojoType="dojox.mobile.ToolBarButton" 
+							data-dojo-props="arrow:'left'">Back</button>
+					<span id="headerLabel" style="float:center;">Welcome</span>
+				</h1>
+				<div id="rightPane" dojoType="dojox.mobile.View" 
+					selected="true" style="overflow:hidden;">
+					<div id="welcome" dojoType="dojox.mobile.ScrollableView">
+						<h1 dojoType="dojox.mobile.RoundRectCategory" 
+							style="text-align:center;vertical-align:middle;margin-left:0px;padding-left:0px">
+							<div>Welcome to Dojo Mobile Showcase</div>
+							<!-- <img src="images/welcomeLogo.png"/>  -->
+						</h1>
+					</div>
+					<!-- 
+					<div id="source" dojoType="dojox.mobile.View">
+						<ul id="srcTabBar" dojoType="dojox.mobile.TabBar" barType="segmentedControl">
+							<li id="htmlSrcTab" dojoType="dojox.mobile.TabBarButton" 
+								moveTo="htmlSrcView" selected="true">HTML</li>
+							<li id="jsSrcTab" dojoType="dojox.mobile.TabBarButton" 
+								moveTo="jsSrcView">JavaScript</li>
+						</ul>
+						<div>
+							<div id="htmlSrcView" dojoType="dojox.mobile.ScrollableView" scrollDir="hv">
+								<pre id="htmlContent"></pre>
+							</div>
+							<div id="jsSrcView" dojoType="dojox.mobile.ScrollableView" scrollDir="hv">
+								<pre id="jsContent"></pre>
+							</div>
+						</div>
+					</div>
+					 -->
+				</div>
+			</div>
+		</div>
+		<div id="loadDiv" style="position:absolute;left:0px;top:0px;width:100%;height:100%;z-index:999;">
+			<span>Loading...</span>
+		</div>
+		
+		<script type="text/javascript" src="dojo/dojo.js" 
+			data-dojo-config="parseOnLoad:false,mblAlwaysHideAddressBar:true,async:true"></script>
+		<script type="text/javascript">
+			require(["app",
+			         "dojo/ready",
+			         "dojox/mobile",
+			         "dojox/mobile/Button",
+			         "dojox/mobile/ToolBarButton", 
+			         "dojox/mobile/FixedSplitter",
+			         "dojox/mobile/Container",
+			         "dojox/mobile/View",
+			         "dojox/mobile/ScrollableView",
+			         "dojox/mobile/TabBar",
+			         "dojo/domReady!"], function(app, ready){
+					ready(function(){
+						app.init();
+					});
+				});
+		</script>
+    </body>
+</html>
