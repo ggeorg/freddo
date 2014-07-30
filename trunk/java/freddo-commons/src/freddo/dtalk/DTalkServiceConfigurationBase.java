@@ -30,30 +30,35 @@ import freddo.dtalk.util.LOG;
  */
 public abstract class DTalkServiceConfigurationBase implements DTalkService.Configuration {
   
-  private final ExecutorService threadPool;
+  private final ExecutorService mThreadPool;
   private byte[] hwAddr = null;
   
   protected DTalkServiceConfigurationBase() {
-    this.threadPool = Executors.newCachedThreadPool();
+    this(Executors.newCachedThreadPool());
+  }
+  
+  protected DTalkServiceConfigurationBase(ExecutorService threadPool) {
+    mThreadPool = threadPool;
   }
   
   @Override
-  public ExecutorService getThreadPool() {
-    return threadPool;
+  public final ExecutorService getThreadPool() {
+    return mThreadPool;
   }
   
   @Override
-  public String getDeviceId() {
+  public final String getDeviceId() {
     return getHardwareAddress("");
   }
 
+  @Override
   public final byte[] getHardwareAddress() {
     if (hwAddr != null && hwAddr.length != 0) {
       return hwAddr;
     }
 
     try {
-      NetworkInterface ni = NetworkInterface.getByInetAddress(getJmDNS().getInterface());
+      NetworkInterface ni = NetworkInterface.getByInetAddress(getInetAddress());
       hwAddr = ni.getHardwareAddress();
     } catch (Exception e) {
       if (LOG.isLoggable(LOG.INFO)) {
@@ -72,6 +77,7 @@ public abstract class DTalkServiceConfigurationBase implements DTalkService.Conf
     return hwAddr;
   }
 
+  @Override
   public final String getHardwareAddress(String separator) {
     byte[] macAddrs = getHardwareAddress();
     StringBuilder sb = new StringBuilder();
@@ -83,6 +89,6 @@ public abstract class DTalkServiceConfigurationBase implements DTalkService.Conf
   
   @Override
   public int getPort() {
-    return 0; // random
+    return 0;
   }
 }

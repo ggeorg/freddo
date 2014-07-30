@@ -36,8 +36,6 @@ import org.json.JSONObject;
 import com.arkasoft.freddo.dtalk.netty4.client.WebSocketClient;
 import com.arkasoft.freddo.dtalk.netty4.server.WebPresenceService;
 import com.arkasoft.freddo.dtalk.netty4.server.WebSocketServer;
-import com.arkasoft.freddo.jmdns.JmDNS;
-import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
@@ -47,6 +45,9 @@ import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.events.WebPresenceEvent;
 import freddo.dtalk.util.LOG;
+import freddo.dtalk.zeroconf.ZConfManager;
+import freddo.dtalk.zeroconf.ZConfRegistrationListener;
+import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
 public class DTalkService {
   private static final String TAG = LOG.tag(DTalkService.class);
@@ -57,7 +58,8 @@ public class DTalkService {
    * {@code DTalkService} configuration object.
    */
   public static interface Configuration {
-    JmDNS getJmDNS();
+    //JmDNS getJmDNS();
+    ZConfManager getNsdManager();
 
     String getDeviceId();
 
@@ -72,6 +74,12 @@ public class DTalkService {
     String getWebPresenceURL();
 
     int getPort();
+
+    byte[] getHardwareAddress();
+
+    String getHardwareAddress(String separator);
+
+    InetAddress getInetAddress();
   }
 
   /**
@@ -163,7 +171,32 @@ public class DTalkService {
   private boolean mStarted = false;
 
   private DTalkDiscovery mServiceDiscovery = null;
-  private volatile ServiceInfo mLocalServiceInfo = null;
+  private ZConfServiceInfo mNsdServiceInfo = null;
+  private final ZConfRegistrationListener mNsdRegistrationListener = new ZConfRegistrationListener() {
+    @Override
+    public void onRegistrationFailed(ZConfServiceInfo serviceInfo, int errorCode) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void onUnregistrationFailed(ZConfServiceInfo serviceInfo, int errorCode) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void onServiceRegistered(ZConfServiceInfo serviceInfo) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void onServiceUnregistered(ZConfServiceInfo serviceInfo) {
+      // TODO Auto-generated method stub
+      
+    }
+  };
 
   /**
    * {@code DTalkService} constructor.
@@ -183,16 +216,16 @@ public class DTalkService {
     return mConfiguration;
   }
 
-  public ServiceInfo getLocalServiceInfo() {
+  public ZConfServiceInfo getLocalServiceInfo() {
     synchronized (this) {
-      LOG.v(TAG, "mLocalServiceInfo: %s", mLocalServiceInfo);
-      return mLocalServiceInfo;
+      LOG.v(TAG, "mLocalServiceInfo: %s", mNsdServiceInfo);
+      return mNsdServiceInfo;
     }
   }
 
-  private static final Map<String, ServiceInfo> EMPTY_SERVICEINFO_MAP = Collections.unmodifiableMap(new HashMap<String, ServiceInfo>());
+  private static final Map<String, ZConfServiceInfo> EMPTY_SERVICEINFO_MAP = Collections.unmodifiableMap(new HashMap<String, ZConfServiceInfo>());
 
-  public Map<String, ServiceInfo> getServiceInfoMap() {
+  public Map<String, ZConfServiceInfo> getServiceInfoMap() {
     synchronized (this) {
       return mServiceDiscovery != null ? Collections.unmodifiableMap(mServiceDiscovery.mServiceInfoMap) : EMPTY_SERVICEINFO_MAP;
     }
@@ -348,7 +381,8 @@ public class DTalkService {
     // ...
 
     try {
-      updateServiceInfo(ServiceInfo.create(DTalk.SERVICE_TYPE, targetName, mWebSocketServer.getAddress().getPort(), 0, 0, props));
+      InetSocketAddress address = mWebSocketServer.getAddress();
+      updateServiceInfo(new ZConfServiceInfo(targetName, DTalk.SERVICE_TYPE, props, mConfiguration.getInetAddress(), address.getPort()));
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -368,16 +402,19 @@ public class DTalkService {
   }
 
   // NOTE: must be called from inside synchronized(this) {..} block
-  private synchronized void updateServiceInfo(ServiceInfo serviceInfo) throws IOException {
+  private synchronized void updateServiceInfo(ZConfServiceInfo serviceInfo) throws IOException {
+    LOG.v(TAG, ">>> updateServiceInfo: %s", serviceInfo);
+    
     ExecutorService threadPool = getConfiguration().getThreadPool();
 
-    if (mLocalServiceInfo != null) {
+    if (mNsdServiceInfo != null) {
 
       // Notify that DTalkService is about to unregister.
       MessageBus.sendMessage(new DTalkServiceEvent(), threadPool);
 
       // Unregister service.
-      mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
+      mConfiguration.getNsdManager().unregisterService(mNsdRegistrationListener);
+      //mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
 
       // Disable WebPresence...
       threadPool.execute(new Runnable() {
@@ -388,15 +425,16 @@ public class DTalkService {
       });
     }
 
-    mLocalServiceInfo = serviceInfo;
+    mNsdServiceInfo = serviceInfo;
 
-    if (mLocalServiceInfo != null) {
+    if (mNsdServiceInfo != null) {
 
       // Notify that DTalkService is ready to handle local connections.
-      MessageBus.sendMessage(new DTalkServiceEvent(mLocalServiceInfo), threadPool);
+      MessageBus.sendMessage(new DTalkServiceEvent(mNsdServiceInfo), threadPool);
 
       // Publish service.
-      mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
+      mConfiguration.getNsdManager().registerService(mNsdServiceInfo, mNsdRegistrationListener);
+      //mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
 
       // Enable/disable WebPresence...
       threadPool.execute(new Runnable() {
@@ -542,10 +580,10 @@ public class DTalkService {
     if (ch == null) {
       // Get service info or recipient by name (recipient)
       // We use direct access to the service map in service discovery instance.
-      ServiceInfo remoteInfo = mServiceDiscovery.mServiceInfoMap.get(to);
+      ZConfServiceInfo remoteInfo = mServiceDiscovery.mServiceInfoMap.get(to);
       if (remoteInfo != null) {
         try {
-          String dTalkServiceAddr = getServiceAddress(remoteInfo);
+          String dTalkServiceAddr = remoteInfo.getHost().getHostAddress(); // TODO getServiceAddress(remoteInfo);
           LOG.i(TAG, "Connect to: %s", dTalkServiceAddr);
           ch = new WebSocketClient(new URI(dTalkServiceAddr)).connect();
           addChannel(to, ch);
@@ -572,10 +610,10 @@ public class DTalkService {
     if (service != null) {
       if (service.startsWith("$")) {
         if (to.startsWith("x-dtalk-") && !jsonMsg.has(MessageEvent.KEY_FROM)) {
-          jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getName());
+          jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getServiceName());
         }
       } else if (!jsonMsg.has(MessageEvent.KEY_FROM)) {
-        jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getName());
+        jsonMsg.put(MessageEvent.KEY_FROM, getLocalServiceInfo().getServiceName());
       }
     }
     jsonMsg.put(MessageEvent.KEY_TO, to);
@@ -625,7 +663,8 @@ public class DTalkService {
         if (webPresenceURI == null || webPresenceURI.trim().length() == 0) {
           return;
         }
-        getWebPresenceService().publish(new URI(webPresenceURI), mConfiguration.getJmDNS(), getLocalServiceInfo());
+        //getWebPresenceService().publish(new URI(webPresenceURI), mConfiguration.getJmDNS(), getLocalServiceInfo());
+// TODO        getWebPresenceService().publish(new URI(webPresenceURI), mConfiguration.getNsdManager(), getLocalServiceInfo());
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -681,31 +720,12 @@ public class DTalkService {
     return sb.toString();
   }
 
-  public static String getServiceAddress(ServiceInfo info) {
+  public static String getServiceAddress(ZConfServiceInfo info) {
     StringBuilder sb = new StringBuilder();
     sb.append("ws://");
-    sb.append(getAddress(info)).append(':').append(info.getPort());
+    sb.append(info.getHost().getHostAddress()).append(':').append(info.getPort());
     sb.append(WebSocketServer.WEBSOCKET_PATH);
     return sb.toString();
-  }
-
-  public static final String getAddress(ServiceInfo info) {
-    // NOTE: info.getServer() takes to long to resolve the IP address.
-    String server = null; // info.getServer();
-    InetAddress[] addresses = info.getInetAddresses();
-    if (addresses.length > 0) {
-      for (InetAddress address : addresses) {
-        server = address.getHostAddress();
-        break;
-      }
-    } else {
-      // fall back to info.getServer()
-      server = info.getServer();
-      if (server == null || server.trim().length() == 0) {
-        LOG.w(TAG, "Can't get address from %s", info);
-      }
-    }
-    return server;
   }
 
 }

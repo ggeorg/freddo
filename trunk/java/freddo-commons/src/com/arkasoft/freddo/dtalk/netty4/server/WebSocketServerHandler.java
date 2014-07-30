@@ -234,7 +234,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
       JSONObject jsonMsg = new JSONObject(message);
 
-      String localServiceName = DTalkService.getInstance().getLocalServiceInfo().getName();
+      String localServiceName = DTalkService.getInstance().getLocalServiceInfo().getServiceName();
 
       String to = jsonMsg.optString(DTalk.KEY_TO, null);
       String from = jsonMsg.optString(DTalk.KEY_FROM, null);

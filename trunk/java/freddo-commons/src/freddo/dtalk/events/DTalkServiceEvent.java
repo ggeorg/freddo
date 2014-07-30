@@ -15,21 +15,21 @@
  */
 package freddo.dtalk.events;
 
-import com.arkasoft.freddo.jmdns.ServiceInfo;
+import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
 public class DTalkServiceEvent {
 
-  private final ServiceInfo serviceInfo;
+  private final ZConfServiceInfo serviceInfo;
 
   public DTalkServiceEvent() {
     this.serviceInfo = null;
   }
 
-  public DTalkServiceEvent(ServiceInfo serviceInfo) {
+  public DTalkServiceEvent(ZConfServiceInfo serviceInfo) {
     this.serviceInfo = serviceInfo;
   }
 
-  public ServiceInfo getServiceInfo() {
+  public ZConfServiceInfo getServiceInfo() {
     return serviceInfo;
   }
 

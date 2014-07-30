@@ -87,7 +87,7 @@ public class WebPresenceService {
       }
 
       presence.put(DTalk.KEY_NAME, serviceInfo.getName());
-      presence.put(DTalk.KEY_SERVER, DTalkService.getAddress(serviceInfo));
+// TODO      presence.put(DTalk.KEY_SERVER, DTalkService.getAddress(serviceInfo));
       presence.put(DTalk.KEY_PORT, serviceInfo.getPort());
 
       HttpHeaders customHeaders = new DefaultHttpHeaders();
