@@ -15,82 +15,78 @@
  */
 package freddo.dtalk;
 
-import java.net.InetAddress;
-import java.util.Enumeration;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.jmdns.JmDNS;
-import com.arkasoft.freddo.jmdns.ServiceEvent;
-import com.arkasoft.freddo.jmdns.ServiceInfo;
-import com.arkasoft.freddo.jmdns.ServiceListener;
-import com.arkasoft.freddo.jmdns.impl.constants.DNSConstants;
 import com.arkasoft.freddo.messagebus.MessageBus;
 
 import freddo.dtalk.util.LOG;
+import freddo.dtalk.zeroconf.ZConfDiscoveryListener;
+import freddo.dtalk.zeroconf.ZConfManager;
+import freddo.dtalk.zeroconf.ZConfServiceInfo;
+import freddo.dtalk.zeroconf.ZConfResolveListener;
 
 class DTalkDiscovery {
   private static final String TAG = LOG.tag(DTalkDiscovery.class);
 
-  final Map<String, ServiceInfo> mServiceInfoMap;
+  final Map<String, ZConfServiceInfo> mServiceInfoMap;
 
-  private volatile DTalkServiceListener mServiceListener = null;
+  private DTalkDiscoveryListener mDiscoveryListener = null;
 
   public DTalkDiscovery() {
-    mServiceInfoMap = new ConcurrentHashMap<String, ServiceInfo>();
+    mServiceInfoMap = new ConcurrentHashMap<String, ZConfServiceInfo>();
   }
 
   public void startup() {
     LOG.v(TAG, ">>> startup");
-
-    setServiceListener(new DTalkServiceListener());
+    updateServiceListener(new DTalkDiscoveryListener());
   }
 
   public void shutdown() {
     LOG.v(TAG, ">>> shutdown");
-
-    setServiceListener(null);
+    updateServiceListener(null);
   }
 
-  private synchronized void setServiceListener(final DTalkServiceListener serviceListener) {
-    final JmDNS jmDNS = DTalkService.getInstance().getConfiguration().getJmDNS();
+  private void updateServiceListener(final DTalkDiscoveryListener serviceListener) {
+    final ZConfManager nsd = DTalkService.getInstance().getConfiguration().getNsdManager();
 
     // Remove listener...
-    if (mServiceListener != null) {
+    if (mDiscoveryListener != null) {
       LOG.v(TAG, "removeServiceListener: %s", DTalk.SERVICE_TYPE);
-      jmDNS.removeServiceListener(DTalk.SERVICE_TYPE, mServiceListener);
+      nsd.stopServiceDiscovery(mDiscoveryListener);
     }
 
-    mServiceListener = serviceListener;
+    mDiscoveryListener = serviceListener;
 
     // Register listener...
-    if (mServiceListener != null) {
+    if (mDiscoveryListener != null) {
       LOG.v(TAG, "addServiceListener: %s", DTalk.SERVICE_TYPE);
-      jmDNS.addServiceListener(DTalk.SERVICE_TYPE, mServiceListener);
+      nsd.discoverServices(DTalk.SERVICE_TYPE, mDiscoveryListener);
     }
   }
 
-  protected void serviceRemoved(final ServiceInfo info) {
+  protected void serviceRemoved(final ZConfServiceInfo info) {
     LOG.v(TAG, ">>> presenceRemoved: %s", info);
 
     if (info == null) {
       return;
     }
 
-    final ServiceInfo _info = mServiceInfoMap.get(info.getName());
+    final ZConfServiceInfo _info = mServiceInfoMap.get(info.getServiceName());
     if (_info != null) {
       if (!_info.equals(info)) {
         return;
       }
     }
 
-    mServiceInfoMap.remove(info.getName());
-    if (info != null && !info.getName().equals(DTalkService.getInstance().getLocalServiceInfo().getName())) {
+    mServiceInfoMap.remove(info.getServiceName());
+    if (info != null && !info.getServiceName().equals(DTalkService.getInstance().getLocalServiceInfo().getServiceName())) {
       try {
         JSONObject params = new JSONObject();
-        params.put(DTalk.KEY_NAME, info.getName());
+        params.put(DTalk.KEY_NAME, info.getServiceName());
         // TODO make params this just a string
         JSONObject jsonMsg = DTalk.createMessage(null, DTalk.SERVICE_DTALK_PRESENCE, DTalk.ACTION_REMOVED, params);
         MessageBus.sendMessage(DTalk.SERVICE_DTALK_PRESENCE, jsonMsg);
@@ -100,7 +96,7 @@ class DTalkDiscovery {
     }
   }
 
-  protected void serviceResolved(final ServiceInfo info) {
+  protected void serviceResolved(final ZConfServiceInfo info) {
     LOG.v(TAG, ">>> presenceResolved: %s", info);
 
     if (info == null /* || !info.hasData() */) {
@@ -108,13 +104,13 @@ class DTalkDiscovery {
       return;
     }
 
-    String value = info.getPropertyString(DTalk.KEY_PRESENCE_DTALK);
+    String value = info.getTxtRecordValue(DTalk.KEY_PRESENCE_DTALK);
     // not if not dtalk service
     if (!"1".equals(value)) {
       return;
     }
 
-    ServiceInfo _info = mServiceInfoMap.get(info.getName());
+    ZConfServiceInfo _info = mServiceInfoMap.get(info.getServiceName());
     if (_info != null) {
       if (!_info.equals(info)) {
         serviceRemoved(_info);
@@ -124,21 +120,20 @@ class DTalkDiscovery {
       }
     }
 
-    if (info != null && !info.getName().equals(DTalkService.getInstance().getLocalServiceInfo().getName())) {
+    if (info != null && !info.getServiceName().equals(DTalkService.getInstance().getLocalServiceInfo().getServiceName())) {
       // NOTE: self is excluded!!!
-      mServiceInfoMap.put(info.getName(), info);
+      mServiceInfoMap.put(info.getServiceName(), info);
 
       try {
         JSONObject params = new JSONObject();
 
-        Enumeration<String> pNames = info.getPropertyNames();
-        while (pNames.hasMoreElements()) {
-          String key = pNames.nextElement();
-          params.put(key, info.getPropertyString(key));
+        Set<String> pNames = info.getTxtRecord().keySet();
+        for (String key : pNames) {
+          params.put(key, info.getTxtRecordValue(key));
         }
 
-        params.put(DTalk.KEY_NAME, info.getName());
-        params.put(DTalk.KEY_SERVER, DTalkService.getAddress(info));
+        params.put(DTalk.KEY_NAME, info.getServiceName());
+        params.put(DTalk.KEY_SERVER, info.getHost().getHostAddress());
         params.put(DTalk.KEY_PORT, info.getPort());
 
         JSONObject jsonMsg = DTalk.createMessage(null, DTalk.SERVICE_DTALK_PRESENCE, DTalk.ACTION_RESOLVED, params);
@@ -148,78 +143,32 @@ class DTalkDiscovery {
       }
     }
   }
-
-  /**
-   * Listener for service updates implementation.
-   */
-  private class DTalkServiceListener implements ServiceListener {
-    private final String TAG = LOG.tag(DTalkServiceListener.class);
-
+  
+  private class DTalkDiscoveryListener implements ZConfDiscoveryListener {
     @Override
-    public void serviceAdded(final ServiceEvent event) {
-      LOG.v(TAG, ">>> serviceAdded: %s", event/* .getName() */);
-
-      // check if already resolved
-      if (!checkIfAlreadyResolved(event.getInfo())) {
-        // we need to resolve
-        DTalkService.getInstance().getConfiguration().getThreadPool().execute(new Runnable() {
-          @Override
-          public void run() {
-            JmDNS jmDNS = DTalkService.getInstance().getConfiguration().getJmDNS();
-
-            LOG.d(TAG, "(1) Request service info: %s", event.getName());
-            jmDNS.requestServiceInfo(DTalk.SERVICE_TYPE, event.getName(), true);
-
-            LOG.d(TAG, "(2) request service info: %s", event.getName());
-            jmDNS.requestServiceInfo(DTalk.SERVICE_TYPE, event.getName(), true, DNSConstants.SERVICE_INFO_TIMEOUT * 2);
-
-            LOG.d(TAG, "(3) request service info: %s", event.getName());
-            jmDNS.requestServiceInfo(DTalk.SERVICE_TYPE, event.getName(), true, DNSConstants.SERVICE_INFO_TIMEOUT * 3);
-
-            ServiceInfo info = jmDNS.getServiceInfo(DTalk.SERVICE_TYPE, event.getName(), true);
-            if (!checkIfAlreadyResolved(info)) {
-              LOG.w(TAG, "Failed to resolved event: %s", event);
-            }
-          }
-        });
-      }
+    public void onServiceFound(ZConfServiceInfo serviceInfo) {
+      LOG.v(TAG, ">>> onServiceFound: %s", serviceInfo.getServiceName());
+      DTalkService.getInstance().getConfiguration().getNsdManager().resolveService(serviceInfo, mResolveListener);
     }
 
-    /** A service has been removed. */
     @Override
-    public void serviceRemoved(final ServiceEvent event) {
-      LOG.v(TAG, ">>> serviceRemoved: %s", event.getName());
-      DTalkDiscovery.this.serviceRemoved(event.getInfo());
-    }
-
-    /** A service has been resolved. */
-    @Override
-    public void serviceResolved(final ServiceEvent event) {
-      LOG.v(TAG, ">>> serviceResolved: %s", event);
-      // check if already resolved
-      if (!checkIfAlreadyResolved(event.getInfo())) {
-        LOG.w(TAG, "Unresolved event: %s", event);
-      }
+    public void onServiceLost(ZConfServiceInfo serviceInfo) {
+      LOG.v(TAG, ">>> onServiceLost: %s", serviceInfo.getServiceName());
+      DTalkDiscovery.this.serviceRemoved(serviceInfo);
     }
   }
-
-  protected boolean checkIfAlreadyResolved(ServiceInfo info) {
-    if (info != null) {
-      InetAddress[] addresses = info.getInetAddresses();
-      if (addresses != null && addresses.length > 0) {
-        for (InetAddress address : addresses) {
-          StringBuilder buf = new StringBuilder();
-          buf.append(address);
-          buf.append(':');
-          buf.append(info.getPort());
-          buf.append(' ');
-          LOG.d(TAG, "address: %s", buf);
-        }
-        DTalkDiscovery.this.serviceResolved(info);
-        return true;
-      }
+  
+  private final ZConfResolveListener mResolveListener = new ZConfResolveListener() {
+    @Override
+    public void onResolveFailed(ZConfServiceInfo serviceInfo, int errorCode) {
+      LOG.e(TAG, ">>> onResolveFailed: %s", serviceInfo.getServiceName());
     }
-    return false;
-  }
+
+    @Override
+    public void onServiceResolved(ZConfServiceInfo serviceInfo) {
+      LOG.v(TAG, ">>> onServiceResolved: %s", serviceInfo.getServiceName());
+      DTalkDiscovery.this.serviceResolved(serviceInfo);
+    }
+  };
 
 }

@@ -32,7 +32,7 @@ import freddo.dtalk.util.LOG;
 public final class DTalk implements MessageEvent {
   private static final String TAG = LOG.tag(DTalk.class);
 
-  public static final String SERVICE_TYPE = "_http._tcp.local.";
+  public static final String SERVICE_TYPE = "_http._tcp.";
 
   // --------------------------------------------------------------------------
 
