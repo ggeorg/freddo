@@ -32,15 +32,21 @@ public class JmDNSManagerImpl implements ZConfManager {
   }
 
   /* convert from JmDNS ServiceInfo to ZConfServiceInfo. */
-  private static ZConfServiceInfo convertFromJmDNS(ServiceInfo jmDNSserviceInfo) {
+  private static ZConfServiceInfo convertFromJmDNS(ServiceInfo jmDNSServiceInfo, ZConfServiceInfo serviceInfo) {
     Map<String, String> txtRecord = new HashMap<String, String>();
-    Enumeration<String> keys = jmDNSserviceInfo.getPropertyNames();
+    Enumeration<String> keys = jmDNSServiceInfo.getPropertyNames();
     while (keys.hasMoreElements()) {
       String key = keys.nextElement();
-      txtRecord.put(key, jmDNSserviceInfo.getPropertyString(key));
+      txtRecord.put(key, jmDNSServiceInfo.getPropertyString(key));
     }
-    return new ZConfServiceInfo(jmDNSserviceInfo.getName(), jmDNSserviceInfo.getType(), 
-        txtRecord, getAddress(jmDNSserviceInfo), jmDNSserviceInfo.getPort());
+
+    serviceInfo.setServiceName(jmDNSServiceInfo.getName());
+    serviceInfo.setServiceType(jmDNSServiceInfo.getType());
+    serviceInfo.setTxtRecord(txtRecord);
+    serviceInfo.setHost(getAddress(jmDNSServiceInfo));
+    serviceInfo.setPort(jmDNSServiceInfo.getPort());
+
+    return serviceInfo;
   }
 
   // ---------------------------
@@ -78,11 +84,13 @@ public class JmDNSManagerImpl implements ZConfManager {
     LOG.v(TAG, ">>> stopServiceDiscovery");
 
     if (mDiscoveryListeners == null) {
+      LOG.d(TAG, "Discovery listener lists is null");
       return;
     }
 
     DiscoveryListenerImpl serviceListener = mDiscoveryListeners.remove(listener);
     if (serviceListener != null) {
+      LOG.d(TAG, "Removing service listener: %s", serviceListener.getServiceType());
       mJmDNS.removeServiceListener(serviceListener.getServiceType(), serviceListener);
     }
   }
@@ -96,16 +104,28 @@ public class JmDNSManagerImpl implements ZConfManager {
     }
 
     if (mRegistrationListeners.containsKey(listener)) {
-      throw new IllegalStateException("Listener already used");
+      throw new IllegalStateException("Listener already registered.");
     }
 
-    ServiceInfo jmDNSServiceInfo = convertToJmDNS(serviceInfo);
+    final ServiceInfo jmDNSServiceInfo = convertToJmDNS(serviceInfo);
     RegistrationListenerImpl registrationListener = new RegistrationListenerImpl(jmDNSServiceInfo, listener);
     mRegistrationListeners.put(listener, registrationListener);
 
     try {
+      LOG.d(TAG, "ServiceInfo before: %s", jmDNSServiceInfo);
+
+      // Note that the given {@code ServiceInfo} is bound to this {@code JmDNS}
+      // instance, and should not be reused for any other {@linkplain
+      // #registerService(ServiceInfo)}.
       mJmDNS.registerService(jmDNSServiceInfo);
+
+      // Note: don't create new one, just copy all info to ZConfServiceInfo
+      listener.onServiceRegistered(convertFromJmDNS(jmDNSServiceInfo, serviceInfo));
+
     } catch (IOException e) {
+      LOG.e(TAG, "Service registration failed.", e);
+
+      // Inform listener about failure.
       listener.onRegistrationFailed(serviceInfo, -1);
     }
   }
@@ -115,12 +135,20 @@ public class JmDNSManagerImpl implements ZConfManager {
     LOG.v(TAG, ">>> unregisterService");
 
     if (mRegistrationListeners == null) {
+      LOG.d(TAG, "Registration listener list is null.");
       return;
     }
 
     RegistrationListenerImpl registrationListener = mRegistrationListeners.remove(listener);
     if (registrationListener != null) {
+      LOG.d(TAG, "Unregister service: %s", registrationListener.getServiceInfo());
+
+      // Note: ServiceInfo must be the one used in:
+      // mJmDNS.registerService(jmDNSServiceInfo);
       mJmDNS.unregisterService(registrationListener.getServiceInfo());
+
+      // Inform listener...
+      // listener.onServiceUnregistered(registrationListener.get);
     }
   }
 
@@ -135,7 +163,8 @@ public class JmDNSManagerImpl implements ZConfManager {
         if (jmDNSServiceInfo == null) {
           listener.onResolveFailed(serviceInfo, -1);
         } else {
-          listener.onServiceResolved(convertFromJmDNS(jmDNSServiceInfo));
+          // Note: don't create new one, just copy all info to ZConfServiceInfo
+          listener.onServiceResolved(convertFromJmDNS(jmDNSServiceInfo, serviceInfo));
         }
       }
     });
@@ -205,7 +234,7 @@ public class JmDNSManagerImpl implements ZConfManager {
     @SuppressWarnings("unused")
     private static final String TAG = LOG.tag(RegistrationListenerImpl.class);
 
-    private final ServiceInfo mServiceInfo;
+    private ServiceInfo mServiceInfo;
     private final ZConfRegistrationListener mListener;
 
     RegistrationListenerImpl(ServiceInfo info, ZConfRegistrationListener listener) {
@@ -215,6 +244,10 @@ public class JmDNSManagerImpl implements ZConfManager {
 
     ServiceInfo getServiceInfo() {
       return mServiceInfo;
+    }
+
+    void setServiceInfo(ServiceInfo serviceInfo) {
+      mServiceInfo = serviceInfo;
     }
 
     @SuppressWarnings("unused")
