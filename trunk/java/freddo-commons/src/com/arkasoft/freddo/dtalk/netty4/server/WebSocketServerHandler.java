@@ -291,8 +291,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
             from = String.format("%s%d", DTalkService.LOCAL_CHANNEL_PREFIX, channel.hashCode());
           }
           // else: see DTalkDispatcher for message forwarding.
-        } else {
-
+        }
+        
+        if (from != null) {
           // Set the connection id.
           conn.setId(from);
 
