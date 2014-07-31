@@ -10,8 +10,8 @@
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 package com.arkasoft.freddo.dtalk.netty4.server;
 
@@ -28,6 +28,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
+import freddo.dtalk.events.DTalkChannelClosedEvent;
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
@@ -67,6 +68,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONObject;
 
+import com.arkasoft.freddo.dtalk.DTalkConnectionRegistry;
 import com.arkasoft.freddo.messagebus.MessageBus;
 
 /**
@@ -95,8 +97,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
   protected static HttpRequestHandler getRequestHandler(String uri) {
     return (sRequestHandlers != null) ? sRequestHandlers.get(uri) : null;
   }
-
-  private final Map<Channel, WebSocketServerHandshaker> handshakers = new ConcurrentHashMap<Channel, WebSocketServerHandshaker>();
 
   private FileRequestHandler fileHandler = null;
 
@@ -145,12 +145,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
       } else {
         LOG.d(TAG, "Handshake: %s", req);
         Channel channel = ctx.channel();
+        handshaker.handshake(channel, req);
 
         // register anonymous channel
-        DTalkService.getInstance().addChannel(channel);
-
-        handshakers.put(channel, handshaker);
-        handshaker.handshake(ctx.channel(), req);
+        // DTalkService.getInstance().addChannel(channel);
+        DTalkConnectionRegistry.getInstance().register(channel, new DTalkNettyServerConnection(channel, handshaker));
       }
     } else {
       String[] parts = path.split("/");
@@ -195,30 +194,44 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
   }
 
   private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
-    LOG.v(TAG, ">>> handleWebSocketFrame");
+    LOG.v(TAG, ">>> handleWebSocketFrame: %s", frame.getClass());
 
     final Channel channel = ctx.channel();
 
+    final DTalkNettyServerConnection conn = (DTalkNettyServerConnection) DTalkConnectionRegistry.getInstance().get(channel);
+    if (conn == null) {
+      // should not happen...
+      LOG.e(TAG, "*** THIS SHOULD NOT HAPPEN ***");
+      LOG.e(TAG, "Connection not registered!!!");
+      // TODO close channel and return.
+      return;
+    }
+
     // Check for closing frame
     if (frame instanceof CloseWebSocketFrame) {
-      DTalkService.getInstance().removeChannel(channel);
-
-      WebSocketServerHandshaker handshaker = handshakers.remove(channel);
-      if (handshaker != null) {
-        handshaker.close(ctx.channel(), (CloseWebSocketFrame) frame.retain());
+      DTalkConnectionRegistry.getInstance().remove(channel);
+      if (conn.getId() != null) {
+        // Notify listeners that channel was closed...
+        MessageBus.sendMessage(new DTalkChannelClosedEvent((String)conn.getId()));
       }
-
+      
+      @SuppressWarnings("deprecation")
+      WebSocketServerHandshaker handshaker = conn.mHandshaker;
+      if (handshaker != null) {
+        handshaker.close(channel, (CloseWebSocketFrame) frame.retain());
+      }
+      conn.close();
       return;
     }
 
+    // Check for ping frame
     if (frame instanceof PingWebSocketFrame) {
-      LOG.d(TAG, "Got ping ws frame");
-      ctx.channel().write(new PongWebSocketFrame(frame.content().retain()));
+      channel.write(new PongWebSocketFrame(frame.content().retain()));
       return;
     }
-    
+
+    // Check for pong frame
     if (frame instanceof PongWebSocketFrame) {
-      LOG.d(TAG, "Got pong ws frame");
       return;
     }
 
@@ -271,7 +284,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         // incoming message
         //
 
-        if (from == null) { 
+        if (from == null) {
           // anonymous message...
           if (service != null && !service.startsWith("$")) {
             // if its not a broadcast message add 'from'...
@@ -279,8 +292,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
           }
           // else: see DTalkDispatcher for message forwarding.
         } else {
-          // replace anonymous channel
-          DTalkService.getInstance().addChannel(from, channel);
+
+          // Set the connection id.
+          conn.setId(from);
+
+          // create double entry in DTalkConnectionRegistry...
+          DTalkConnectionRegistry.getInstance().register(from, conn);
         }
 
         LOG.d(TAG, "IncomingMessageEvent from: %s", from);

@@ -28,26 +28,34 @@ import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.net.URI;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.arkasoft.freddo.dtalk.DTalkConnection;
+
 import freddo.dtalk.util.LOG;
 
-public class WebSocketClient {
-  private static final String TAG = LOG.tag(WebSocketClient.class);
+public class DTalkNettyClientConnection implements DTalkConnection {
+  private static final String TAG = LOG.tag(DTalkNettyClientConnection.class);
   
   private static EventLoopGroup group = null;
 
   private final URI uri;
+  
+  private Channel mChannel = null;
 
-  public WebSocketClient(URI uri) {
+  public DTalkNettyClientConnection(URI uri) {
     this.uri = uri;
   }
 
-  public Channel connect() {
+  public void connect() {
     assert uri != null : "URI is null";
     LOG.v(TAG, ">>> connect: %s", uri);
     
@@ -55,7 +63,6 @@ public class WebSocketClient {
       group = new NioEventLoopGroup();
     }
 
-    Channel ch = null;
     EventLoopGroup group = new NioEventLoopGroup();
     try {
       Bootstrap b = new Bootstrap();
@@ -68,8 +75,8 @@ public class WebSocketClient {
       // customHeaders.add("MyHeader", "MyValue");
 
       // Connect with V13 (RFC 6455 aka HyBi-17).
-      final WebSocketClientHandler handler =
-          new WebSocketClientHandler(WebSocketClientHandshakerFactory.newHandshaker(uri,
+      final DTalkNettyClientHandler handler =
+          new DTalkNettyClientHandler(this, WebSocketClientHandshakerFactory.newHandshaker(uri,
               WebSocketVersion.V13, null, false, customHeaders));
 
       b.group(group)
@@ -85,7 +92,7 @@ public class WebSocketClient {
           });
 
       LOG.d(TAG, "WebSocket Client connecting...");
-      ch = b.connect(uri.getHost(), uri.getPort()).addListener(new GenericFutureListener<ChannelFuture>() {
+      mChannel = b.connect(uri.getHost(), uri.getPort()).addListener(new GenericFutureListener<ChannelFuture>() {
         @Override
         public void operationComplete(ChannelFuture f) throws Exception {
           if (!f.isSuccess()) {
@@ -114,8 +121,33 @@ public class WebSocketClient {
       group.shutdownGracefully();
       group = null;
     }
+  }
+  
+  @Override
+  public Object getId() {
+    return null;
+  }
 
-    return ch;
+  @Override
+  public Object sendMessage(JSONObject jsonMsg) throws JSONException {
+    return mChannel.writeAndFlush(new TextWebSocketFrame(jsonMsg.toString()));
+  }
+
+  @Override
+  public void onMessage(JSONObject message) throws JSONException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void close() {
+    // TODO we need to send close frame.
+    mChannel.close();
+  }
+
+  @Override
+  public boolean isOpen() {
+    return mChannel.isOpen();
   }
 
 }
