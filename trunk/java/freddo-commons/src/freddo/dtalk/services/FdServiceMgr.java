@@ -70,7 +70,7 @@ public abstract class FdServiceMgr extends FdService {
     super(context, TYPE, options);
     services = new ConcurrentHashMap<String, FdService>();
     factories = new ConcurrentHashMap<String, FdServiceFactory>();
-    MessageBus.subscribe(DTalkChannelClosedEvent.class.getName(), chClosedEventH);
+    MessageBus.xsubscribe(DTalkChannelClosedEvent.class.getName(), chClosedEventH);
   }
 
   protected void registerService(FdServiceFactory factory) {
