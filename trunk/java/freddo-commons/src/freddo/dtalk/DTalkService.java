@@ -15,9 +15,7 @@
  */
 package freddo.dtalk;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import java.io.IOException;
@@ -27,13 +25,14 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.dtalk.netty4.client.WebSocketClient;
+import com.arkasoft.freddo.dtalk.DTalkConnection;
+import com.arkasoft.freddo.dtalk.DTalkConnectionRegistry;
+import com.arkasoft.freddo.dtalk.netty4.client.DTalkNettyClientConnection;
 import com.arkasoft.freddo.dtalk.netty4.server.WebPresenceService;
 import com.arkasoft.freddo.dtalk.netty4.server.WebSocketServer;
 import com.arkasoft.freddo.messagebus.MessageBus;
@@ -58,7 +57,7 @@ public class DTalkService {
    * {@code DTalkService} configuration object.
    */
   public static interface Configuration {
-    //JmDNS getJmDNS();
+    // JmDNS getJmDNS();
     ZConfManager getNsdManager();
 
     String getDeviceId();
@@ -104,7 +103,7 @@ public class DTalkService {
    * Create and initialize {@code DTalkService}.
    * 
    * @param config The {@link DTalkServiceConfiguration}.
-   * @return 
+   * @return
    * 
    * @throws IllgalStateException if {@code DTalkService} is already
    *           initialized.
@@ -166,7 +165,6 @@ public class DTalkService {
   // --------------------------------------------------------------------------
 
   private final Configuration mConfiguration;
-  private final Map<String, Channel> mChannels; // thread safe
   private final WebSocketServer mWebSocketServer;
 
   private boolean mStarted = false;
@@ -177,13 +175,13 @@ public class DTalkService {
     @Override
     public void onRegistrationFailed(ZConfServiceInfo serviceInfo, int errorCode) {
       LOG.e(TAG, ">>> onRegistrationFailed: %s (%d)", serviceInfo.getServiceName(), errorCode);
-      
+
     }
 
     @Override
     public void onUnregistrationFailed(ZConfServiceInfo serviceInfo, int errorCode) {
       LOG.e(TAG, ">>> onUnregistrationFailed: %s (%d)", serviceInfo.getServiceName(), errorCode);
-      
+
     }
 
     @Override
@@ -206,7 +204,6 @@ public class DTalkService {
    */
   private DTalkService(Configuration configuration) {
     mConfiguration = configuration;
-    mChannels = new ConcurrentHashMap<String, Channel>();
     mWebSocketServer = new WebSocketServer();
 
     // Start dispatcher...
@@ -322,20 +319,7 @@ public class DTalkService {
       }
 
       // Close client connections...
-      for (Map.Entry<String, Channel> entry : mChannels.entrySet()) {
-        Channel ch = entry.getValue();
-        if (ch != null && ch.isOpen()) {
-          LOG.d(TAG, "Closing connection to: %s", entry.getKey());
-          try {
-            ch.close();
-          } catch (Exception e) {
-            // ignore
-          }
-        }
-      }
-
-      LOG.d(TAG, "Clean up connections...");
-      mChannels.clear();
+      DTalkConnectionRegistry.getInstance().reset();
 
       // Stop WebSocket server...
       unpublishService();
@@ -404,7 +388,7 @@ public class DTalkService {
   // NOTE: must be called from inside synchronized(this) {..} block
   private synchronized void updateServiceInfo(ZConfServiceInfo serviceInfo) throws IOException {
     LOG.v(TAG, ">>> updateServiceInfo: %s", serviceInfo);
-    
+
     ExecutorService threadPool = getConfiguration().getThreadPool();
 
     if (mNsdServiceInfo != null) {
@@ -414,7 +398,7 @@ public class DTalkService {
 
       // Unregister service.
       mConfiguration.getNsdManager().unregisterService(mNsdRegistrationListener);
-      //mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
+      // mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
 
       // Disable WebPresence...
       threadPool.execute(new Runnable() {
@@ -434,7 +418,7 @@ public class DTalkService {
 
       // Publish service.
       mConfiguration.getNsdManager().registerService(mNsdServiceInfo, mNsdRegistrationListener);
-      //mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
+      // mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
 
       // Enable/disable WebPresence...
       threadPool.execute(new Runnable() {
@@ -444,114 +428,6 @@ public class DTalkService {
         }
       });
     }
-  }
-
-  // --------------------------------------------------------------------------
-  // Channel management.
-  // --------------------------------------------------------------------------
-
-  /**
-   * Add anonymous channel.
-   * 
-   * @param ch
-   */
-  public void addChannel(Channel ch) {
-    LOG.v(TAG, ">>> addChannel");
-
-    addChannel(hashCode(ch), ch);
-  }
-
-  /**
-   * Add named channel.
-   * 
-   * @param serviceName
-   * @param ch
-   */
-  public void addChannel(String serviceName, Channel ch) {
-    LOG.v(TAG, ">>> addChannel: %s", serviceName);
-    
-    if (ch == null) {
-      return;
-    }
-
-    // If channel is new, register channel by name...
-    if (!mChannels.containsKey(serviceName)) {
-      // Remove any previous anonymous registration...
-      mChannels.remove(hashCode(ch));
-      // Register...
-      mChannels.put(serviceName, ch);
-    }
-  }
-
-  /**
-   * Remove channel.
-   * 
-   * @param ch
-   */
-  public void removeChannel(Channel ch) {
-    LOG.v(TAG, ">>> removeChannel");
-
-    // first try to remove channel by hash code
-    final String hashCode = hashCode(ch);
-    if (mChannels.containsKey(hashCode)) {
-      removeChannel(hashCode);
-      return;
-    }
-
-    // then try by instance
-    String key = null;
-    for (Map.Entry<String, Channel> entry : mChannels.entrySet()) {
-      if (ch == entry.getValue()) {
-        key = entry.getKey();
-        break;
-      }
-    }
-    removeChannel(key);
-  }
-
-  /**
-   * Remove channel by name.
-   * 
-   * @param serviceName
-   */
-  public void removeChannel(String serviceName) {
-    LOG.v(TAG, ">>> removeChannel: %s", serviceName);
-
-    if (serviceName != null) {
-      if (mChannels.remove(serviceName) != null) {
-        // Notify listeners that channel was closed...
-        MessageBus.sendMessage(new DTalkChannelClosedEvent(serviceName));
-      }
-    }
-  }
-
-  /**
-   * Get a channel by name.
-   * 
-   * @param serviceName
-   * @return
-   */
-  public Channel getChannelByName(String serviceName) {
-    Channel ch = mChannels.get(serviceName);
-    if (ch != null) {
-      if (!ch.isOpen()) {
-        mChannels.remove(serviceName);
-        ch.close();
-        ch = null;
-      }
-    }
-    return ch;
-  }
-
-  /**
-   * Anonymous channels are mapped by hash code. This method simply calculates a
-   * hash code for a given channel.
-   * 
-   * @param ch the channel.
-   * @return hash code.
-   */
-  private static String hashCode(Channel ch) {
-    return String.format("%s%d", LOCAL_CHANNEL_PREFIX, ch.hashCode());
   }
 
   // --------------------------------------------------------------------------
@@ -572,26 +448,33 @@ public class DTalkService {
       return;
     }
 
-    // Get channel by name (recipient).
-    Channel ch = getChannelByName(to);
+    // Get connection by name (recipient).
+    DTalkConnection conn = DTalkConnectionRegistry.getInstance().get(to);
 
-    if (ch != null && !ch.isOpen()) {
+    if (conn != null && !conn.isOpen()) {
+
       // lazy clean up
-      removeChannel(to);
-      ch = null;
+      DTalkConnectionRegistry.getInstance().remove(to).close();
+
+      // Notify listeners that channel was closed...
+      MessageBus.sendMessage(new DTalkChannelClosedEvent(to));
+
+      // force creation of a new connection...
+      conn = null;
     }
 
-    if (ch == null) {
+    if (conn == null) {
       // Get service info or recipient by name (recipient)
       // We use direct access to the service map in service discovery instance.
-      ZConfServiceInfo remoteInfo = mServiceDiscovery.mServiceInfoMap.get(to);
-      if (remoteInfo != null) {
+      ZConfServiceInfo remoteServiceInfo = mServiceDiscovery.mServiceInfoMap.get(to);
+      if (remoteServiceInfo != null) {
         try {
-          String dTalkServiceAddr = getWebSocketAddress(remoteInfo);
+          String dTalkServiceAddr = getWebSocketAddress(remoteServiceInfo);
           LOG.i(TAG, "Connect to: %s", dTalkServiceAddr);
-          ch = new WebSocketClient(new URI(dTalkServiceAddr)).connect();
-          addChannel(to, ch);
-          ch = getChannelByName(to);
+          (conn = new DTalkNettyClientConnection(new URI(dTalkServiceAddr))).connect();
+          // addChannel(to, ch);
+          DTalkConnectionRegistry.getInstance().register(to, conn);
+          // ch = getChannelByName(to);
         } catch (Exception e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
@@ -599,13 +482,13 @@ public class DTalkService {
       }
     }
 
-    if (ch != null) {
-      send(ch, message);
+    if (conn != null) {
+      send(conn, message);
     }
   }
 
-  private void send(Channel ch, final OutgoingMessageEvent message) throws JSONException {
-    LOG.d(TAG, ">> sending: %s (%s)", ch.isActive(), message);
+  private void send(DTalkConnection conn, final OutgoingMessageEvent message) throws JSONException {
+    LOG.d(TAG, ">> sending: %s", message);
 
     // clone message and send...
     final JSONObject jsonMsg = new JSONObject(message.getMsg().toString());
@@ -623,7 +506,7 @@ public class DTalkService {
     jsonMsg.put(MessageEvent.KEY_TO, to);
 
     LOG.d(TAG, "Message: %s", jsonMsg.toString());
-    ch.writeAndFlush(new TextWebSocketFrame(jsonMsg.toString())).addListener(new GenericFutureListener<ChannelFuture>() {
+    ((ChannelFuture) conn.sendMessage(jsonMsg)).addListener(new GenericFutureListener<ChannelFuture>() {
       @Override
       public void operationComplete(ChannelFuture f) throws Exception {
         if (!f.isSuccess()) {
@@ -667,8 +550,10 @@ public class DTalkService {
         if (webPresenceURI == null || webPresenceURI.trim().length() == 0) {
           return;
         }
-        //getWebPresenceService().publish(new URI(webPresenceURI), mConfiguration.getJmDNS(), getLocalServiceInfo());
-// TODO        getWebPresenceService().publish(new URI(webPresenceURI), mConfiguration.getNsdManager(), getLocalServiceInfo());
+        // getWebPresenceService().publish(new URI(webPresenceURI),
+        // mConfiguration.getJmDNS(), getLocalServiceInfo());
+        // TODO getWebPresenceService().publish(new URI(webPresenceURI),
+        // mConfiguration.getNsdManager(), getLocalServiceInfo());
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

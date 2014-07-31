@@ -20,4 +20,5 @@ import org.json.JSONObject;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 public interface DTalkEventListener extends MessageBusListener<JSONObject> {
+  
 }
