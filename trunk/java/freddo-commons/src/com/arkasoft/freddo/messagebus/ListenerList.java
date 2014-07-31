@@ -170,6 +170,9 @@ final class ListenerList<T> implements Iterable<T> {
     return (first == null);
   }
 
+  /**
+   * 
+   */
   public Iterator<T> iterator() {
     return new NodeIterator();
   }
