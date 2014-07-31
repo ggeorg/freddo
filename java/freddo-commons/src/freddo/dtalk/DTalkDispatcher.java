@@ -66,21 +66,23 @@ public final class DTalkDispatcher {
   }
 
   private final Map<String, _MessageBusListener> mSubscribers;
+  
+  private final MessageBusListener<IncomingMessageEvent> mIncomingMessageEventHandler = new MessageBusListener<IncomingMessageEvent>() {
+    @Override
+    public void messageSent(String topic, IncomingMessageEvent message) {
+      try {
+        onIncomingMessageEvent(message);
+      } catch (Throwable t) {
+        LOG.e(TAG, "Unhandled exception:", t);
+      }
+    }
+  };
 
   private DTalkDispatcher() {
     mSubscribers = new ConcurrentHashMap<String, _MessageBusListener>();
 
     // Subscribe to incoming events (Note: We never un-subscribe).
-    MessageBus.subscribe(IncomingMessageEvent.class.getName(), new MessageBusListener<IncomingMessageEvent>() {
-      @Override
-      public void messageSent(String topic, IncomingMessageEvent message) {
-        try {
-          onIncomingMessageEvent(message);
-        } catch (Throwable t) {
-          LOG.e(TAG, "Unhandled exception:", t);
-        }
-      }
-    });
+    MessageBus.xsubscribe(IncomingMessageEvent.class.getName(), mIncomingMessageEventHandler);
   }
 
   /**
@@ -107,7 +109,7 @@ public final class DTalkDispatcher {
             if (!mSubscribers.containsKey(from + topic)) {
               _MessageBusListener subscriber = new _MessageBusListener(from);
               mSubscribers.put(from + topic, subscriber);
-              MessageBus.subscribe(topic, subscriber);
+              MessageBus.xsubscribe(topic, subscriber);
             } // XXX: reference counting?
           } // else: No topic to subscribe to, ignore event.
         } else if (DTalk.ACTION_UNSUBSCRIBE.equals(action)) {

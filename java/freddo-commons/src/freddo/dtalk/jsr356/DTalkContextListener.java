@@ -172,9 +172,9 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 
     resetConnections();
 
-    MessageBus.subscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
-    MessageBus.subscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
-    MessageBus.subscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
+    MessageBus.xsubscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
+    MessageBus.xsubscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
+    MessageBus.xsubscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
   }
 
   @Override

@@ -104,18 +104,19 @@ public class DTalkService {
    * Create and initialize {@code DTalkService}.
    * 
    * @param config The {@link DTalkServiceConfiguration}.
+   * @return 
    * 
    * @throws IllgalStateException if {@code DTalkService} is already
    *           initialized.
    */
-  public static void init(Configuration config) {
+  public static DTalkService init(Configuration config) {
     LOG.v(TAG, ">>> init");
 
     if (sInstance == null) {
       synchronized (DTalkService.class) {
         if (sInstance == null) {
           sInstance = new DTalkService(config);
-          return;
+          return sInstance;
         }
       }
     }
@@ -175,26 +176,26 @@ public class DTalkService {
   private final ZConfRegistrationListener mNsdRegistrationListener = new ZConfRegistrationListener() {
     @Override
     public void onRegistrationFailed(ZConfServiceInfo serviceInfo, int errorCode) {
-      // TODO Auto-generated method stub
+      LOG.e(TAG, ">>> onRegistrationFailed: %s (%d)", serviceInfo.getServiceName(), errorCode);
       
     }
 
     @Override
     public void onUnregistrationFailed(ZConfServiceInfo serviceInfo, int errorCode) {
-      // TODO Auto-generated method stub
+      LOG.e(TAG, ">>> onUnregistrationFailed: %s (%d)", serviceInfo.getServiceName(), errorCode);
       
     }
 
     @Override
     public void onServiceRegistered(ZConfServiceInfo serviceInfo) {
-      // TODO Auto-generated method stub
-      
+      LOG.e(TAG, ">>> onServiceRegistered: %s", serviceInfo);
+      DTalkService.this.mNsdServiceInfo = serviceInfo;
     }
 
     @Override
     public void onServiceUnregistered(ZConfServiceInfo serviceInfo) {
-      // TODO Auto-generated method stub
-      
+      LOG.e(TAG, ">>> onRegistrationFailed: %s", serviceInfo);
+      DTalkService.this.mNsdServiceInfo = null;
     }
   };
 
@@ -218,7 +219,6 @@ public class DTalkService {
 
   public ZConfServiceInfo getLocalServiceInfo() {
     synchronized (this) {
-      LOG.v(TAG, "mLocalServiceInfo: %s", mNsdServiceInfo);
       return mNsdServiceInfo;
     }
   }
@@ -251,10 +251,10 @@ public class DTalkService {
       mServiceDiscovery = new DTalkDiscovery();
 
       LOG.d(TAG, "Subscribe for: %s", OutgoingMessageEvent.class.getName());
-      MessageBus.subscribe(OutgoingMessageEvent.class.getName(), mOutgoingMsgEventListener);
+      MessageBus.xsubscribe(OutgoingMessageEvent.class.getName(), mOutgoingMsgEventListener);
 
       LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
-      MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
+      MessageBus.xsubscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
 
       mConfiguration.getThreadPool().execute(new Runnable() {
         @Override
@@ -469,6 +469,10 @@ public class DTalkService {
    */
   public void addChannel(String serviceName, Channel ch) {
     LOG.v(TAG, ">>> addChannel: %s", serviceName);
+    
+    if (ch == null) {
+      return;
+    }
 
     // If channel is new, register channel by name...
     if (!mChannels.containsKey(serviceName)) {
@@ -583,7 +587,7 @@ public class DTalkService {
       ZConfServiceInfo remoteInfo = mServiceDiscovery.mServiceInfoMap.get(to);
       if (remoteInfo != null) {
         try {
-          String dTalkServiceAddr = remoteInfo.getHost().getHostAddress(); // TODO getServiceAddress(remoteInfo);
+          String dTalkServiceAddr = getWebSocketAddress(remoteInfo);
           LOG.i(TAG, "Connect to: %s", dTalkServiceAddr);
           ch = new WebSocketClient(new URI(dTalkServiceAddr)).connect();
           addChannel(to, ch);
@@ -707,7 +711,7 @@ public class DTalkService {
 
   public String getLocalServiceAddress() {
     // NOTE: uses locking
-    return getServiceAddress(getLocalServiceInfo());
+    return getWebSocketAddress(getLocalServiceInfo());
   }
 
   public String getServiceAddressForLocalhost() {
@@ -720,7 +724,7 @@ public class DTalkService {
     return sb.toString();
   }
 
-  public static String getServiceAddress(ZConfServiceInfo info) {
+  public static String getWebSocketAddress(ZConfServiceInfo info) {
     StringBuilder sb = new StringBuilder();
     sb.append("ws://");
     sb.append(info.getHost().getHostAddress()).append(':').append(info.getPort());

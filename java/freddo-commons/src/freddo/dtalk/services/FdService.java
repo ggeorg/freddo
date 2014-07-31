@@ -51,7 +51,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
     this.name = name;
     this.replyName = '$' + name;
 
-    MessageBus.subscribe(getName(), this);
+    MessageBus.xsubscribe(getName(), this);
   }
 
   protected abstract void start();

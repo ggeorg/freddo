@@ -31,6 +31,7 @@ import freddo.dtalk.util.LOG;
 public abstract class DTalkServiceConfigurationBase implements DTalkService.Configuration {
   
   private final ExecutorService mThreadPool;
+
   private byte[] hwAddr = null;
   
   protected DTalkServiceConfigurationBase() {
@@ -47,7 +48,7 @@ public abstract class DTalkServiceConfigurationBase implements DTalkService.Conf
   }
   
   @Override
-  public final String getDeviceId() {
+  public String getDeviceId() {
     return getHardwareAddress("");
   }
 

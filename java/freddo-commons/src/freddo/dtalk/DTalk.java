@@ -32,7 +32,7 @@ import freddo.dtalk.util.LOG;
 public final class DTalk implements MessageEvent {
   private static final String TAG = LOG.tag(DTalk.class);
 
-  public static final String SERVICE_TYPE = "_http._tcp.";
+  public static final String SERVICE_TYPE = "_http._tcp.local.";
 
   // --------------------------------------------------------------------------
 
@@ -357,7 +357,7 @@ public final class DTalk implements MessageEvent {
       }
 
       // create callback handler
-      final MessageBusListener<JSONObject> listener = new MessageBusListener<JSONObject>() {
+      final MessageBusListener<JSONObject> mListener = new MessageBusListener<JSONObject>() {
         @SuppressWarnings("unchecked")
         @Override
         public void messageSent(String topic, JSONObject message) {
@@ -380,13 +380,13 @@ public final class DTalk implements MessageEvent {
       };
 
       // subscribe to requestId
-      MessageBus.subscribe(requestId, listener);
+      MessageBus.xsubscribe(requestId, mListener);
 
       try {
         forward(request.optString(KEY_BODY_SERVICE, null), request);
       } catch (DTalkException e) {
         try {
-          MessageBus.unsubscribe(requestId, listener);
+          MessageBus.unsubscribe(requestId, mListener);
           callback.onFailure(e);
         } catch (Throwable t) {
           LOG.e(TAG, "Handler error");
@@ -399,9 +399,9 @@ public final class DTalk implements MessageEvent {
       ensureScheduledExecutorServiceExists().schedule(new Runnable() {
         @Override
         public void run() {
-          if (MessageBus.hasListener(requestId, listener)) {
+          if (MessageBus.hasListener(requestId, mListener)) {
             try {
-              MessageBus.unsubscribe(requestId, listener);
+              MessageBus.unsubscribe(requestId, mListener);
               callback.onFailure(new DTalkException(DTalkException.REQUEST_TIMEOUT, "Timeout"));
             } catch (Throwable t) {
               LOG.e(TAG, "Timeout handler error");
@@ -425,7 +425,7 @@ public final class DTalk implements MessageEvent {
    */
   public static DTalkSubscribeHandle subscribe(final String topic, final DTalkEventListener listener) {
     // do subscribe
-    MessageBus.subscribe(topic, listener);
+    MessageBus.xsubscribe(topic, listener);
 
     // create and return un-subscribe handle
     return new DTalkSubscribeHandle() {
