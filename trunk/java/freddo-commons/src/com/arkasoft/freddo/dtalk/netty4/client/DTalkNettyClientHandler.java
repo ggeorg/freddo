@@ -33,16 +33,20 @@ import io.netty.util.CharsetUtil;
 
 import org.json.JSONObject;
 
+import com.arkasoft.freddo.dtalk.DTalkConnection;
 import com.arkasoft.freddo.messagebus.MessageBus;
 
-public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
+public class DTalkNettyClientHandler extends SimpleChannelInboundHandler<Object> {
   private static final String TAG = "WebSocketClientHandler";
 
-  private final WebSocketClientHandshaker handshaker;
+  @SuppressWarnings("unused")
+  private final DTalkConnection mConnection;
+  private final WebSocketClientHandshaker mHandshaker;
   private ChannelPromise handshakeFuture;
 
-  public WebSocketClientHandler(WebSocketClientHandshaker handshaker) {
-    this.handshaker = handshaker;
+  public DTalkNettyClientHandler(DTalkConnection conn, WebSocketClientHandshaker handshaker) {
+    mConnection = conn;
+    mHandshaker = handshaker;
   }
 
   public ChannelFuture handshakeFuture() {
@@ -56,7 +60,7 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    handshaker.handshake(ctx.channel());
+    mHandshaker.handshake(ctx.channel());
   }
 
   @Override
@@ -67,8 +71,8 @@ public class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> 
   @Override
   public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
     Channel ch = ctx.channel();
-    if (!handshaker.isHandshakeComplete()) {
-      handshaker.finishHandshake(ch, (FullHttpResponse) msg);
+    if (!mHandshaker.isHandshakeComplete()) {
+      mHandshaker.finishHandshake(ch, (FullHttpResponse) msg);
       LOG.d(TAG, "WebSocket Client connected!");
       handshakeFuture.setSuccess();
       return;
