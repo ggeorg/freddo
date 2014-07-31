@@ -16,7 +16,7 @@
 package com.arkasoft.freddo.messagebus;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -27,8 +27,8 @@ import java.util.concurrent.ExecutorService;
  * Otherwise, your application's performance could be negatively impacted.
  */
 public class MessageBus {
-  private static final Map<String, ListenerList<MessageBusListener<?>>> messageTopics =
-      new ConcurrentHashMap<String, ListenerList<MessageBusListener<?>>>();
+  private static final Map<String, ListenerList<MessageBusListener<?>>> sMessageTopics =
+      new WeakHashMap<String, ListenerList<MessageBusListener<?>>>();
 
   /**
    * Subscribes a listener to a message topic.
@@ -36,15 +36,17 @@ public class MessageBus {
    * @param topic
    * @param messageListener
    */
-  public static <T> void subscribe(String topic, MessageBusListener<T> messageListener) {
-    ListenerList<MessageBusListener<?>> topicListeners = messageTopics.get(topic);
+  public static <T> void xsubscribe(String topic, MessageBusListener<T> messageListener) {
+    synchronized (sMessageTopics) {
+      ListenerList<MessageBusListener<?>> topicListeners = sMessageTopics.get(topic);
 
-    if (topicListeners == null) {
-      topicListeners = new ListenerList<MessageBusListener<?>>();
-      messageTopics.put(topic, topicListeners);
+      if (topicListeners == null) {
+        topicListeners = new ListenerList<MessageBusListener<?>>();
+        sMessageTopics.put(topic, topicListeners);
+      }
+
+      topicListeners.add(messageListener);
     }
-
-    topicListeners.add(messageListener);
   }
 
   /**
@@ -54,15 +56,17 @@ public class MessageBus {
    * @param messageListener
    */
   public static <T> void unsubscribe(String topic, MessageBusListener<T> messageListener) {
-    ListenerList<MessageBusListener<?>> topicListeners = messageTopics.get(topic);
+    synchronized (sMessageTopics) {
+      ListenerList<MessageBusListener<?>> topicListeners = sMessageTopics.get(topic);
 
-    if (topicListeners == null) {
-      throw new IllegalArgumentException(topic + " does not exist.");
-    }
+      if (topicListeners == null) {
+        throw new IllegalArgumentException(topic + " does not exist.");
+      }
 
-    topicListeners.remove(messageListener);
-    if (topicListeners.isEmpty()) {
-      messageTopics.remove(topic);
+      topicListeners.remove(messageListener);
+      if (topicListeners.isEmpty()) {
+        sMessageTopics.remove(topic);
+      }
     }
   }
 
@@ -74,13 +78,15 @@ public class MessageBus {
    * @return
    */
   public static <T> boolean hasListener(String topic, MessageBusListener<T> messageListener) {
-    ListenerList<MessageBusListener<?>> topicListeners = messageTopics.get(topic);
+    synchronized (sMessageTopics) {
+      ListenerList<MessageBusListener<?>> topicListeners = sMessageTopics.get(topic);
 
-    if (topicListeners != null) {
-      return topicListeners.contains(messageListener);
+      if (topicListeners != null) {
+        return topicListeners.contains(messageListener);
+      }
+
+      return false;
     }
-
-    return false;
   }
 
   /**
@@ -91,14 +97,16 @@ public class MessageBus {
    */
   @SuppressWarnings("unchecked")
   public static <T> void sendMessage(String topic, T message) {
-    ListenerList<MessageBusListener<?>> topicListeners = messageTopics.get(topic);
+    synchronized (sMessageTopics) {
+      ListenerList<MessageBusListener<?>> topicListeners = sMessageTopics.get(topic);
 
-    if (topicListeners != null) {
-      for (MessageBusListener<?> listener : topicListeners) {
-        try {
-          ((MessageBusListener<T>) listener).messageSent(topic, message);
-        } catch (Throwable t) {
-          t.printStackTrace();
+      if (topicListeners != null) {
+        for (MessageBusListener<?> listener : topicListeners) {
+          try {
+            ((MessageBusListener<T>) listener).messageSent(topic, message);
+          } catch (Throwable t) {
+            t.printStackTrace();
+          }
         }
       }
     }
