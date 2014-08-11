@@ -28,17 +28,18 @@ import freddo.dtalk.util.LOG;
  * This class implements {@link #getDeviceId()} by using the MAC address. Also
  * implements {@link #getThreadPool()} and {@link #getPort()}.
  */
-public abstract class DTalkServiceConfigurationBase implements DTalkService.Configuration {
+public abstract class DTalkServiceConfiguration implements DTalkService.Configuration {
   
   private final ExecutorService mThreadPool;
 
-  private byte[] hwAddr = null;
+  private byte[] mHwAddr = null;
   
-  protected DTalkServiceConfigurationBase() {
+  protected DTalkServiceConfiguration() {
     this(Executors.newCachedThreadPool());
   }
   
-  protected DTalkServiceConfigurationBase(ExecutorService threadPool) {
+  protected DTalkServiceConfiguration(ExecutorService threadPool) {
+  	assert threadPool != null : "ExecutorService is null";
     mThreadPool = threadPool;
   }
   
@@ -53,29 +54,29 @@ public abstract class DTalkServiceConfigurationBase implements DTalkService.Conf
   }
 
   @Override
-  public final byte[] getHardwareAddress() {
-    if (hwAddr != null && hwAddr.length != 0) {
-      return hwAddr;
+  public byte[] getHardwareAddress() {
+    if (mHwAddr != null && mHwAddr.length != 0) {
+      return mHwAddr;
     }
 
     try {
       NetworkInterface ni = NetworkInterface.getByInetAddress(getInetAddress());
-      hwAddr = ni.getHardwareAddress();
+      mHwAddr = ni.getHardwareAddress();
     } catch (Exception e) {
       if (LOG.isLoggable(LOG.INFO)) {
         e.printStackTrace();
       }
     }
 
-    if (hwAddr == null || hwAddr.length == 0) {
+    if (mHwAddr == null || mHwAddr.length == 0) {
       Random rand = new Random();
       byte[] mac = new byte[8];
       rand.nextBytes(mac);
       mac[0] = 0x00;
-      hwAddr = mac;
+      mHwAddr = mac;
     }
 
-    return hwAddr;
+    return mHwAddr;
   }
 
   @Override
@@ -92,4 +93,5 @@ public abstract class DTalkServiceConfigurationBase implements DTalkService.Conf
   public int getPort() {
     return 0;
   }
+  
 }

@@ -34,260 +34,264 @@ import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 
 public abstract class FdService implements MessageBusListener<JSONObject> {
-  private static final String TAG = LOG.tag(FdService.class);
+	private static final String TAG = LOG.tag(FdService.class);
 
-  protected static final String SRV_PREFIX = "dtalk.service.";
+	protected static final String SRV_PREFIX = "dtalk.service.";
 
-  private final DTalkServiceContext context;
-  private final String name;
-  protected final String replyName;
+	private final DTalkServiceContext context;
+	private final String name;
+	protected final String replyName;
 
-  private boolean disposed = false;
+	private boolean disposed = false;
 
-  final Map<String, String> refCntMap = new ConcurrentHashMap<String, String>();
+	final Map<String, String> refCntMap = new ConcurrentHashMap<String, String>();
 
-  protected FdService(DTalkServiceContext context, String name, final JSONObject options) {
-    this.context = context;
-    this.name = name;
-    this.replyName = '$' + name;
+	protected FdService(DTalkServiceContext context, String name, final JSONObject options) {
+		this.context = context;
+		this.name = name;
+		this.replyName = '$' + name;
 
-    MessageBus.xsubscribe(getName(), this);
-  }
+		MessageBus.subscribe(getName(), this);
+	}
 
-  protected abstract void start();
+	protected DTalkServiceContext getContext() {
+		return context;
+	}
 
-  protected abstract void reset();
+	protected String getName() {
+		return name;
+	}
+	
+	@Deprecated
+	protected abstract void start(); // TODO rename to onCreate()
 
-  protected DTalkServiceContext getContext() {
-    return context;
-  }
+	protected abstract void reset();
+	
+	protected final boolean isDisposed() {
+		return disposed;
+	}
 
-  protected String getName() {
-    return name;
-  }
+	public final void dispose() { // TODO rename to onDestroy()
+		LOG.v(LOG.tag(getClass()), ">>> dispose");
 
-  @Override
-  public void messageSent(final String topic, final JSONObject message) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        if (!onMessage(topic, message)) {
-          LOG.d(TAG, "Unhandled message: %s", topic);
-        }
-      }
-    });
-  }
+		disposed = true;
+		reset();
 
-  protected void runOnUiThread(Runnable r) {
-    getContext().runOnUiThread(r);
-  }
+		if (MessageBus.hasListener(getName(), this)) {
+			MessageBus.unsubscribe(getName(), this);
+		}
+	}
 
-  @SuppressWarnings("unchecked")
-  private boolean onMessage(String topic, JSONObject message) {
-    String action = message.optString(DTalk.KEY_BODY_ACTION);
-    if ("get".equals(action)) {
-      String property = message.optString(MessageEvent.KEY_BODY_PARAMS, null);
-      if (property != null && property.length() > 0) {
-        invoke("get" + cap1stChar(property), message);
-        return true;
-      }
-    } else if ("set".equals(action)) {
-      JSONObject options = message.optJSONObject(DTalk.KEY_BODY_PARAMS);
-      if (options != null) {
-        // NOTE: we avoid ConcurrentModificationException
-        String[] keys = new String[options.length()];
-        int i = 0;
-        for (Iterator<String> it = options.keys(); it.hasNext();) {
-          keys[i++] = it.next();
-        }
-        for (String key : keys) {
-          invoke("set" + cap1stChar(key), options);
-        }
-        return true;
-      }
-    } else if (action != null && action.length() > 0) {
-      invoke("do" + cap1stChar(action), message);
-      return true;
-    }
-    return false;
-  }
+	@Override
+	public void messageSent(final String topic, final JSONObject message) {
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				if (!onMessage(topic, message)) {
+					LOG.d(TAG, "Unhandled message: %s", topic);
+				}
+			}
+		});
+	}
 
-  private void invoke(String method, JSONObject message) {
-    LOG.v(TAG, ">>> invoke: %s::%s", getClass().getName(), method);
+	protected void runOnUiThread(Runnable r) {
+		getContext().runOnUiThread(r);
+	}
 
-    try {
-      Method m = getClass().getMethod(method, JSONObject.class);
-      m.invoke(this, message);
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	@SuppressWarnings("unchecked")
+	private boolean onMessage(String topic, JSONObject message) {
+		String action = message.optString(DTalk.KEY_BODY_ACTION);
+		if ("get".equals(action)) {
+			String property = message.optString(MessageEvent.KEY_BODY_PARAMS, null);
+			if (property != null && property.length() > 0) {
+				invoke("get" + cap1stChar(property), message);
+				return true;
+			}
+		} else if ("set".equals(action)) {
+			JSONObject options = message.optJSONObject(DTalk.KEY_BODY_PARAMS);
+			if (options != null) {
+				// NOTE: we avoid ConcurrentModificationException
+				String[] keys = new String[options.length()];
+				int i = 0;
+				for (Iterator<String> it = options.keys(); it.hasNext();) {
+					keys[i++] = it.next();
+				}
+				for (String key : keys) {
+					invoke("set" + cap1stChar(key), options);
+				}
+				return true;
+			}
+		} else if (action != null && action.length() > 0) {
+			invoke("do" + cap1stChar(action), message);
+			return true;
+		}
+		return false;
+	}
 
-  // --------------------------------------------------------------------------
-  // RESPONSE
-  // --------------------------------------------------------------------------
+	private void invoke(String method, JSONObject message) {
+		LOG.v(TAG, ">>> invoke: %s::%s", getClass().getName(), method);
 
-  private static final JSONObject newResponse(JSONObject request) throws JSONException {
-    final String id = request.optString(DTalk.KEY_BODY_ID, null);
-    if (id != null) {
-      final JSONObject response = new JSONObject();
-      final String from = request.optString(DTalk.KEY_FROM, null);
-      if (from != null) {
-        response.put(MessageEvent.KEY_TO, from);
-      }
-      response.put(MessageEvent.KEY_BODY_VERSION, "1.0");
-      response.put(MessageEvent.KEY_BODY_SERVICE, id);
-      return response;
-    } else {
-      return null;
-    }
-  }
+		try {
+			Method m = getClass().getMethod(method, JSONObject.class);
+			m.invoke(this, message);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-  private static final void sendResponse(JSONObject jsonMsg) throws JSONException {
-    if (!jsonMsg.isNull(DTalk.KEY_TO)) {
-      String recipient = jsonMsg.optString(DTalk.KEY_TO);
-      LOG.d(TAG, "Send response to recipient: %s", recipient);
-      jsonMsg.remove(DTalk.KEY_FROM);
-      jsonMsg.remove(DTalk.KEY_TO);
-      MessageBus.sendMessage(new OutgoingMessageEvent(recipient, jsonMsg));
-    } else {
-      String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE);
-      LOG.d(TAG, "Send response to: %s", service);
-      if (service != null) {
-        MessageBus.sendMessage(service, jsonMsg);
-      }
-    }
-  }
+	// --------------------------------------------------------------------------
+	// RESPONSE
+	// --------------------------------------------------------------------------
 
-  protected static void sendResponse(JSONObject request, Object value) {
-    try {
-      JSONObject response = newResponse(request);
-      if (response != null) {
-        response.put(MessageEvent.KEY_BDOY_RESULT, value);
-        sendResponse(response);
-      }
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	private static final JSONObject newResponse(JSONObject request) throws JSONException {
+		final String id = request.optString(DTalk.KEY_BODY_ID, null);
+		if (id != null) {
+			final JSONObject response = new JSONObject();
+			final String from = request.optString(DTalk.KEY_FROM, null);
+			if (from != null) {
+				response.put(MessageEvent.KEY_TO, from);
+			}
+			response.put(MessageEvent.KEY_BODY_VERSION, "1.0");
+			response.put(MessageEvent.KEY_BODY_SERVICE, id);
+			return response;
+		} else {
+			return null;
+		}
+	}
 
-  protected static void sendErrorResponse(JSONObject request, Object error) {
-    try {
-      JSONObject response = newResponse(request);
-      if (response != null) {
-        response.put(MessageEvent.KEY_BODY_ERROR, error);
-        sendResponse(response);
-      }
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	private static final void sendResponse(JSONObject jsonMsg) throws JSONException {
+		if (!jsonMsg.isNull(DTalk.KEY_TO)) {
+			String recipient = jsonMsg.optString(DTalk.KEY_TO);
+			LOG.d(TAG, "Send response to recipient: %s", recipient);
+			jsonMsg.remove(DTalk.KEY_FROM);
+			jsonMsg.remove(DTalk.KEY_TO);
+			MessageBus.sendMessage(new OutgoingMessageEvent(recipient, jsonMsg));
+		} else {
+			String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE);
+			LOG.d(TAG, "Send response to: %s", service);
+			if (service != null) {
+				MessageBus.sendMessage(service, jsonMsg);
+			}
+		}
+	}
 
-  protected static void sendErrorResponse(JSONObject request, int code, String message, JSONObject data) {
-    JSONObject error = new JSONObject();
-    try {
-      error.put(DTalk.KEY_ERROR_CODE, code);
-      error.put(DTalk.KEY_ERROR_MESSAGE, message);
-      if (data != null) {
-        error.put(DTalk.KEY_ERROR_DATA, data);
-      }
-      sendErrorResponse(request, error);
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	protected static void sendResponse(JSONObject request, Object value) {
+		try {
+			JSONObject response = newResponse(request);
+			if (response != null) {
+				response.put(MessageEvent.KEY_BDOY_RESULT, value);
+				sendResponse(response);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-  // --------------------------------------------------------------------------
+	protected static void sendErrorResponse(JSONObject request, Object error) {
+		try {
+			JSONObject response = newResponse(request);
+			if (response != null) {
+				response.put(MessageEvent.KEY_BODY_ERROR, error);
+				sendResponse(response);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-  protected JSONObject getJSONObject(JSONObject options, String key) {
-    JSONObject object = !options.isNull(key) ? options.optJSONObject(key) : null;
-    options.remove(key);
-    return object;
-  }
+	protected static void sendErrorResponse(JSONObject request, int code, String message, JSONObject data) {
+		JSONObject error = new JSONObject();
+		try {
+			error.put(DTalk.KEY_ERROR_CODE, code);
+			error.put(DTalk.KEY_ERROR_MESSAGE, message);
+			if (data != null) {
+				error.put(DTalk.KEY_ERROR_DATA, data);
+			}
+			sendErrorResponse(request, error);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-  protected JSONArray getJSONArray(JSONObject options, String key) {
-    JSONArray array = !options.isNull(key) ? options.optJSONArray(key) : null;
-    options.remove(key);
-    return array;
-  }
+	// --------------------------------------------------------------------------
 
-  protected int getInt(JSONObject options, String key) {
-    int value = options.optInt(key);
-    options.remove(key);
-    return value;
-  }
+	protected JSONObject getJSONObject(JSONObject options, String key) {
+		JSONObject object = !options.isNull(key) ? options.optJSONObject(key) : null;
+		options.remove(key);
+		return object;
+	}
 
-  protected double getDouble(JSONObject options, String key) {
-    double value = options.optDouble(key);
-    options.remove(key);
-    return value;
-  }
+	protected JSONArray getJSONArray(JSONObject options, String key) {
+		JSONArray array = !options.isNull(key) ? options.optJSONArray(key) : null;
+		options.remove(key);
+		return array;
+	}
 
-  protected boolean getBoolean(JSONObject options, String key) {
-    boolean value = options.optBoolean(key);
-    options.remove(key);
-    return value;
-  }
+	protected int getInt(JSONObject options, String key) {
+		int value = options.optInt(key);
+		options.remove(key);
+		return value;
+	}
 
-  protected String getString(JSONObject options, String key) {
-    String value = !options.isNull(key) ? options.optString(key) : null;
-    options.remove(key);
-    return value;
-  }
+	protected double getDouble(JSONObject options, String key) {
+		double value = options.optDouble(key);
+		options.remove(key);
+		return value;
+	}
 
-  private JSONObject newEvent(String event) throws JSONException {
-    JSONObject message = new JSONObject();
-    message.put(MessageEvent.KEY_BODY_VERSION, "1.0");
-    message.put(MessageEvent.KEY_BODY_SERVICE, replyName + "." + event);
-    return message;
-  }
+	protected boolean getBoolean(JSONObject options, String key) {
+		boolean value = options.optBoolean(key);
+		options.remove(key);
+		return value;
+	}
 
-  protected void fireEvent(String event) {
-    try {
-      JSONObject message = newEvent(event);
-      MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	protected String getString(JSONObject options, String key) {
+		String value = !options.isNull(key) ? options.optString(key) : null;
+		options.remove(key);
+		return value;
+	}
 
-  protected void fireEvent(String event, Object params) {
-    try {
-      JSONObject message = newEvent(event);
-      message.put(MessageEvent.KEY_BODY_PARAMS, params);
-      MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
-    } catch (JSONException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-  }
+	private JSONObject newEvent(String event) throws JSONException {
+		JSONObject message = new JSONObject();
+		message.put(MessageEvent.KEY_BODY_VERSION, "1.0");
+		message.put(MessageEvent.KEY_BODY_SERVICE, replyName + "." + event);
+		return message;
+	}
 
-  protected final boolean isDisposed() {
-    return disposed;
-  }
+	protected void fireEvent(String event) {
+		try {
+			JSONObject message = newEvent(event);
+			MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-  public final void dispose() {
-    LOG.v(LOG.tag(getClass()), ">>> dispose");
+	protected void fireEvent(String event, Object params) {
+		try {
+			JSONObject message = newEvent(event);
+			message.put(MessageEvent.KEY_BODY_PARAMS, params);
+			MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-    disposed = true;
-    reset();
-
-    if (MessageBus.hasListener(getName(), this)) {
-      MessageBus.unsubscribe(getName(), this);
-    }
-  }
-
-  private static String cap1stChar(String str) {
-    String result = str;
-    if (str.length() > 0) {
-      String first = str.substring(0, 1);
-      result = str.replaceFirst(first, first.toUpperCase());
-    }
-    return result;
-  }
+	/*
+	 * Utility method to capitalize the first character of a string.
+	 */
+	private static String cap1stChar(String str) {
+		String result = str;
+		if (str.length() > 0) {
+			String first = str.substring(0, 1);
+			result = str.replaceFirst(first, first.toUpperCase());
+		}
+		return result;
+	}
 }

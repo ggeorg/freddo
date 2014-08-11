@@ -380,7 +380,7 @@ public final class DTalk implements MessageEvent {
       };
 
       // subscribe to requestId
-      MessageBus.xsubscribe(requestId, mListener);
+      MessageBus.subscribe(requestId, mListener);
 
       try {
         forward(request.optString(KEY_BODY_SERVICE, null), request);
@@ -425,7 +425,7 @@ public final class DTalk implements MessageEvent {
    */
   public static DTalkSubscribeHandle subscribe(final String topic, final DTalkEventListener listener) {
     // do subscribe
-    MessageBus.xsubscribe(topic, listener);
+    MessageBus.subscribe(topic, listener);
 
     // create and return un-subscribe handle
     return new DTalkSubscribeHandle() {
