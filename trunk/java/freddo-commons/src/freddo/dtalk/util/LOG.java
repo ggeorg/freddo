@@ -211,6 +211,19 @@ public class LOG {
     if (LOG.VERBOSE >= LOGLEVEL)
       LOGGER.v(tag, s, e);
   }
+  
+  /**
+   * Verbose log message.
+   * 
+   * @param tag
+   * @param s
+   * @param arg
+   * @param e
+   */
+  public static void v(String tag, String s, Object arg, Throwable e) {
+    if (LOG.VERBOSE >= LOGLEVEL)
+      LOGGER.v(tag, String.format(s, arg), e);
+  }
 
   /**
    * Debug log message.
@@ -222,6 +235,19 @@ public class LOG {
   public static void d(String tag, String s, Throwable e) {
     if (LOG.DEBUG >= LOGLEVEL)
       LOGGER.d(tag, s, e);
+  }
+  
+  /**
+   * Debug log message.
+   * 
+   * @param tag
+   * @param s
+   * @param arg
+   * @param e
+   */
+  public static void d(String tag, String s, Object arg, Throwable e) {
+    if (LOG.DEBUG >= LOGLEVEL)
+      LOGGER.d(tag, String.format(s, arg), e);
   }
 
   /**
@@ -235,6 +261,19 @@ public class LOG {
     if (LOG.INFO >= LOGLEVEL)
       LOGGER.i(tag, s, e);
   }
+  
+  /**
+   * Info log message.
+   * 
+   * @param tag
+   * @param s
+   * @param arg
+   * @param e
+   */
+  public static void i(String tag, String s, Object arg, Throwable e) {
+    if (LOG.INFO >= LOGLEVEL)
+      LOGGER.i(tag, String.format(s, arg), e);
+  }
 
   /**
    * Warning log message.
@@ -247,6 +286,19 @@ public class LOG {
     if (LOG.WARN >= LOGLEVEL)
       LOGGER.w(tag, s, e);
   }
+  
+  /**
+   * Warning log message.
+   * 
+   * @param tag
+   * @param s
+   * @param arg
+   * @param e
+   */
+  public static void w(String tag, String s, Object arg, Throwable e) {
+    if (LOG.WARN >= LOGLEVEL)
+      LOGGER.w(tag, String.format(s, arg), e);
+  }
 
   /**
    * Error log message.
@@ -258,6 +310,19 @@ public class LOG {
   public static void e(String tag, String s, Throwable e) {
     if (LOG.ERROR >= LOGLEVEL)
       LOGGER.e(tag, s, e);
+  }
+  
+  /**
+   * Error log message.
+   * 
+   * @param tag
+   * @param s
+   * @param arg
+   * @param e
+   */
+  public static void e(String tag, String s, Object arg, Throwable e) {
+    if (LOG.ERROR >= LOGLEVEL)
+      LOGGER.e(tag, String.format(s, arg), e);
   }
 
   /**

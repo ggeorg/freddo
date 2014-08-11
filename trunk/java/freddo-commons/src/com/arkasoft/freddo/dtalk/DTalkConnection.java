@@ -26,6 +26,9 @@ public interface DTalkConnection {
 
   Object sendMessage(JSONObject message) throws JSONException;
 
+  // XXX not used so far
+  // could be a common message handler for all types of connections
+  @Deprecated
   void onMessage(JSONObject message) throws JSONException;
 
   void close();

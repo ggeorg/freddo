@@ -20,28 +20,30 @@ import javax.websocket.server.HandshakeRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.arkasoft.freddo.dtalk.j2ee.server.DTalkServerEndpoint;
+import com.arkasoft.freddo.dtalk.j2ee.server.DTalkContextListener;
+
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkServiceContext;
-import freddo.dtalk.jsr356.DTalkConnection;
-import freddo.dtalk.jsr356.DTalkContextListener;
 import freddo.dtalk.services.FdService;
 
+@Deprecated
 public abstract class FdJSR356Service extends FdService {
 
   protected FdJSR356Service(DTalkServiceContext context, String name, JSONObject options) {
     super(context, name, options);
   }
   
-  public HandshakeRequest getHandshakeRequest(JSONObject message) throws JSONException {
-    String from = message.getString(DTalk.KEY_FROM);
-    if (from != null) {
-      DTalkContextListener ctx = (DTalkContextListener) getContext();
-      DTalkConnection conn = ctx.getConnection(from);
-      if (conn != null) {
-        return conn.getHandshakeRequest();
-      }
-    }
-    return null;
-  }
+//  public HandshakeRequest getHandshakeRequest(JSONObject message) throws JSONException {
+//    String from = message.getString(DTalk.KEY_FROM);
+//    if (from != null) {
+//      DTalkContextListener ctx = (DTalkContextListener) getContext();
+//      DTalkConnectionImpl conn = ctx.getConnection(from);
+//      if (conn != null) {
+//        return conn.getHandshakeRequest();
+//      }
+//    }
+//    return null;
+//  }
 
 }

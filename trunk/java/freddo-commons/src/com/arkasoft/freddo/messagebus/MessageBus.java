@@ -36,7 +36,7 @@ public class MessageBus {
    * @param topic
    * @param messageListener
    */
-  public static <T> void xsubscribe(String topic, MessageBusListener<T> messageListener) {
+  public static <T> void subscribe(String topic, MessageBusListener<T> messageListener) {
     synchronized (sMessageTopics) {
       ListenerList<MessageBusListener<?>> topicListeners = sMessageTopics.get(topic);
 
