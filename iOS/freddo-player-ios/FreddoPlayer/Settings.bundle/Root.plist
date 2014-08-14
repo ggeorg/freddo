@@ -34,7 +34,7 @@
 			<key>IsSecure</key>
 			<false/>
 			<key>DefaultValue</key>
-			<string>1.0 (Build 1.5)</string>
+			<string>1.0 (Build 1.9)</string>
 			<key>Title</key>
 			<string>Version</string>
 			<key>Key</key>
