@@ -1,0 +1,1371 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A90EC65E1817F09500C2658A /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A90EC65D1817F09500C2658A /* EventKit.framework */; };
+		A90EC66F18199C2800C2658A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A90EC66818199C2800C2658A /* Default-568h@2x.png */; };
+		A90EC67018199C2800C2658A /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = A90EC66918199C2800C2658A /* Default.png */; };
+		A90EC67118199C2800C2658A /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A90EC66A18199C2800C2658A /* Default@2x.png */; };
+		A90EC67218199C2800C2658A /* Freddo-Player-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A90EC66B18199C2800C2658A /* Freddo-Player-Info.plist */; };
+		A90EC67318199C2800C2658A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC66D18199C2800C2658A /* main.m */; };
+		A90EC67418199C2800C2658A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A90EC66E18199C2800C2658A /* Settings.bundle */; };
+		A90EC67718199C6A00C2658A /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC67618199C6A00C2658A /* NSData+Base64.m */; };
+		A90EC6AE18199C9600C2658A /* FdButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC67918199C9600C2658A /* FdButton.m */; };
+		A90EC6AF18199C9600C2658A /* FdButtonFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC67B18199C9600C2658A /* FdButtonFactory.m */; };
+		A90EC6B018199C9600C2658A /* FdDisplay.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC67D18199C9600C2658A /* FdDisplay.m */; };
+		A90EC6B118199C9600C2658A /* FdHBox.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC67F18199C9600C2658A /* FdHBox.m */; };
+		A90EC6B218199C9600C2658A /* FdHBoxFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68118199C9600C2658A /* FdHBoxFactory.m */; };
+		A90EC6B318199C9600C2658A /* FdImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68318199C9600C2658A /* FdImageView.m */; };
+		A90EC6B418199C9600C2658A /* FdNavController.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68518199C9600C2658A /* FdNavController.m */; };
+		A90EC6B518199C9600C2658A /* FdNavControllerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68718199C9600C2658A /* FdNavControllerFactory.m */; };
+		A90EC6B618199C9600C2658A /* FdProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68918199C9600C2658A /* FdProgressView.m */; };
+		A90EC6B718199C9600C2658A /* FdProgressViewFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68B18199C9600C2658A /* FdProgressViewFactory.m */; };
+		A90EC6B818199C9600C2658A /* FdSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68D18199C9600C2658A /* FdSlider.m */; };
+		A90EC6B918199C9600C2658A /* FdSliderFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC68F18199C9600C2658A /* FdSliderFactory.m */; };
+		A90EC6BA18199C9600C2658A /* FdSpacer.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69118199C9600C2658A /* FdSpacer.m */; };
+		A90EC6BB18199C9600C2658A /* FdSpacerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69318199C9600C2658A /* FdSpacerFactory.m */; };
+		A90EC6BC18199C9600C2658A /* FdStack.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69518199C9600C2658A /* FdStack.m */; };
+		A90EC6BD18199C9600C2658A /* FdStackFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69718199C9600C2658A /* FdStackFactory.m */; };
+		A90EC6BE18199C9600C2658A /* FdSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69918199C9600C2658A /* FdSwitch.m */; };
+		A90EC6BF18199C9600C2658A /* FdSwitchFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69B18199C9600C2658A /* FdSwitchFactory.m */; };
+		A90EC6C018199C9600C2658A /* FdTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69D18199C9600C2658A /* FdTextField.m */; };
+		A90EC6C118199C9600C2658A /* FdTextFieldFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC69F18199C9600C2658A /* FdTextFieldFactory.m */; };
+		A90EC6C218199C9600C2658A /* FdTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6A118199C9600C2658A /* FdTextView.m */; };
+		A90EC6C318199C9600C2658A /* FdTextViewFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6A318199C9600C2658A /* FdTextViewFactory.m */; };
+		A90EC6C418199C9600C2658A /* FdVBox.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6A518199C9600C2658A /* FdVBox.m */; };
+		A90EC6C518199C9600C2658A /* FdVBoxFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6A718199C9600C2658A /* FdVBoxFactory.m */; };
+		A90EC6C618199C9600C2658A /* FdView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6A918199C9600C2658A /* FdView.m */; };
+		A90EC6C718199C9600C2658A /* FdViewFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6AB18199C9600C2658A /* FdViewFactory.m */; };
+		A90EC6C818199C9600C2658A /* FdViewGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6AD18199C9600C2658A /* FdViewGroup.m */; };
+		A90EC6DE18199CB800C2658A /* WeViewBlockLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6CB18199CB800C2658A /* WeViewBlockLayout.m */; };
+		A90EC6DF18199CB800C2658A /* WeViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6CD18199CB800C2658A /* WeViewFlowLayout.m */; };
+		A90EC6E018199CB800C2658A /* WeViewGridLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6CF18199CB800C2658A /* WeViewGridLayout.m */; };
+		A90EC6E118199CB800C2658A /* WeViewLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6D118199CB800C2658A /* WeViewLayout.m */; };
+		A90EC6E218199CB800C2658A /* WeViewLinearLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6D318199CB800C2658A /* WeViewLinearLayout.m */; };
+		A90EC6E318199CB800C2658A /* WeViewNoopLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6D518199CB800C2658A /* WeViewNoopLayout.m */; };
+		A90EC6E418199CB800C2658A /* WeViewStackLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6D718199CB800C2658A /* WeViewStackLayout.m */; };
+		A90EC6E518199CB800C2658A /* UIView+WeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6D918199CB800C2658A /* UIView+WeView.m */; };
+		A90EC6E618199CB800C2658A /* WeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6DB18199CB800C2658A /* WeView.m */; };
+		A90EC6F818199CEB00C2658A /* FdAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6E818199CEB00C2658A /* FdAppDelegate.m */; };
+		A90EC6F918199CEB00C2658A /* FdClientWS.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6EA18199CEB00C2658A /* FdClientWS.m */; };
+		A90EC6FA18199CEB00C2658A /* FdHTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6EC18199CEB00C2658A /* FdHTTPConnection.m */; };
+		A90EC6FC18199CEB00C2658A /* FdServerBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6F118199CEB00C2658A /* FdServerBrowser.m */; };
+		A90EC6FD18199CEB00C2658A /* FdServerWS.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6F318199CEB00C2658A /* FdServerWS.m */; };
+		A90EC6FE18199CEB00C2658A /* FdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6F518199CEB00C2658A /* FdViewController.m */; };
+		A90EC6FF18199CEB00C2658A /* FdWebViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC6F718199CEB00C2658A /* FdWebViewDelegate.m */; };
+		A90EC74A18199E2800C2658A /* FdAccelerometer.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC70318199E2800C2658A /* FdAccelerometer.m */; };
+		A90EC74B18199E2800C2658A /* FdAccelerometerFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC70518199E2800C2658A /* FdAccelerometerFactory.m */; };
+		A90EC74C18199E2800C2658A /* CalendarPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC70818199E2800C2658A /* CalendarPlugin.m */; };
+		A90EC74D18199E2800C2658A /* FdCalendarFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC70A18199E2800C2658A /* FdCalendarFactory.m */; };
+		A90EC75118199E2800C2658A /* FdCompass.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC71218199E2800C2658A /* FdCompass.m */; };
+		A90EC75318199E2800C2658A /* FdCompassFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC71618199E2800C2658A /* FdCompassFactory.m */; };
+		A90EC75418199E2800C2658A /* FdConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC71918199E2800C2658A /* FdConnection.m */; };
+		A90EC75518199E2800C2658A /* FdReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC71B18199E2800C2658A /* FdReachability.m */; };
+		A90EC75618199E2800C2658A /* FdConnectionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC71D18199E2800C2658A /* FdConnectionFactory.m */; };
+		A90EC75718199E2800C2658A /* FdContact.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72018199E2800C2658A /* FdContact.m */; };
+		A90EC75818199E2800C2658A /* FdContacts.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72218199E2800C2658A /* FdContacts.m */; };
+		A90EC75918199E2800C2658A /* FdContactsFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72418199E2800C2658A /* FdContactsFactory.m */; };
+		A90EC75A18199E2800C2658A /* FdDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72718199E2800C2658A /* FdDevice.m */; };
+		A90EC75B18199E2800C2658A /* FdDeviceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72918199E2800C2658A /* FdDeviceFactory.m */; };
+		A90EC75C18199E2800C2658A /* FdService.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72B18199E2800C2658A /* FdService.m */; };
+		A90EC75D18199E2800C2658A /* FdServiceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72D18199E2800C2658A /* FdServiceFactory.m */; };
+		A90EC75E18199E2800C2658A /* FdServiceMgr.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC72F18199E2800C2658A /* FdServiceMgr.m */; };
+		A90EC75F18199E2800C2658A /* FdVideo.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC73118199E2800C2658A /* FdVideo.m */; };
+		A90EC76018199E2800C2658A /* FdVideoFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC73318199E2800C2658A /* FdVideoFactory.m */; };
+		A90EC76118199E2800C2658A /* FdLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC73618199E2800C2658A /* FdLocation.m */; };
+		A90EC76218199E2800C2658A /* FdLocationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC73818199E2800C2658A /* FdLocationFactory.m */; };
+		A90EC76318199E2800C2658A /* FdGlobalization.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC73B18199E2800C2658A /* FdGlobalization.m */; };
+		A90EC76418199E2800C2658A /* FdGlobalizationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC73D18199E2800C2658A /* FdGlobalizationFactory.m */; };
+		A90EC76518199E2800C2658A /* FdNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC74018199E2800C2658A /* FdNotification.m */; };
+		A90EC76618199E2800C2658A /* FdNotificationFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC74218199E2800C2658A /* FdNotificationFactory.m */; };
+		A90EC76718199E2800C2658A /* NSArray+Comparisons.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC74518199E2800C2658A /* NSArray+Comparisons.m */; };
+		A90EC76818199E2800C2658A /* NSDictionary+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC74718199E2800C2658A /* NSDictionary+Extensions.m */; };
+		A90EC76918199E2800C2658A /* NSMutableArray+QueueAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC74918199E2800C2658A /* NSMutableArray+QueueAdditions.m */; };
+		A90EC7711819A3E800C2658A /* FdViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A90EC76B1819A3E800C2658A /* FdViewController_iPad.xib */; };
+		A90EC7721819A3E800C2658A /* FdViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = A90EC76D1819A3E800C2658A /* FdViewController_iPhone.xib */; };
+		A90EC7731819A3E800C2658A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A90EC76F1819A3E800C2658A /* InfoPlist.strings */; };
+		A90EC7761819C8D500C2658A /* FdAirPlay.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC7751819C8D500C2658A /* FdAirPlay.m */; };
+		A90EC7791819C96900C2658A /* FdAirPlayFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A90EC7781819C96900C2658A /* FdAirPlayFactory.m */; };
+		A96110441816A21D00DFF08E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A96110431816A21D00DFF08E /* AudioToolbox.framework */; };
+		A970345118EC4AAF00FD9B18 /* FdNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A970345018EC4AAF00FD9B18 /* FdNotification.bundle */; };
+		A98FA70518048E79005D9BE6 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FA70318048E79005D9BE6 /* AddressBook.framework */; };
+		A98FA70618048E79005D9BE6 /* AddressBookUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FA70418048E79005D9BE6 /* AddressBookUI.framework */; };
+		A98FA73C18100A52005D9BE6 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FA73B18100A52005D9BE6 /* MobileCoreServices.framework */; };
+		A98FA73E18100A86005D9BE6 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A98FA73D18100A86005D9BE6 /* SystemConfiguration.framework */; };
+		A9CC3B8518296D7B0047F1D6 /* FdSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = A9CC3B8418296D7B0047F1D6 /* FdSettings.m */; };
+		A9CC3B8818296E960047F1D6 /* FdSettingsFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A9CC3B8718296E960047F1D6 /* FdSettingsFactory.m */; };
+		A9DEB18E18C126050069D33E /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A9DEB18818C126050069D33E /* libTestFlight.a */; };
+		A9DEB19218C126960069D33E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A9DEB19118C126960069D33E /* libz.dylib */; };
+		A9EBEF0317FF6FE100660116 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A9EBEF0217FF6FE100660116 /* CoreLocation.framework */; };
+		A9FCFEC1183A464800A32410 /* FdAppView.m in Sources */ = {isa = PBXBuildFile; fileRef = A9FCFEC0183A464800A32410 /* FdAppView.m */; };
+		A9FCFEC4183A466200A32410 /* FdAppViewFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = A9FCFEC3183A466200A32410 /* FdAppViewFactory.m */; };
+		CC1A00D7177158E900F0C3D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1A00D6177158E900F0C3D6 /* UIKit.framework */; };
+		CC1A00D9177158E900F0C3D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1A00D8177158E900F0C3D6 /* Foundation.framework */; };
+		CC1A00DB177158E900F0C3D6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1A00DA177158E900F0C3D6 /* CoreGraphics.framework */; };
+		CC1A02E01771BD5700F0C3D6 /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = CC1A02A51771BD5700F0C3D6 /* About.txt */; };
+		CC1A02E11771BD5700F0C3D6 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02A71771BD5700F0C3D6 /* GCDAsyncSocket.m */; };
+		CC1A02E21771BD5700F0C3D6 /* DDData.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02AB1771BD5700F0C3D6 /* DDData.m */; };
+		CC1A02E31771BD5700F0C3D6 /* DDNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02AD1771BD5700F0C3D6 /* DDNumber.m */; };
+		CC1A02E41771BD5700F0C3D6 /* DDRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02AF1771BD5700F0C3D6 /* DDRange.m */; };
+		CC1A02E51771BD5700F0C3D6 /* HTTPAuthenticationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02B11771BD5700F0C3D6 /* HTTPAuthenticationRequest.m */; };
+		CC1A02E61771BD5700F0C3D6 /* HTTPConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02B31771BD5700F0C3D6 /* HTTPConnection.m */; };
+		CC1A02E71771BD5700F0C3D6 /* HTTPMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02B61771BD5700F0C3D6 /* HTTPMessage.m */; };
+		CC1A02E81771BD5700F0C3D6 /* HTTPServer.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02B91771BD5700F0C3D6 /* HTTPServer.m */; };
+		CC1A02E91771BD5700F0C3D6 /* MultipartFormDataParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02BC1771BD5700F0C3D6 /* MultipartFormDataParser.m */; };
+		CC1A02EA1771BD5700F0C3D6 /* MultipartMessageHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02BE1771BD5700F0C3D6 /* MultipartMessageHeader.m */; };
+		CC1A02EB1771BD5700F0C3D6 /* MultipartMessageHeaderField.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02C01771BD5700F0C3D6 /* MultipartMessageHeaderField.m */; };
+		CC1A02EC1771BD5700F0C3D6 /* HTTPAsyncFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02C31771BD5700F0C3D6 /* HTTPAsyncFileResponse.m */; };
+		CC1A02ED1771BD5700F0C3D6 /* HTTPDataResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02C51771BD5700F0C3D6 /* HTTPDataResponse.m */; };
+		CC1A02EE1771BD5700F0C3D6 /* HTTPDynamicFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02C71771BD5700F0C3D6 /* HTTPDynamicFileResponse.m */; };
+		CC1A02EF1771BD5700F0C3D6 /* HTTPFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02C91771BD5700F0C3D6 /* HTTPFileResponse.m */; };
+		CC1A02F01771BD5700F0C3D6 /* HTTPRedirectResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02CB1771BD5700F0C3D6 /* HTTPRedirectResponse.m */; };
+		CC1A02F11771BD5700F0C3D6 /* WebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02CD1771BD5700F0C3D6 /* WebSocket.m */; };
+		CC1A02F21771BD5700F0C3D6 /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = CC1A02CF1771BD5700F0C3D6 /* About.txt */; };
+		CC1A02F31771BD5700F0C3D6 /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02D11771BD5700F0C3D6 /* DDAbstractDatabaseLogger.m */; };
+		CC1A02F41771BD5700F0C3D6 /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02D31771BD5700F0C3D6 /* DDASLLogger.m */; };
+		CC1A02F51771BD5700F0C3D6 /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02D51771BD5700F0C3D6 /* DDFileLogger.m */; };
+		CC1A02F61771BD5700F0C3D6 /* DDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02D71771BD5700F0C3D6 /* DDLog.m */; };
+		CC1A02F71771BD5700F0C3D6 /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02D91771BD5700F0C3D6 /* DDTTYLogger.m */; };
+		CC1A02F81771BD5700F0C3D6 /* ContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02DC1771BD5700F0C3D6 /* ContextFilterLogFormatter.m */; };
+		CC1A02F91771BD5700F0C3D6 /* DispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A02DE1771BD5700F0C3D6 /* DispatchQueueLogFormatter.m */; };
+		CC1A02FA1771BD5700F0C3D6 /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = CC1A02DF1771BD5700F0C3D6 /* README.txt */; };
+		CC1A02FD1771BF0500F0C3D6 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1A02FB1771BEA200F0C3D6 /* CFNetwork.framework */; };
+		CC1A03001771BF9D00F0C3D6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1A02FE1771BF8F00F0C3D6 /* Security.framework */; };
+		CC1A03031771C9D700F0C3D6 /* www in Resources */ = {isa = PBXBuildFile; fileRef = CC1A03021771C9D700F0C3D6 /* www */; };
+		CC1A03251772C87400F0C3D6 /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = CC1A031E1772C87400F0C3D6 /* base64.c */; };
+		CC1A03261772C87400F0C3D6 /* NSData+SRB64Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A03211772C87400F0C3D6 /* NSData+SRB64Additions.m */; };
+		CC1A03271772C87400F0C3D6 /* SRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = CC1A03241772C87400F0C3D6 /* SRWebSocket.m */; };
+		CC1A03291772CC1E00F0C3D6 /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CC1A03281772CC1E00F0C3D6 /* libicucore.dylib */; };
+		CC2961AB18E9610000CBD669 /* GoogleCast.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC2961AA18E9610000CBD669 /* GoogleCast.framework */; };
+		CC2961AF18E9744200CBD669 /* FdChromecastFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CC2961AE18E9744200CBD669 /* FdChromecastFactory.m */; };
+		CC2961B218E97A1100CBD669 /* FdChromecast.m in Sources */ = {isa = PBXBuildFile; fileRef = CC2961B118E97A1100CBD669 /* FdChromecast.m */; };
+		CC3FC60B1860474A006BB55E /* FdPresence.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3FC6081860474A006BB55E /* FdPresence.m */; };
+		CC3FC60C1860474A006BB55E /* FdPresenceFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3FC60A1860474A006BB55E /* FdPresenceFactory.m */; };
+		CC64D9C7180F40C200B9C639 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC64D9C6180F40C200B9C639 /* QuartzCore.framework */; };
+		CC8422FA18071175001B34C3 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CC8422F918071175001B34C3 /* MediaPlayer.framework */; };
+		CCFABCE318BB669500D9CEAA /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CCFABCE218BB669500D9CEAA /* Images.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A90EC65D1817F09500C2658A /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
+		A90EC66818199C2800C2658A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "FreddoPlayer/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
+		A90EC66918199C2800C2658A /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = FreddoPlayer/Default.png; sourceTree = SOURCE_ROOT; };
+		A90EC66A18199C2800C2658A /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "FreddoPlayer/Default@2x.png"; sourceTree = SOURCE_ROOT; };
+		A90EC66B18199C2800C2658A /* Freddo-Player-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "Freddo-Player-Info.plist"; path = "FreddoPlayer/Freddo-Player-Info.plist"; sourceTree = SOURCE_ROOT; };
+		A90EC66C18199C2800C2658A /* Freddo-Player-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Freddo-Player-Prefix.pch"; path = "FreddoPlayer/Freddo-Player-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		A90EC66D18199C2800C2658A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = FreddoPlayer/main.m; sourceTree = SOURCE_ROOT; };
+		A90EC66E18199C2800C2658A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = Settings.bundle; path = FreddoPlayer/Settings.bundle; sourceTree = SOURCE_ROOT; };
+		A90EC67518199C6A00C2658A /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "FreddoPlayer/Utils/NSData+Base64.h"; sourceTree = SOURCE_ROOT; };
+		A90EC67618199C6A00C2658A /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "FreddoPlayer/Utils/NSData+Base64.m"; sourceTree = SOURCE_ROOT; };
+		A90EC67818199C9600C2658A /* FdButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdButton.h; path = FreddoPlayer/UI/FdButton.h; sourceTree = SOURCE_ROOT; };
+		A90EC67918199C9600C2658A /* FdButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdButton.m; path = FreddoPlayer/UI/FdButton.m; sourceTree = SOURCE_ROOT; };
+		A90EC67A18199C9600C2658A /* FdButtonFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdButtonFactory.h; path = FreddoPlayer/UI/FdButtonFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC67B18199C9600C2658A /* FdButtonFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdButtonFactory.m; path = FreddoPlayer/UI/FdButtonFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC67C18199C9600C2658A /* FdDisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdDisplay.h; path = FreddoPlayer/UI/FdDisplay.h; sourceTree = SOURCE_ROOT; };
+		A90EC67D18199C9600C2658A /* FdDisplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdDisplay.m; path = FreddoPlayer/UI/FdDisplay.m; sourceTree = SOURCE_ROOT; };
+		A90EC67E18199C9600C2658A /* FdHBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdHBox.h; path = FreddoPlayer/UI/FdHBox.h; sourceTree = SOURCE_ROOT; };
+		A90EC67F18199C9600C2658A /* FdHBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdHBox.m; path = FreddoPlayer/UI/FdHBox.m; sourceTree = SOURCE_ROOT; };
+		A90EC68018199C9600C2658A /* FdHBoxFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdHBoxFactory.h; path = FreddoPlayer/UI/FdHBoxFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC68118199C9600C2658A /* FdHBoxFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdHBoxFactory.m; path = FreddoPlayer/UI/FdHBoxFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC68218199C9600C2658A /* FdImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdImageView.h; path = FreddoPlayer/UI/FdImageView.h; sourceTree = SOURCE_ROOT; };
+		A90EC68318199C9600C2658A /* FdImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdImageView.m; path = FreddoPlayer/UI/FdImageView.m; sourceTree = SOURCE_ROOT; };
+		A90EC68418199C9600C2658A /* FdNavController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdNavController.h; path = FreddoPlayer/UI/FdNavController.h; sourceTree = SOURCE_ROOT; };
+		A90EC68518199C9600C2658A /* FdNavController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdNavController.m; path = FreddoPlayer/UI/FdNavController.m; sourceTree = SOURCE_ROOT; };
+		A90EC68618199C9600C2658A /* FdNavControllerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdNavControllerFactory.h; path = FreddoPlayer/UI/FdNavControllerFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC68718199C9600C2658A /* FdNavControllerFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdNavControllerFactory.m; path = FreddoPlayer/UI/FdNavControllerFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC68818199C9600C2658A /* FdProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdProgressView.h; path = FreddoPlayer/UI/FdProgressView.h; sourceTree = SOURCE_ROOT; };
+		A90EC68918199C9600C2658A /* FdProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdProgressView.m; path = FreddoPlayer/UI/FdProgressView.m; sourceTree = SOURCE_ROOT; };
+		A90EC68A18199C9600C2658A /* FdProgressViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdProgressViewFactory.h; path = FreddoPlayer/UI/FdProgressViewFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC68B18199C9600C2658A /* FdProgressViewFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdProgressViewFactory.m; path = FreddoPlayer/UI/FdProgressViewFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC68C18199C9600C2658A /* FdSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdSlider.h; path = FreddoPlayer/UI/FdSlider.h; sourceTree = SOURCE_ROOT; };
+		A90EC68D18199C9600C2658A /* FdSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdSlider.m; path = FreddoPlayer/UI/FdSlider.m; sourceTree = SOURCE_ROOT; };
+		A90EC68E18199C9600C2658A /* FdSliderFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdSliderFactory.h; path = FreddoPlayer/UI/FdSliderFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC68F18199C9600C2658A /* FdSliderFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdSliderFactory.m; path = FreddoPlayer/UI/FdSliderFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC69018199C9600C2658A /* FdSpacer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdSpacer.h; path = FreddoPlayer/UI/FdSpacer.h; sourceTree = SOURCE_ROOT; };
+		A90EC69118199C9600C2658A /* FdSpacer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdSpacer.m; path = FreddoPlayer/UI/FdSpacer.m; sourceTree = SOURCE_ROOT; };
+		A90EC69218199C9600C2658A /* FdSpacerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdSpacerFactory.h; path = FreddoPlayer/UI/FdSpacerFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC69318199C9600C2658A /* FdSpacerFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdSpacerFactory.m; path = FreddoPlayer/UI/FdSpacerFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC69418199C9600C2658A /* FdStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdStack.h; path = FreddoPlayer/UI/FdStack.h; sourceTree = SOURCE_ROOT; };
+		A90EC69518199C9600C2658A /* FdStack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdStack.m; path = FreddoPlayer/UI/FdStack.m; sourceTree = SOURCE_ROOT; };
+		A90EC69618199C9600C2658A /* FdStackFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdStackFactory.h; path = FreddoPlayer/UI/FdStackFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC69718199C9600C2658A /* FdStackFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdStackFactory.m; path = FreddoPlayer/UI/FdStackFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC69818199C9600C2658A /* FdSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdSwitch.h; path = FreddoPlayer/UI/FdSwitch.h; sourceTree = SOURCE_ROOT; };
+		A90EC69918199C9600C2658A /* FdSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdSwitch.m; path = FreddoPlayer/UI/FdSwitch.m; sourceTree = SOURCE_ROOT; };
+		A90EC69A18199C9600C2658A /* FdSwitchFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdSwitchFactory.h; path = FreddoPlayer/UI/FdSwitchFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC69B18199C9600C2658A /* FdSwitchFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdSwitchFactory.m; path = FreddoPlayer/UI/FdSwitchFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC69C18199C9600C2658A /* FdTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdTextField.h; path = FreddoPlayer/UI/FdTextField.h; sourceTree = SOURCE_ROOT; };
+		A90EC69D18199C9600C2658A /* FdTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdTextField.m; path = FreddoPlayer/UI/FdTextField.m; sourceTree = SOURCE_ROOT; };
+		A90EC69E18199C9600C2658A /* FdTextFieldFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdTextFieldFactory.h; path = FreddoPlayer/UI/FdTextFieldFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC69F18199C9600C2658A /* FdTextFieldFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdTextFieldFactory.m; path = FreddoPlayer/UI/FdTextFieldFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC6A018199C9600C2658A /* FdTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdTextView.h; path = FreddoPlayer/UI/FdTextView.h; sourceTree = SOURCE_ROOT; };
+		A90EC6A118199C9600C2658A /* FdTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdTextView.m; path = FreddoPlayer/UI/FdTextView.m; sourceTree = SOURCE_ROOT; };
+		A90EC6A218199C9600C2658A /* FdTextViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdTextViewFactory.h; path = FreddoPlayer/UI/FdTextViewFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC6A318199C9600C2658A /* FdTextViewFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdTextViewFactory.m; path = FreddoPlayer/UI/FdTextViewFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC6A418199C9600C2658A /* FdVBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdVBox.h; path = FreddoPlayer/UI/FdVBox.h; sourceTree = SOURCE_ROOT; };
+		A90EC6A518199C9600C2658A /* FdVBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdVBox.m; path = FreddoPlayer/UI/FdVBox.m; sourceTree = SOURCE_ROOT; };
+		A90EC6A618199C9600C2658A /* FdVBoxFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdVBoxFactory.h; path = FreddoPlayer/UI/FdVBoxFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC6A718199C9600C2658A /* FdVBoxFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdVBoxFactory.m; path = FreddoPlayer/UI/FdVBoxFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC6A818199C9600C2658A /* FdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdView.h; path = FreddoPlayer/UI/FdView.h; sourceTree = SOURCE_ROOT; };
+		A90EC6A918199C9600C2658A /* FdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdView.m; path = FreddoPlayer/UI/FdView.m; sourceTree = SOURCE_ROOT; };
+		A90EC6AA18199C9600C2658A /* FdViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdViewFactory.h; path = FreddoPlayer/UI/FdViewFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC6AB18199C9600C2658A /* FdViewFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdViewFactory.m; path = FreddoPlayer/UI/FdViewFactory.m; sourceTree = SOURCE_ROOT; };
+		A90EC6AC18199C9600C2658A /* FdViewGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdViewGroup.h; path = FreddoPlayer/UI/FdViewGroup.h; sourceTree = SOURCE_ROOT; };
+		A90EC6AD18199C9600C2658A /* FdViewGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdViewGroup.m; path = FreddoPlayer/UI/FdViewGroup.m; sourceTree = SOURCE_ROOT; };
+		A90EC6CA18199CB800C2658A /* WeViewBlockLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewBlockLayout.h; sourceTree = "<group>"; };
+		A90EC6CB18199CB800C2658A /* WeViewBlockLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewBlockLayout.m; sourceTree = "<group>"; };
+		A90EC6CC18199CB800C2658A /* WeViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewFlowLayout.h; sourceTree = "<group>"; };
+		A90EC6CD18199CB800C2658A /* WeViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewFlowLayout.m; sourceTree = "<group>"; };
+		A90EC6CE18199CB800C2658A /* WeViewGridLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewGridLayout.h; sourceTree = "<group>"; };
+		A90EC6CF18199CB800C2658A /* WeViewGridLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewGridLayout.m; sourceTree = "<group>"; };
+		A90EC6D018199CB800C2658A /* WeViewLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewLayout.h; sourceTree = "<group>"; };
+		A90EC6D118199CB800C2658A /* WeViewLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewLayout.m; sourceTree = "<group>"; };
+		A90EC6D218199CB800C2658A /* WeViewLinearLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewLinearLayout.h; sourceTree = "<group>"; };
+		A90EC6D318199CB800C2658A /* WeViewLinearLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewLinearLayout.m; sourceTree = "<group>"; };
+		A90EC6D418199CB800C2658A /* WeViewNoopLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewNoopLayout.h; sourceTree = "<group>"; };
+		A90EC6D518199CB800C2658A /* WeViewNoopLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewNoopLayout.m; sourceTree = "<group>"; };
+		A90EC6D618199CB800C2658A /* WeViewStackLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeViewStackLayout.h; sourceTree = "<group>"; };
+		A90EC6D718199CB800C2658A /* WeViewStackLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeViewStackLayout.m; sourceTree = "<group>"; };
+		A90EC6D818199CB800C2658A /* UIView+WeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+WeView.h"; path = "FreddoPlayer/WeView/UIView+WeView.h"; sourceTree = SOURCE_ROOT; };
+		A90EC6D918199CB800C2658A /* UIView+WeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+WeView.m"; path = "FreddoPlayer/WeView/UIView+WeView.m"; sourceTree = SOURCE_ROOT; };
+		A90EC6DA18199CB800C2658A /* WeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeView.h; path = FreddoPlayer/WeView/WeView.h; sourceTree = SOURCE_ROOT; };
+		A90EC6DB18199CB800C2658A /* WeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WeView.m; path = FreddoPlayer/WeView/WeView.m; sourceTree = SOURCE_ROOT; };
+		A90EC6DC18199CB800C2658A /* WeViewEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeViewEnums.h; path = FreddoPlayer/WeView/WeViewEnums.h; sourceTree = SOURCE_ROOT; };
+		A90EC6DD18199CB800C2658A /* WeViewMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeViewMacros.h; path = FreddoPlayer/WeView/WeViewMacros.h; sourceTree = SOURCE_ROOT; };
+		A90EC6E718199CEB00C2658A /* FdAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdAppDelegate.h; path = FreddoPlayer/FdAppDelegate.h; sourceTree = SOURCE_ROOT; };
+		A90EC6E818199CEB00C2658A /* FdAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdAppDelegate.m; path = FreddoPlayer/FdAppDelegate.m; sourceTree = SOURCE_ROOT; };
+		A90EC6E918199CEB00C2658A /* FdClientWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdClientWS.h; path = FreddoPlayer/FdClientWS.h; sourceTree = SOURCE_ROOT; };
+		A90EC6EA18199CEB00C2658A /* FdClientWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdClientWS.m; path = FreddoPlayer/FdClientWS.m; sourceTree = SOURCE_ROOT; };
+		A90EC6EB18199CEB00C2658A /* FdHTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdHTTPConnection.h; path = FreddoPlayer/FdHTTPConnection.h; sourceTree = SOURCE_ROOT; };
+		A90EC6EC18199CEB00C2658A /* FdHTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdHTTPConnection.m; path = FreddoPlayer/FdHTTPConnection.m; sourceTree = SOURCE_ROOT; };
+		A90EC6EF18199CEB00C2658A /* FdScreenOrientationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdScreenOrientationDelegate.h; path = FreddoPlayer/FdScreenOrientationDelegate.h; sourceTree = SOURCE_ROOT; };
+		A90EC6F018199CEB00C2658A /* FdServerBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdServerBrowser.h; path = FreddoPlayer/FdServerBrowser.h; sourceTree = SOURCE_ROOT; };
+		A90EC6F118199CEB00C2658A /* FdServerBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdServerBrowser.m; path = FreddoPlayer/FdServerBrowser.m; sourceTree = SOURCE_ROOT; };
+		A90EC6F218199CEB00C2658A /* FdServerWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdServerWS.h; path = FreddoPlayer/FdServerWS.h; sourceTree = SOURCE_ROOT; };
+		A90EC6F318199CEB00C2658A /* FdServerWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdServerWS.m; path = FreddoPlayer/FdServerWS.m; sourceTree = SOURCE_ROOT; };
+		A90EC6F418199CEB00C2658A /* FdViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdViewController.h; path = FreddoPlayer/FdViewController.h; sourceTree = SOURCE_ROOT; };
+		A90EC6F518199CEB00C2658A /* FdViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdViewController.m; path = FreddoPlayer/FdViewController.m; sourceTree = SOURCE_ROOT; };
+		A90EC6F618199CEB00C2658A /* FdWebViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdWebViewDelegate.h; path = FreddoPlayer/FdWebViewDelegate.h; sourceTree = SOURCE_ROOT; };
+		A90EC6F718199CEB00C2658A /* FdWebViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdWebViewDelegate.m; path = FreddoPlayer/FdWebViewDelegate.m; sourceTree = SOURCE_ROOT; };
+		A90EC70218199E2800C2658A /* FdAccelerometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdAccelerometer.h; sourceTree = "<group>"; };
+		A90EC70318199E2800C2658A /* FdAccelerometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdAccelerometer.m; sourceTree = "<group>"; };
+		A90EC70418199E2800C2658A /* FdAccelerometerFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdAccelerometerFactory.h; sourceTree = "<group>"; };
+		A90EC70518199E2800C2658A /* FdAccelerometerFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdAccelerometerFactory.m; sourceTree = "<group>"; };
+		A90EC70718199E2800C2658A /* CalendarPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarPlugin.h; sourceTree = "<group>"; };
+		A90EC70818199E2800C2658A /* CalendarPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarPlugin.m; sourceTree = "<group>"; };
+		A90EC70918199E2800C2658A /* FdCalendarFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdCalendarFactory.h; sourceTree = "<group>"; };
+		A90EC70A18199E2800C2658A /* FdCalendarFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdCalendarFactory.m; sourceTree = "<group>"; };
+		A90EC71118199E2800C2658A /* FdCompass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdCompass.h; sourceTree = "<group>"; };
+		A90EC71218199E2800C2658A /* FdCompass.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdCompass.m; sourceTree = "<group>"; };
+		A90EC71518199E2800C2658A /* FdCompassFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdCompassFactory.h; sourceTree = "<group>"; };
+		A90EC71618199E2800C2658A /* FdCompassFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdCompassFactory.m; sourceTree = "<group>"; };
+		A90EC71818199E2800C2658A /* FdConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdConnection.h; sourceTree = "<group>"; };
+		A90EC71918199E2800C2658A /* FdConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdConnection.m; sourceTree = "<group>"; };
+		A90EC71A18199E2800C2658A /* FdReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdReachability.h; sourceTree = "<group>"; };
+		A90EC71B18199E2800C2658A /* FdReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdReachability.m; sourceTree = "<group>"; };
+		A90EC71C18199E2800C2658A /* FdConnectionFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdConnectionFactory.h; sourceTree = "<group>"; };
+		A90EC71D18199E2800C2658A /* FdConnectionFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdConnectionFactory.m; sourceTree = "<group>"; };
+		A90EC71F18199E2800C2658A /* FdContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdContact.h; sourceTree = "<group>"; };
+		A90EC72018199E2800C2658A /* FdContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdContact.m; sourceTree = "<group>"; };
+		A90EC72118199E2800C2658A /* FdContacts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdContacts.h; sourceTree = "<group>"; };
+		A90EC72218199E2800C2658A /* FdContacts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdContacts.m; sourceTree = "<group>"; };
+		A90EC72318199E2800C2658A /* FdContactsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdContactsFactory.h; sourceTree = "<group>"; };
+		A90EC72418199E2800C2658A /* FdContactsFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdContactsFactory.m; sourceTree = "<group>"; };
+		A90EC72618199E2800C2658A /* FdDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdDevice.h; sourceTree = "<group>"; };
+		A90EC72718199E2800C2658A /* FdDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdDevice.m; sourceTree = "<group>"; };
+		A90EC72818199E2800C2658A /* FdDeviceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdDeviceFactory.h; sourceTree = "<group>"; };
+		A90EC72918199E2800C2658A /* FdDeviceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdDeviceFactory.m; sourceTree = "<group>"; };
+		A90EC72A18199E2800C2658A /* FdService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdService.h; sourceTree = "<group>"; };
+		A90EC72B18199E2800C2658A /* FdService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdService.m; sourceTree = "<group>"; };
+		A90EC72C18199E2800C2658A /* FdServiceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdServiceFactory.h; sourceTree = "<group>"; };
+		A90EC72D18199E2800C2658A /* FdServiceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdServiceFactory.m; sourceTree = "<group>"; };
+		A90EC72E18199E2800C2658A /* FdServiceMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdServiceMgr.h; sourceTree = "<group>"; };
+		A90EC72F18199E2800C2658A /* FdServiceMgr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdServiceMgr.m; sourceTree = "<group>"; };
+		A90EC73018199E2800C2658A /* FdVideo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdVideo.h; sourceTree = "<group>"; };
+		A90EC73118199E2800C2658A /* FdVideo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdVideo.m; sourceTree = "<group>"; };
+		A90EC73218199E2800C2658A /* FdVideoFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdVideoFactory.h; sourceTree = "<group>"; };
+		A90EC73318199E2800C2658A /* FdVideoFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdVideoFactory.m; sourceTree = "<group>"; };
+		A90EC73518199E2800C2658A /* FdLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdLocation.h; sourceTree = "<group>"; };
+		A90EC73618199E2800C2658A /* FdLocation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdLocation.m; sourceTree = "<group>"; };
+		A90EC73718199E2800C2658A /* FdLocationFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdLocationFactory.h; sourceTree = "<group>"; };
+		A90EC73818199E2800C2658A /* FdLocationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdLocationFactory.m; sourceTree = "<group>"; };
+		A90EC73A18199E2800C2658A /* FdGlobalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdGlobalization.h; sourceTree = "<group>"; };
+		A90EC73B18199E2800C2658A /* FdGlobalization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdGlobalization.m; sourceTree = "<group>"; };
+		A90EC73C18199E2800C2658A /* FdGlobalizationFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdGlobalizationFactory.h; sourceTree = "<group>"; };
+		A90EC73D18199E2800C2658A /* FdGlobalizationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdGlobalizationFactory.m; sourceTree = "<group>"; };
+		A90EC73F18199E2800C2658A /* FdNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdNotification.h; sourceTree = "<group>"; };
+		A90EC74018199E2800C2658A /* FdNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdNotification.m; sourceTree = "<group>"; };
+		A90EC74118199E2800C2658A /* FdNotificationFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdNotificationFactory.h; sourceTree = "<group>"; };
+		A90EC74218199E2800C2658A /* FdNotificationFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdNotificationFactory.m; sourceTree = "<group>"; };
+		A90EC74418199E2800C2658A /* NSArray+Comparisons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+Comparisons.h"; sourceTree = "<group>"; };
+		A90EC74518199E2800C2658A /* NSArray+Comparisons.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Comparisons.m"; sourceTree = "<group>"; };
+		A90EC74618199E2800C2658A /* NSDictionary+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Extensions.h"; sourceTree = "<group>"; };
+		A90EC74718199E2800C2658A /* NSDictionary+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Extensions.m"; sourceTree = "<group>"; };
+		A90EC74818199E2800C2658A /* NSMutableArray+QueueAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+QueueAdditions.h"; sourceTree = "<group>"; };
+		A90EC74918199E2800C2658A /* NSMutableArray+QueueAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+QueueAdditions.m"; sourceTree = "<group>"; };
+		A90EC76C1819A3E800C2658A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = FdViewController_iPad.xib; sourceTree = "<group>"; };
+		A90EC76E1819A3E800C2658A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = FdViewController_iPhone.xib; sourceTree = "<group>"; };
+		A90EC7701819A3E800C2658A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
+		A90EC7741819C8D500C2658A /* FdAirPlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdAirPlay.h; path = FreddoPlayer/UI/FdAirPlay.h; sourceTree = SOURCE_ROOT; };
+		A90EC7751819C8D500C2658A /* FdAirPlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdAirPlay.m; path = FreddoPlayer/UI/FdAirPlay.m; sourceTree = SOURCE_ROOT; };
+		A90EC7771819C96900C2658A /* FdAirPlayFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdAirPlayFactory.h; path = FreddoPlayer/UI/FdAirPlayFactory.h; sourceTree = SOURCE_ROOT; };
+		A90EC7781819C96900C2658A /* FdAirPlayFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdAirPlayFactory.m; path = FreddoPlayer/UI/FdAirPlayFactory.m; sourceTree = SOURCE_ROOT; };
+		A96110431816A21D00DFF08E /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		A970345018EC4AAF00FD9B18 /* FdNotification.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FdNotification.bundle; path = FreddoPlayer/Services/FdNotification.bundle; sourceTree = SOURCE_ROOT; };
+		A98FA70318048E79005D9BE6 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		A98FA70418048E79005D9BE6 /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		A98FA73B18100A52005D9BE6 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		A98FA73D18100A86005D9BE6 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		A9CC3B8318296D7B0047F1D6 /* FdSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdSettings.h; sourceTree = "<group>"; };
+		A9CC3B8418296D7B0047F1D6 /* FdSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdSettings.m; sourceTree = "<group>"; };
+		A9CC3B8618296E960047F1D6 /* FdSettingsFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdSettingsFactory.h; sourceTree = "<group>"; };
+		A9CC3B8718296E960047F1D6 /* FdSettingsFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdSettingsFactory.m; sourceTree = "<group>"; };
+		A9DEB18818C126050069D33E /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		A9DEB18B18C126050069D33E /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		A9DEB18C18C126050069D33E /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		A9DEB18D18C126050069D33E /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		A9DEB19118C126960069D33E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		A9EBEF0217FF6FE100660116 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		A9FCFEBF183A464800A32410 /* FdAppView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdAppView.h; path = AppView/FdAppView.h; sourceTree = "<group>"; };
+		A9FCFEC0183A464800A32410 /* FdAppView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdAppView.m; path = AppView/FdAppView.m; sourceTree = "<group>"; };
+		A9FCFEC2183A466200A32410 /* FdAppViewFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdAppViewFactory.h; path = AppView/FdAppViewFactory.h; sourceTree = "<group>"; };
+		A9FCFEC3183A466200A32410 /* FdAppViewFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdAppViewFactory.m; path = AppView/FdAppViewFactory.m; sourceTree = "<group>"; };
+		CC1A00D3177158E900F0C3D6 /* Freddo Player.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Freddo Player.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC1A00D6177158E900F0C3D6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		CC1A00D8177158E900F0C3D6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		CC1A00DA177158E900F0C3D6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		CC1A02A51771BD5700F0C3D6 /* About.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = About.txt; sourceTree = "<group>"; };
+		CC1A02A61771BD5700F0C3D6 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		CC1A02A71771BD5700F0C3D6 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		CC1A02AA1771BD5700F0C3D6 /* DDData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDData.h; sourceTree = "<group>"; };
+		CC1A02AB1771BD5700F0C3D6 /* DDData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDData.m; sourceTree = "<group>"; };
+		CC1A02AC1771BD5700F0C3D6 /* DDNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDNumber.h; sourceTree = "<group>"; };
+		CC1A02AD1771BD5700F0C3D6 /* DDNumber.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDNumber.m; sourceTree = "<group>"; };
+		CC1A02AE1771BD5700F0C3D6 /* DDRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDRange.h; sourceTree = "<group>"; };
+		CC1A02AF1771BD5700F0C3D6 /* DDRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDRange.m; sourceTree = "<group>"; };
+		CC1A02B01771BD5700F0C3D6 /* HTTPAuthenticationRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPAuthenticationRequest.h; sourceTree = "<group>"; };
+		CC1A02B11771BD5700F0C3D6 /* HTTPAuthenticationRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPAuthenticationRequest.m; sourceTree = "<group>"; };
+		CC1A02B21771BD5700F0C3D6 /* HTTPConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPConnection.h; sourceTree = "<group>"; };
+		CC1A02B31771BD5700F0C3D6 /* HTTPConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPConnection.m; sourceTree = "<group>"; };
+		CC1A02B41771BD5700F0C3D6 /* HTTPLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPLogging.h; sourceTree = "<group>"; };
+		CC1A02B51771BD5700F0C3D6 /* HTTPMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPMessage.h; sourceTree = "<group>"; };
+		CC1A02B61771BD5700F0C3D6 /* HTTPMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPMessage.m; sourceTree = "<group>"; };
+		CC1A02B71771BD5700F0C3D6 /* HTTPResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPResponse.h; sourceTree = "<group>"; };
+		CC1A02B81771BD5700F0C3D6 /* HTTPServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPServer.h; sourceTree = "<group>"; };
+		CC1A02B91771BD5700F0C3D6 /* HTTPServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPServer.m; sourceTree = "<group>"; };
+		CC1A02BB1771BD5700F0C3D6 /* MultipartFormDataParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultipartFormDataParser.h; sourceTree = "<group>"; };
+		CC1A02BC1771BD5700F0C3D6 /* MultipartFormDataParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultipartFormDataParser.m; sourceTree = "<group>"; };
+		CC1A02BD1771BD5700F0C3D6 /* MultipartMessageHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultipartMessageHeader.h; sourceTree = "<group>"; };
+		CC1A02BE1771BD5700F0C3D6 /* MultipartMessageHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultipartMessageHeader.m; sourceTree = "<group>"; };
+		CC1A02BF1771BD5700F0C3D6 /* MultipartMessageHeaderField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultipartMessageHeaderField.h; sourceTree = "<group>"; };
+		CC1A02C01771BD5700F0C3D6 /* MultipartMessageHeaderField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultipartMessageHeaderField.m; sourceTree = "<group>"; };
+		CC1A02C21771BD5700F0C3D6 /* HTTPAsyncFileResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPAsyncFileResponse.h; sourceTree = "<group>"; };
+		CC1A02C31771BD5700F0C3D6 /* HTTPAsyncFileResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPAsyncFileResponse.m; sourceTree = "<group>"; };
+		CC1A02C41771BD5700F0C3D6 /* HTTPDataResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPDataResponse.h; sourceTree = "<group>"; };
+		CC1A02C51771BD5700F0C3D6 /* HTTPDataResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPDataResponse.m; sourceTree = "<group>"; };
+		CC1A02C61771BD5700F0C3D6 /* HTTPDynamicFileResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPDynamicFileResponse.h; sourceTree = "<group>"; };
+		CC1A02C71771BD5700F0C3D6 /* HTTPDynamicFileResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPDynamicFileResponse.m; sourceTree = "<group>"; };
+		CC1A02C81771BD5700F0C3D6 /* HTTPFileResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPFileResponse.h; sourceTree = "<group>"; };
+		CC1A02C91771BD5700F0C3D6 /* HTTPFileResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPFileResponse.m; sourceTree = "<group>"; };
+		CC1A02CA1771BD5700F0C3D6 /* HTTPRedirectResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HTTPRedirectResponse.h; sourceTree = "<group>"; };
+		CC1A02CB1771BD5700F0C3D6 /* HTTPRedirectResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HTTPRedirectResponse.m; sourceTree = "<group>"; };
+		CC1A02CC1771BD5700F0C3D6 /* WebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSocket.h; sourceTree = "<group>"; };
+		CC1A02CD1771BD5700F0C3D6 /* WebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebSocket.m; sourceTree = "<group>"; };
+		CC1A02CF1771BD5700F0C3D6 /* About.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = About.txt; sourceTree = "<group>"; };
+		CC1A02D01771BD5700F0C3D6 /* DDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
+		CC1A02D11771BD5700F0C3D6 /* DDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
+		CC1A02D21771BD5700F0C3D6 /* DDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDASLLogger.h; sourceTree = "<group>"; };
+		CC1A02D31771BD5700F0C3D6 /* DDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDASLLogger.m; sourceTree = "<group>"; };
+		CC1A02D41771BD5700F0C3D6 /* DDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDFileLogger.h; sourceTree = "<group>"; };
+		CC1A02D51771BD5700F0C3D6 /* DDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDFileLogger.m; sourceTree = "<group>"; };
+		CC1A02D61771BD5700F0C3D6 /* DDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDLog.h; sourceTree = "<group>"; };
+		CC1A02D71771BD5700F0C3D6 /* DDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDLog.m; sourceTree = "<group>"; };
+		CC1A02D81771BD5700F0C3D6 /* DDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTTYLogger.h; sourceTree = "<group>"; };
+		CC1A02D91771BD5700F0C3D6 /* DDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTTYLogger.m; sourceTree = "<group>"; };
+		CC1A02DB1771BD5700F0C3D6 /* ContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContextFilterLogFormatter.h; sourceTree = "<group>"; };
+		CC1A02DC1771BD5700F0C3D6 /* ContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContextFilterLogFormatter.m; sourceTree = "<group>"; };
+		CC1A02DD1771BD5700F0C3D6 /* DispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DispatchQueueLogFormatter.h; sourceTree = "<group>"; };
+		CC1A02DE1771BD5700F0C3D6 /* DispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DispatchQueueLogFormatter.m; sourceTree = "<group>"; };
+		CC1A02DF1771BD5700F0C3D6 /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		CC1A02FB1771BEA200F0C3D6 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		CC1A02FE1771BF8F00F0C3D6 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		CC1A03021771C9D700F0C3D6 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		CC1A031E1772C87400F0C3D6 /* base64.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base64.c; sourceTree = "<group>"; };
+		CC1A031F1772C87400F0C3D6 /* base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base64.h; sourceTree = "<group>"; };
+		CC1A03201772C87400F0C3D6 /* NSData+SRB64Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+SRB64Additions.h"; sourceTree = "<group>"; };
+		CC1A03211772C87400F0C3D6 /* NSData+SRB64Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+SRB64Additions.m"; sourceTree = "<group>"; };
+		CC1A03221772C87400F0C3D6 /* SocketRocket-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SocketRocket-Prefix.pch"; sourceTree = "<group>"; };
+		CC1A03231772C87400F0C3D6 /* SRWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SRWebSocket.h; sourceTree = "<group>"; };
+		CC1A03241772C87400F0C3D6 /* SRWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SRWebSocket.m; sourceTree = "<group>"; };
+		CC1A03281772CC1E00F0C3D6 /* libicucore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libicucore.dylib; path = usr/lib/libicucore.dylib; sourceTree = SDKROOT; };
+		CC2961AA18E9610000CBD669 /* GoogleCast.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleCast.framework; sourceTree = "<group>"; };
+		CC2961AD18E9744200CBD669 /* FdChromecastFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdChromecastFactory.h; path = Chromecast/FdChromecastFactory.h; sourceTree = "<group>"; };
+		CC2961AE18E9744200CBD669 /* FdChromecastFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdChromecastFactory.m; path = Chromecast/FdChromecastFactory.m; sourceTree = "<group>"; };
+		CC2961B018E97A1100CBD669 /* FdChromecast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FdChromecast.h; path = Chromecast/FdChromecast.h; sourceTree = "<group>"; };
+		CC2961B118E97A1100CBD669 /* FdChromecast.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FdChromecast.m; path = Chromecast/FdChromecast.m; sourceTree = "<group>"; };
+		CC3FC6071860474A006BB55E /* FdPresence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdPresence.h; sourceTree = "<group>"; };
+		CC3FC6081860474A006BB55E /* FdPresence.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdPresence.m; sourceTree = "<group>"; };
+		CC3FC6091860474A006BB55E /* FdPresenceFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FdPresenceFactory.h; sourceTree = "<group>"; };
+		CC3FC60A1860474A006BB55E /* FdPresenceFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FdPresenceFactory.m; sourceTree = "<group>"; };
+		CC64D9C6180F40C200B9C639 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		CC8422F918071175001B34C3 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		CCFABCE218BB669500D9CEAA /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "Freddo-Player/Images.xcassets"; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CC1A00D0177158E900F0C3D6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9DEB19218C126960069D33E /* libz.dylib in Frameworks */,
+				A90EC65E1817F09500C2658A /* EventKit.framework in Frameworks */,
+				A96110441816A21D00DFF08E /* AudioToolbox.framework in Frameworks */,
+				A98FA73E18100A86005D9BE6 /* SystemConfiguration.framework in Frameworks */,
+				A9DEB18E18C126050069D33E /* libTestFlight.a in Frameworks */,
+				A98FA73C18100A52005D9BE6 /* MobileCoreServices.framework in Frameworks */,
+				CC64D9C7180F40C200B9C639 /* QuartzCore.framework in Frameworks */,
+				CC8422FA18071175001B34C3 /* MediaPlayer.framework in Frameworks */,
+				A98FA70518048E79005D9BE6 /* AddressBook.framework in Frameworks */,
+				A98FA70618048E79005D9BE6 /* AddressBookUI.framework in Frameworks */,
+				A9EBEF0317FF6FE100660116 /* CoreLocation.framework in Frameworks */,
+				CC1A03291772CC1E00F0C3D6 /* libicucore.dylib in Frameworks */,
+				CC2961AB18E9610000CBD669 /* GoogleCast.framework in Frameworks */,
+				CC1A03001771BF9D00F0C3D6 /* Security.framework in Frameworks */,
+				CC1A02FD1771BF0500F0C3D6 /* CFNetwork.framework in Frameworks */,
+				CC1A00D7177158E900F0C3D6 /* UIKit.framework in Frameworks */,
+				CC1A00D9177158E900F0C3D6 /* Foundation.framework in Frameworks */,
+				CC1A00DB177158E900F0C3D6 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A90EC6C918199CB800C2658A /* Layouts */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC6CA18199CB800C2658A /* WeViewBlockLayout.h */,
+				A90EC6CB18199CB800C2658A /* WeViewBlockLayout.m */,
+				A90EC6CC18199CB800C2658A /* WeViewFlowLayout.h */,
+				A90EC6CD18199CB800C2658A /* WeViewFlowLayout.m */,
+				A90EC6CE18199CB800C2658A /* WeViewGridLayout.h */,
+				A90EC6CF18199CB800C2658A /* WeViewGridLayout.m */,
+				A90EC6D018199CB800C2658A /* WeViewLayout.h */,
+				A90EC6D118199CB800C2658A /* WeViewLayout.m */,
+				A90EC6D218199CB800C2658A /* WeViewLinearLayout.h */,
+				A90EC6D318199CB800C2658A /* WeViewLinearLayout.m */,
+				A90EC6D418199CB800C2658A /* WeViewNoopLayout.h */,
+				A90EC6D518199CB800C2658A /* WeViewNoopLayout.m */,
+				A90EC6D618199CB800C2658A /* WeViewStackLayout.h */,
+				A90EC6D718199CB800C2658A /* WeViewStackLayout.m */,
+			);
+			name = Layouts;
+			path = FreddoPlayer/WeView/Layouts;
+			sourceTree = SOURCE_ROOT;
+		};
+		A90EC70018199E2800C2658A /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				CC2961AC18E973DF00CBD669 /* Chromecast */,
+				A90EC70118199E2800C2658A /* Accelerometer */,
+				A9FCFEBE183A460900A32410 /* AppView */,
+				A90EC70618199E2800C2658A /* Calendar */,
+				A90EC71018199E2800C2658A /* Compass */,
+				A90EC71718199E2800C2658A /* Connection */,
+				A90EC71E18199E2800C2658A /* Contacts */,
+				A90EC72518199E2800C2658A /* Device */,
+				A90EC72A18199E2800C2658A /* FdService.h */,
+				A90EC72B18199E2800C2658A /* FdService.m */,
+				A90EC72C18199E2800C2658A /* FdServiceFactory.h */,
+				A90EC72D18199E2800C2658A /* FdServiceFactory.m */,
+				A90EC72E18199E2800C2658A /* FdServiceMgr.h */,
+				A90EC72F18199E2800C2658A /* FdServiceMgr.m */,
+				A90EC73418199E2800C2658A /* Geolocation */,
+				A90EC73918199E2800C2658A /* Globalization */,
+				A90EC73E18199E2800C2658A /* Notification */,
+				A9CC3B8218296D7B0047F1D6 /* Preferences */,
+				CC3FC6061860474A006BB55E /* Presence */,
+				A90EC74318199E2800C2658A /* Utils */,
+				CCB13D8C18576E35007D1D23 /* Video */,
+			);
+			name = Services;
+			path = FreddoPlayer/Services;
+			sourceTree = SOURCE_ROOT;
+		};
+		A90EC70118199E2800C2658A /* Accelerometer */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC70218199E2800C2658A /* FdAccelerometer.h */,
+				A90EC70318199E2800C2658A /* FdAccelerometer.m */,
+				A90EC70418199E2800C2658A /* FdAccelerometerFactory.h */,
+				A90EC70518199E2800C2658A /* FdAccelerometerFactory.m */,
+			);
+			path = Accelerometer;
+			sourceTree = "<group>";
+		};
+		A90EC70618199E2800C2658A /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC70718199E2800C2658A /* CalendarPlugin.h */,
+				A90EC70818199E2800C2658A /* CalendarPlugin.m */,
+				A90EC70918199E2800C2658A /* FdCalendarFactory.h */,
+				A90EC70A18199E2800C2658A /* FdCalendarFactory.m */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		A90EC71018199E2800C2658A /* Compass */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC71118199E2800C2658A /* FdCompass.h */,
+				A90EC71218199E2800C2658A /* FdCompass.m */,
+				A90EC71518199E2800C2658A /* FdCompassFactory.h */,
+				A90EC71618199E2800C2658A /* FdCompassFactory.m */,
+			);
+			path = Compass;
+			sourceTree = "<group>";
+		};
+		A90EC71718199E2800C2658A /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC71818199E2800C2658A /* FdConnection.h */,
+				A90EC71918199E2800C2658A /* FdConnection.m */,
+				A90EC71A18199E2800C2658A /* FdReachability.h */,
+				A90EC71B18199E2800C2658A /* FdReachability.m */,
+				A90EC71C18199E2800C2658A /* FdConnectionFactory.h */,
+				A90EC71D18199E2800C2658A /* FdConnectionFactory.m */,
+			);
+			path = Connection;
+			sourceTree = "<group>";
+		};
+		A90EC71E18199E2800C2658A /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC71F18199E2800C2658A /* FdContact.h */,
+				A90EC72018199E2800C2658A /* FdContact.m */,
+				A90EC72118199E2800C2658A /* FdContacts.h */,
+				A90EC72218199E2800C2658A /* FdContacts.m */,
+				A90EC72318199E2800C2658A /* FdContactsFactory.h */,
+				A90EC72418199E2800C2658A /* FdContactsFactory.m */,
+			);
+			path = Contacts;
+			sourceTree = "<group>";
+		};
+		A90EC72518199E2800C2658A /* Device */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC72618199E2800C2658A /* FdDevice.h */,
+				A90EC72718199E2800C2658A /* FdDevice.m */,
+				A90EC72818199E2800C2658A /* FdDeviceFactory.h */,
+				A90EC72918199E2800C2658A /* FdDeviceFactory.m */,
+			);
+			path = Device;
+			sourceTree = "<group>";
+		};
+		A90EC73418199E2800C2658A /* Geolocation */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC73518199E2800C2658A /* FdLocation.h */,
+				A90EC73618199E2800C2658A /* FdLocation.m */,
+				A90EC73718199E2800C2658A /* FdLocationFactory.h */,
+				A90EC73818199E2800C2658A /* FdLocationFactory.m */,
+			);
+			path = Geolocation;
+			sourceTree = "<group>";
+		};
+		A90EC73918199E2800C2658A /* Globalization */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC73A18199E2800C2658A /* FdGlobalization.h */,
+				A90EC73B18199E2800C2658A /* FdGlobalization.m */,
+				A90EC73C18199E2800C2658A /* FdGlobalizationFactory.h */,
+				A90EC73D18199E2800C2658A /* FdGlobalizationFactory.m */,
+			);
+			path = Globalization;
+			sourceTree = "<group>";
+		};
+		A90EC73E18199E2800C2658A /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				A970345018EC4AAF00FD9B18 /* FdNotification.bundle */,
+				A90EC73F18199E2800C2658A /* FdNotification.h */,
+				A90EC74018199E2800C2658A /* FdNotification.m */,
+				A90EC74118199E2800C2658A /* FdNotificationFactory.h */,
+				A90EC74218199E2800C2658A /* FdNotificationFactory.m */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
+		A90EC74318199E2800C2658A /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC74418199E2800C2658A /* NSArray+Comparisons.h */,
+				A90EC74518199E2800C2658A /* NSArray+Comparisons.m */,
+				A90EC74618199E2800C2658A /* NSDictionary+Extensions.h */,
+				A90EC74718199E2800C2658A /* NSDictionary+Extensions.m */,
+				A90EC74818199E2800C2658A /* NSMutableArray+QueueAdditions.h */,
+				A90EC74918199E2800C2658A /* NSMutableArray+QueueAdditions.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		A90EC76A1819A3E800C2658A /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC76B1819A3E800C2658A /* FdViewController_iPad.xib */,
+				A90EC76D1819A3E800C2658A /* FdViewController_iPhone.xib */,
+				A90EC76F1819A3E800C2658A /* InfoPlist.strings */,
+			);
+			name = en.lproj;
+			path = FreddoPlayer/en.lproj;
+			sourceTree = SOURCE_ROOT;
+		};
+		A96110481816A89100DFF08E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		A9CC3B8218296D7B0047F1D6 /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				A9CC3B8318296D7B0047F1D6 /* FdSettings.h */,
+				A9CC3B8418296D7B0047F1D6 /* FdSettings.m */,
+				A9CC3B8618296E960047F1D6 /* FdSettingsFactory.h */,
+				A9CC3B8718296E960047F1D6 /* FdSettingsFactory.m */,
+			);
+			path = Preferences;
+			sourceTree = "<group>";
+		};
+		A9DEB18718C126050069D33E /* TestFlightSDK3 */ = {
+			isa = PBXGroup;
+			children = (
+				A9DEB18818C126050069D33E /* libTestFlight.a */,
+				A9DEB18B18C126050069D33E /* TestFlight+AsyncLogging.h */,
+				A9DEB18C18C126050069D33E /* TestFlight+ManualSessions.h */,
+				A9DEB18D18C126050069D33E /* TestFlight.h */,
+			);
+			path = TestFlightSDK3;
+			sourceTree = "<group>";
+		};
+		A9FCFEBE183A460900A32410 /* AppView */ = {
+			isa = PBXGroup;
+			children = (
+				A9FCFEBF183A464800A32410 /* FdAppView.h */,
+				A9FCFEC0183A464800A32410 /* FdAppView.m */,
+				A9FCFEC2183A466200A32410 /* FdAppViewFactory.h */,
+				A9FCFEC3183A466200A32410 /* FdAppViewFactory.m */,
+			);
+			name = AppView;
+			sourceTree = "<group>";
+		};
+		CC1A00CA177158E900F0C3D6 = {
+			isa = PBXGroup;
+			children = (
+				CC2961A918E9610000CBD669 /* GoogleCastFramework-2.1.0-Release */,
+				A9DEB18718C126050069D33E /* TestFlightSDK3 */,
+				CC1A03021771C9D700F0C3D6 /* www */,
+				CC1A02A41771BD5700F0C3D6 /* CocoaAsyncSocket-1-10-2013 */,
+				CC1A02A81771BD5700F0C3D6 /* CocoaHTTPServer */,
+				CC1A02CE1771BD5700F0C3D6 /* CocoaLumberjack */,
+				CC1A031D1772C87400F0C3D6 /* SocketRocket */,
+				CC1A00DC177158E900F0C3D6 /* Freddo-Player */,
+				CC1A00D4177158E900F0C3D6 /* Products */,
+				CC1A00D5177158E900F0C3D6 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		CC1A00D4177158E900F0C3D6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A00D3177158E900F0C3D6 /* Freddo Player.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CC1A00D5177158E900F0C3D6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A9DEB19118C126960069D33E /* libz.dylib */,
+				A90EC65D1817F09500C2658A /* EventKit.framework */,
+				A96110431816A21D00DFF08E /* AudioToolbox.framework */,
+				A98FA73D18100A86005D9BE6 /* SystemConfiguration.framework */,
+				A98FA73B18100A52005D9BE6 /* MobileCoreServices.framework */,
+				CC64D9C6180F40C200B9C639 /* QuartzCore.framework */,
+				CC8422F918071175001B34C3 /* MediaPlayer.framework */,
+				A98FA70318048E79005D9BE6 /* AddressBook.framework */,
+				A98FA70418048E79005D9BE6 /* AddressBookUI.framework */,
+				A9EBEF0217FF6FE100660116 /* CoreLocation.framework */,
+				CC1A03281772CC1E00F0C3D6 /* libicucore.dylib */,
+				CC1A02FE1771BF8F00F0C3D6 /* Security.framework */,
+				CC1A02FB1771BEA200F0C3D6 /* CFNetwork.framework */,
+				CC1A00D6177158E900F0C3D6 /* UIKit.framework */,
+				CC1A00D8177158E900F0C3D6 /* Foundation.framework */,
+				CC1A00DA177158E900F0C3D6 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CC1A00DC177158E900F0C3D6 /* Freddo-Player */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC76A1819A3E800C2658A /* en.lproj */,
+				A90EC70018199E2800C2658A /* Services */,
+				A90EC6E718199CEB00C2658A /* FdAppDelegate.h */,
+				A90EC6E818199CEB00C2658A /* FdAppDelegate.m */,
+				A90EC6E918199CEB00C2658A /* FdClientWS.h */,
+				A90EC6EA18199CEB00C2658A /* FdClientWS.m */,
+				A90EC6EB18199CEB00C2658A /* FdHTTPConnection.h */,
+				A90EC6EC18199CEB00C2658A /* FdHTTPConnection.m */,
+				A90EC6EF18199CEB00C2658A /* FdScreenOrientationDelegate.h */,
+				A90EC6F018199CEB00C2658A /* FdServerBrowser.h */,
+				A90EC6F118199CEB00C2658A /* FdServerBrowser.m */,
+				A90EC6F218199CEB00C2658A /* FdServerWS.h */,
+				A90EC6F318199CEB00C2658A /* FdServerWS.m */,
+				A90EC6F418199CEB00C2658A /* FdViewController.h */,
+				A90EC6F518199CEB00C2658A /* FdViewController.m */,
+				A90EC6F618199CEB00C2658A /* FdWebViewDelegate.h */,
+				A90EC6F718199CEB00C2658A /* FdWebViewDelegate.m */,
+				A96110481816A89100DFF08E /* Resources */,
+				CCA4EA9217944C140064AC5E /* UI */,
+				CC1A032D1773118300F0C3D6 /* Utils */,
+				CCFABCE218BB669500D9CEAA /* Images.xcassets */,
+				CC1A00DD177158E900F0C3D6 /* Supporting Files */,
+			);
+			name = "Freddo-Player";
+			path = "FreddoTV Player";
+			sourceTree = "<group>";
+		};
+		CC1A00DD177158E900F0C3D6 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC66818199C2800C2658A /* Default-568h@2x.png */,
+				A90EC66918199C2800C2658A /* Default.png */,
+				A90EC66A18199C2800C2658A /* Default@2x.png */,
+				A90EC66B18199C2800C2658A /* Freddo-Player-Info.plist */,
+				A90EC66C18199C2800C2658A /* Freddo-Player-Prefix.pch */,
+				A90EC66D18199C2800C2658A /* main.m */,
+				A90EC66E18199C2800C2658A /* Settings.bundle */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		CC1A02A41771BD5700F0C3D6 /* CocoaAsyncSocket-1-10-2013 */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02A51771BD5700F0C3D6 /* About.txt */,
+				CC1A02A61771BD5700F0C3D6 /* GCDAsyncSocket.h */,
+				CC1A02A71771BD5700F0C3D6 /* GCDAsyncSocket.m */,
+			);
+			name = "CocoaAsyncSocket-1-10-2013";
+			path = CocoaAsyncSocket;
+			sourceTree = "<group>";
+		};
+		CC1A02A81771BD5700F0C3D6 /* CocoaHTTPServer */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02A91771BD5700F0C3D6 /* Categories */,
+				CC1A02B01771BD5700F0C3D6 /* HTTPAuthenticationRequest.h */,
+				CC1A02B11771BD5700F0C3D6 /* HTTPAuthenticationRequest.m */,
+				CC1A02B21771BD5700F0C3D6 /* HTTPConnection.h */,
+				CC1A02B31771BD5700F0C3D6 /* HTTPConnection.m */,
+				CC1A02B41771BD5700F0C3D6 /* HTTPLogging.h */,
+				CC1A02B51771BD5700F0C3D6 /* HTTPMessage.h */,
+				CC1A02B61771BD5700F0C3D6 /* HTTPMessage.m */,
+				CC1A02B71771BD5700F0C3D6 /* HTTPResponse.h */,
+				CC1A02B81771BD5700F0C3D6 /* HTTPServer.h */,
+				CC1A02B91771BD5700F0C3D6 /* HTTPServer.m */,
+				CC1A02BA1771BD5700F0C3D6 /* Mime */,
+				CC1A02C11771BD5700F0C3D6 /* Responses */,
+				CC1A02CC1771BD5700F0C3D6 /* WebSocket.h */,
+				CC1A02CD1771BD5700F0C3D6 /* WebSocket.m */,
+			);
+			path = CocoaHTTPServer;
+			sourceTree = "<group>";
+		};
+		CC1A02A91771BD5700F0C3D6 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02AA1771BD5700F0C3D6 /* DDData.h */,
+				CC1A02AB1771BD5700F0C3D6 /* DDData.m */,
+				CC1A02AC1771BD5700F0C3D6 /* DDNumber.h */,
+				CC1A02AD1771BD5700F0C3D6 /* DDNumber.m */,
+				CC1A02AE1771BD5700F0C3D6 /* DDRange.h */,
+				CC1A02AF1771BD5700F0C3D6 /* DDRange.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+		CC1A02BA1771BD5700F0C3D6 /* Mime */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02BB1771BD5700F0C3D6 /* MultipartFormDataParser.h */,
+				CC1A02BC1771BD5700F0C3D6 /* MultipartFormDataParser.m */,
+				CC1A02BD1771BD5700F0C3D6 /* MultipartMessageHeader.h */,
+				CC1A02BE1771BD5700F0C3D6 /* MultipartMessageHeader.m */,
+				CC1A02BF1771BD5700F0C3D6 /* MultipartMessageHeaderField.h */,
+				CC1A02C01771BD5700F0C3D6 /* MultipartMessageHeaderField.m */,
+			);
+			path = Mime;
+			sourceTree = "<group>";
+		};
+		CC1A02C11771BD5700F0C3D6 /* Responses */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02C21771BD5700F0C3D6 /* HTTPAsyncFileResponse.h */,
+				CC1A02C31771BD5700F0C3D6 /* HTTPAsyncFileResponse.m */,
+				CC1A02C41771BD5700F0C3D6 /* HTTPDataResponse.h */,
+				CC1A02C51771BD5700F0C3D6 /* HTTPDataResponse.m */,
+				CC1A02C61771BD5700F0C3D6 /* HTTPDynamicFileResponse.h */,
+				CC1A02C71771BD5700F0C3D6 /* HTTPDynamicFileResponse.m */,
+				CC1A02C81771BD5700F0C3D6 /* HTTPFileResponse.h */,
+				CC1A02C91771BD5700F0C3D6 /* HTTPFileResponse.m */,
+				CC1A02CA1771BD5700F0C3D6 /* HTTPRedirectResponse.h */,
+				CC1A02CB1771BD5700F0C3D6 /* HTTPRedirectResponse.m */,
+			);
+			path = Responses;
+			sourceTree = "<group>";
+		};
+		CC1A02CE1771BD5700F0C3D6 /* CocoaLumberjack */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02CF1771BD5700F0C3D6 /* About.txt */,
+				CC1A02D01771BD5700F0C3D6 /* DDAbstractDatabaseLogger.h */,
+				CC1A02D11771BD5700F0C3D6 /* DDAbstractDatabaseLogger.m */,
+				CC1A02D21771BD5700F0C3D6 /* DDASLLogger.h */,
+				CC1A02D31771BD5700F0C3D6 /* DDASLLogger.m */,
+				CC1A02D41771BD5700F0C3D6 /* DDFileLogger.h */,
+				CC1A02D51771BD5700F0C3D6 /* DDFileLogger.m */,
+				CC1A02D61771BD5700F0C3D6 /* DDLog.h */,
+				CC1A02D71771BD5700F0C3D6 /* DDLog.m */,
+				CC1A02D81771BD5700F0C3D6 /* DDTTYLogger.h */,
+				CC1A02D91771BD5700F0C3D6 /* DDTTYLogger.m */,
+				CC1A02DA1771BD5700F0C3D6 /* Extensions */,
+			);
+			path = CocoaLumberjack;
+			sourceTree = "<group>";
+		};
+		CC1A02DA1771BD5700F0C3D6 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A02DB1771BD5700F0C3D6 /* ContextFilterLogFormatter.h */,
+				CC1A02DC1771BD5700F0C3D6 /* ContextFilterLogFormatter.m */,
+				CC1A02DD1771BD5700F0C3D6 /* DispatchQueueLogFormatter.h */,
+				CC1A02DE1771BD5700F0C3D6 /* DispatchQueueLogFormatter.m */,
+				CC1A02DF1771BD5700F0C3D6 /* README.txt */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		CC1A031D1772C87400F0C3D6 /* SocketRocket */ = {
+			isa = PBXGroup;
+			children = (
+				CC1A031E1772C87400F0C3D6 /* base64.c */,
+				CC1A031F1772C87400F0C3D6 /* base64.h */,
+				CC1A03201772C87400F0C3D6 /* NSData+SRB64Additions.h */,
+				CC1A03211772C87400F0C3D6 /* NSData+SRB64Additions.m */,
+				CC1A03221772C87400F0C3D6 /* SocketRocket-Prefix.pch */,
+				CC1A03231772C87400F0C3D6 /* SRWebSocket.h */,
+				CC1A03241772C87400F0C3D6 /* SRWebSocket.m */,
+			);
+			path = SocketRocket;
+			sourceTree = "<group>";
+		};
+		CC1A032D1773118300F0C3D6 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC67518199C6A00C2658A /* NSData+Base64.h */,
+				A90EC67618199C6A00C2658A /* NSData+Base64.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		CC2961A918E9610000CBD669 /* GoogleCastFramework-2.1.0-Release */ = {
+			isa = PBXGroup;
+			children = (
+				CC2961AA18E9610000CBD669 /* GoogleCast.framework */,
+			);
+			path = "GoogleCastFramework-2.1.0-Release";
+			sourceTree = "<group>";
+		};
+		CC2961AC18E973DF00CBD669 /* Chromecast */ = {
+			isa = PBXGroup;
+			children = (
+				CC2961AD18E9744200CBD669 /* FdChromecastFactory.h */,
+				CC2961AE18E9744200CBD669 /* FdChromecastFactory.m */,
+				CC2961B018E97A1100CBD669 /* FdChromecast.h */,
+				CC2961B118E97A1100CBD669 /* FdChromecast.m */,
+			);
+			name = Chromecast;
+			sourceTree = "<group>";
+		};
+		CC3FC6061860474A006BB55E /* Presence */ = {
+			isa = PBXGroup;
+			children = (
+				CC3FC6071860474A006BB55E /* FdPresence.h */,
+				CC3FC6081860474A006BB55E /* FdPresence.m */,
+				CC3FC6091860474A006BB55E /* FdPresenceFactory.h */,
+				CC3FC60A1860474A006BB55E /* FdPresenceFactory.m */,
+			);
+			path = Presence;
+			sourceTree = "<group>";
+		};
+		CC64D986180C64B400B9C639 /* WeView */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC6C918199CB800C2658A /* Layouts */,
+				A90EC6D818199CB800C2658A /* UIView+WeView.h */,
+				A90EC6D918199CB800C2658A /* UIView+WeView.m */,
+				A90EC6DA18199CB800C2658A /* WeView.h */,
+				A90EC6DB18199CB800C2658A /* WeView.m */,
+				A90EC6DC18199CB800C2658A /* WeViewEnums.h */,
+				A90EC6DD18199CB800C2658A /* WeViewMacros.h */,
+			);
+			path = WeView;
+			sourceTree = "<group>";
+		};
+		CCA4EA9217944C140064AC5E /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC67818199C9600C2658A /* FdButton.h */,
+				A90EC67918199C9600C2658A /* FdButton.m */,
+				A90EC67A18199C9600C2658A /* FdButtonFactory.h */,
+				A90EC67B18199C9600C2658A /* FdButtonFactory.m */,
+				A90EC67C18199C9600C2658A /* FdDisplay.h */,
+				A90EC67D18199C9600C2658A /* FdDisplay.m */,
+				A90EC67E18199C9600C2658A /* FdHBox.h */,
+				A90EC67F18199C9600C2658A /* FdHBox.m */,
+				A90EC68018199C9600C2658A /* FdHBoxFactory.h */,
+				A90EC68118199C9600C2658A /* FdHBoxFactory.m */,
+				A90EC68218199C9600C2658A /* FdImageView.h */,
+				A90EC68318199C9600C2658A /* FdImageView.m */,
+				A90EC68418199C9600C2658A /* FdNavController.h */,
+				A90EC68518199C9600C2658A /* FdNavController.m */,
+				A90EC68618199C9600C2658A /* FdNavControllerFactory.h */,
+				A90EC68718199C9600C2658A /* FdNavControllerFactory.m */,
+				A90EC68818199C9600C2658A /* FdProgressView.h */,
+				A90EC68918199C9600C2658A /* FdProgressView.m */,
+				A90EC68A18199C9600C2658A /* FdProgressViewFactory.h */,
+				A90EC68B18199C9600C2658A /* FdProgressViewFactory.m */,
+				A90EC68C18199C9600C2658A /* FdSlider.h */,
+				A90EC68D18199C9600C2658A /* FdSlider.m */,
+				A90EC68E18199C9600C2658A /* FdSliderFactory.h */,
+				A90EC68F18199C9600C2658A /* FdSliderFactory.m */,
+				A90EC69018199C9600C2658A /* FdSpacer.h */,
+				A90EC69118199C9600C2658A /* FdSpacer.m */,
+				A90EC69218199C9600C2658A /* FdSpacerFactory.h */,
+				A90EC69318199C9600C2658A /* FdSpacerFactory.m */,
+				A90EC69418199C9600C2658A /* FdStack.h */,
+				A90EC69518199C9600C2658A /* FdStack.m */,
+				A90EC69618199C9600C2658A /* FdStackFactory.h */,
+				A90EC69718199C9600C2658A /* FdStackFactory.m */,
+				A90EC69818199C9600C2658A /* FdSwitch.h */,
+				A90EC69918199C9600C2658A /* FdSwitch.m */,
+				A90EC69A18199C9600C2658A /* FdSwitchFactory.h */,
+				A90EC69B18199C9600C2658A /* FdSwitchFactory.m */,
+				A90EC69C18199C9600C2658A /* FdTextField.h */,
+				A90EC69D18199C9600C2658A /* FdTextField.m */,
+				A90EC69E18199C9600C2658A /* FdTextFieldFactory.h */,
+				A90EC69F18199C9600C2658A /* FdTextFieldFactory.m */,
+				A90EC6A018199C9600C2658A /* FdTextView.h */,
+				A90EC6A118199C9600C2658A /* FdTextView.m */,
+				A90EC6A218199C9600C2658A /* FdTextViewFactory.h */,
+				A90EC6A318199C9600C2658A /* FdTextViewFactory.m */,
+				A90EC6A418199C9600C2658A /* FdVBox.h */,
+				A90EC6A518199C9600C2658A /* FdVBox.m */,
+				A90EC6A618199C9600C2658A /* FdVBoxFactory.h */,
+				A90EC6A718199C9600C2658A /* FdVBoxFactory.m */,
+				A90EC6A818199C9600C2658A /* FdView.h */,
+				A90EC6A918199C9600C2658A /* FdView.m */,
+				A90EC6AA18199C9600C2658A /* FdViewFactory.h */,
+				A90EC6AB18199C9600C2658A /* FdViewFactory.m */,
+				A90EC6AC18199C9600C2658A /* FdViewGroup.h */,
+				A90EC6AD18199C9600C2658A /* FdViewGroup.m */,
+				CC64D986180C64B400B9C639 /* WeView */,
+				A90EC7741819C8D500C2658A /* FdAirPlay.h */,
+				A90EC7751819C8D500C2658A /* FdAirPlay.m */,
+				A90EC7771819C96900C2658A /* FdAirPlayFactory.h */,
+				A90EC7781819C96900C2658A /* FdAirPlayFactory.m */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
+		CCB13D8C18576E35007D1D23 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				A90EC73018199E2800C2658A /* FdVideo.h */,
+				A90EC73118199E2800C2658A /* FdVideo.m */,
+				A90EC73218199E2800C2658A /* FdVideoFactory.h */,
+				A90EC73318199E2800C2658A /* FdVideoFactory.m */,
+			);
+			name = Video;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CC1A00D2177158E900F0C3D6 /* Freddo-Player */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC1A00F9177158E900F0C3D6 /* Build configuration list for PBXNativeTarget "Freddo-Player" */;
+			buildPhases = (
+				CC1A00CF177158E900F0C3D6 /* Sources */,
+				CC1A00D0177158E900F0C3D6 /* Frameworks */,
+				CC1A00D1177158E900F0C3D6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Freddo-Player";
+			productName = "FreddoTV Player";
+			productReference = CC1A00D3177158E900F0C3D6 /* Freddo Player.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CC1A00CB177158E900F0C3D6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = Ftv;
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "ArkaSoft LLC";
+				TargetAttributes = {
+					CC1A00D2177158E900F0C3D6 = {
+						DevelopmentTeam = ME833V5D8D;
+					};
+				};
+			};
+			buildConfigurationList = CC1A00CE177158E900F0C3D6 /* Build configuration list for PBXProject "Freddo-Player" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = CC1A00CA177158E900F0C3D6;
+			productRefGroup = CC1A00D4177158E900F0C3D6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CC1A00D2177158E900F0C3D6 /* Freddo-Player */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CC1A00D1177158E900F0C3D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EC67418199C2800C2658A /* Settings.bundle in Resources */,
+				CC1A02E01771BD5700F0C3D6 /* About.txt in Resources */,
+				A90EC7731819A3E800C2658A /* InfoPlist.strings in Resources */,
+				A90EC67218199C2800C2658A /* Freddo-Player-Info.plist in Resources */,
+				A90EC66F18199C2800C2658A /* Default-568h@2x.png in Resources */,
+				CC1A02F21771BD5700F0C3D6 /* About.txt in Resources */,
+				A970345118EC4AAF00FD9B18 /* FdNotification.bundle in Resources */,
+				A90EC67018199C2800C2658A /* Default.png in Resources */,
+				A90EC67118199C2800C2658A /* Default@2x.png in Resources */,
+				CCFABCE318BB669500D9CEAA /* Images.xcassets in Resources */,
+				CC1A02FA1771BD5700F0C3D6 /* README.txt in Resources */,
+				CC1A03031771C9D700F0C3D6 /* www in Resources */,
+				A90EC7711819A3E800C2658A /* FdViewController_iPad.xib in Resources */,
+				A90EC7721819A3E800C2658A /* FdViewController_iPhone.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CC1A00CF177158E900F0C3D6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A90EC76018199E2800C2658A /* FdVideoFactory.m in Sources */,
+				CC3FC60C1860474A006BB55E /* FdPresenceFactory.m in Sources */,
+				A90EC6B218199C9600C2658A /* FdHBoxFactory.m in Sources */,
+				A90EC6C318199C9600C2658A /* FdTextViewFactory.m in Sources */,
+				A90EC6B318199C9600C2658A /* FdImageView.m in Sources */,
+				A90EC6C718199C9600C2658A /* FdViewFactory.m in Sources */,
+				A90EC76318199E2800C2658A /* FdGlobalization.m in Sources */,
+				CC1A02E11771BD5700F0C3D6 /* GCDAsyncSocket.m in Sources */,
+				CC1A02E21771BD5700F0C3D6 /* DDData.m in Sources */,
+				A90EC75518199E2800C2658A /* FdReachability.m in Sources */,
+				A90EC6AE18199C9600C2658A /* FdButton.m in Sources */,
+				CC1A02E31771BD5700F0C3D6 /* DDNumber.m in Sources */,
+				CC1A02E41771BD5700F0C3D6 /* DDRange.m in Sources */,
+				A90EC76418199E2800C2658A /* FdGlobalizationFactory.m in Sources */,
+				A90EC76718199E2800C2658A /* NSArray+Comparisons.m in Sources */,
+				CC1A02E51771BD5700F0C3D6 /* HTTPAuthenticationRequest.m in Sources */,
+				CC1A02E61771BD5700F0C3D6 /* HTTPConnection.m in Sources */,
+				A90EC75A18199E2800C2658A /* FdDevice.m in Sources */,
+				A90EC75418199E2800C2658A /* FdConnection.m in Sources */,
+				CC1A02E71771BD5700F0C3D6 /* HTTPMessage.m in Sources */,
+				A90EC6DF18199CB800C2658A /* WeViewFlowLayout.m in Sources */,
+				A90EC75318199E2800C2658A /* FdCompassFactory.m in Sources */,
+				A90EC6B118199C9600C2658A /* FdHBox.m in Sources */,
+				CC1A02E81771BD5700F0C3D6 /* HTTPServer.m in Sources */,
+				CC1A02E91771BD5700F0C3D6 /* MultipartFormDataParser.m in Sources */,
+				A90EC75D18199E2800C2658A /* FdServiceFactory.m in Sources */,
+				A90EC75B18199E2800C2658A /* FdDeviceFactory.m in Sources */,
+				CC3FC60B1860474A006BB55E /* FdPresence.m in Sources */,
+				A90EC76918199E2800C2658A /* NSMutableArray+QueueAdditions.m in Sources */,
+				A90EC6C818199C9600C2658A /* FdViewGroup.m in Sources */,
+				A9CC3B8818296E960047F1D6 /* FdSettingsFactory.m in Sources */,
+				A90EC67718199C6A00C2658A /* NSData+Base64.m in Sources */,
+				CC1A02EA1771BD5700F0C3D6 /* MultipartMessageHeader.m in Sources */,
+				CC1A02EB1771BD5700F0C3D6 /* MultipartMessageHeaderField.m in Sources */,
+				A90EC6B818199C9600C2658A /* FdSlider.m in Sources */,
+				CC1A02EC1771BD5700F0C3D6 /* HTTPAsyncFileResponse.m in Sources */,
+				A90EC6C118199C9600C2658A /* FdTextFieldFactory.m in Sources */,
+				A90EC6E418199CB800C2658A /* WeViewStackLayout.m in Sources */,
+				CC1A02ED1771BD5700F0C3D6 /* HTTPDataResponse.m in Sources */,
+				A90EC76218199E2800C2658A /* FdLocationFactory.m in Sources */,
+				A90EC75F18199E2800C2658A /* FdVideo.m in Sources */,
+				A90EC75E18199E2800C2658A /* FdServiceMgr.m in Sources */,
+				A90EC74D18199E2800C2658A /* FdCalendarFactory.m in Sources */,
+				A90EC7791819C96900C2658A /* FdAirPlayFactory.m in Sources */,
+				CC1A02EE1771BD5700F0C3D6 /* HTTPDynamicFileResponse.m in Sources */,
+				CC1A02EF1771BD5700F0C3D6 /* HTTPFileResponse.m in Sources */,
+				A90EC6F818199CEB00C2658A /* FdAppDelegate.m in Sources */,
+				CC1A02F01771BD5700F0C3D6 /* HTTPRedirectResponse.m in Sources */,
+				A90EC6C518199C9600C2658A /* FdVBoxFactory.m in Sources */,
+				CC1A02F11771BD5700F0C3D6 /* WebSocket.m in Sources */,
+				A90EC74B18199E2800C2658A /* FdAccelerometerFactory.m in Sources */,
+				A90EC75818199E2800C2658A /* FdContacts.m in Sources */,
+				A9FCFEC1183A464800A32410 /* FdAppView.m in Sources */,
+				CC1A02F31771BD5700F0C3D6 /* DDAbstractDatabaseLogger.m in Sources */,
+				A90EC6B718199C9600C2658A /* FdProgressViewFactory.m in Sources */,
+				CC1A02F41771BD5700F0C3D6 /* DDASLLogger.m in Sources */,
+				A9FCFEC4183A466200A32410 /* FdAppViewFactory.m in Sources */,
+				CC2961AF18E9744200CBD669 /* FdChromecastFactory.m in Sources */,
+				A90EC7761819C8D500C2658A /* FdAirPlay.m in Sources */,
+				A90EC6FF18199CEB00C2658A /* FdWebViewDelegate.m in Sources */,
+				CC1A02F51771BD5700F0C3D6 /* DDFileLogger.m in Sources */,
+				CC1A02F61771BD5700F0C3D6 /* DDLog.m in Sources */,
+				A90EC75118199E2800C2658A /* FdCompass.m in Sources */,
+				A90EC67318199C2800C2658A /* main.m in Sources */,
+				A90EC6C618199C9600C2658A /* FdView.m in Sources */,
+				CC1A02F71771BD5700F0C3D6 /* DDTTYLogger.m in Sources */,
+				CC1A02F81771BD5700F0C3D6 /* ContextFilterLogFormatter.m in Sources */,
+				CC1A02F91771BD5700F0C3D6 /* DispatchQueueLogFormatter.m in Sources */,
+				A90EC74C18199E2800C2658A /* CalendarPlugin.m in Sources */,
+				A90EC6FD18199CEB00C2658A /* FdServerWS.m in Sources */,
+				A90EC76818199E2800C2658A /* NSDictionary+Extensions.m in Sources */,
+				A90EC6DE18199CB800C2658A /* WeViewBlockLayout.m in Sources */,
+				A90EC75C18199E2800C2658A /* FdService.m in Sources */,
+				A90EC76118199E2800C2658A /* FdLocation.m in Sources */,
+				A90EC76618199E2800C2658A /* FdNotificationFactory.m in Sources */,
+				CC1A03251772C87400F0C3D6 /* base64.c in Sources */,
+				A90EC6E618199CB800C2658A /* WeView.m in Sources */,
+				A90EC6B018199C9600C2658A /* FdDisplay.m in Sources */,
+				A90EC6F918199CEB00C2658A /* FdClientWS.m in Sources */,
+				A90EC6BC18199C9600C2658A /* FdStack.m in Sources */,
+				A90EC6E518199CB800C2658A /* UIView+WeView.m in Sources */,
+				CC2961B218E97A1100CBD669 /* FdChromecast.m in Sources */,
+				A9CC3B8518296D7B0047F1D6 /* FdSettings.m in Sources */,
+				A90EC6B918199C9600C2658A /* FdSliderFactory.m in Sources */,
+				A90EC75918199E2800C2658A /* FdContactsFactory.m in Sources */,
+				A90EC6C418199C9600C2658A /* FdVBox.m in Sources */,
+				A90EC6E118199CB800C2658A /* WeViewLayout.m in Sources */,
+				CC1A03261772C87400F0C3D6 /* NSData+SRB64Additions.m in Sources */,
+				A90EC74A18199E2800C2658A /* FdAccelerometer.m in Sources */,
+				A90EC6FE18199CEB00C2658A /* FdViewController.m in Sources */,
+				A90EC76518199E2800C2658A /* FdNotification.m in Sources */,
+				CC1A03271772C87400F0C3D6 /* SRWebSocket.m in Sources */,
+				A90EC6E318199CB800C2658A /* WeViewNoopLayout.m in Sources */,
+				A90EC75618199E2800C2658A /* FdConnectionFactory.m in Sources */,
+				A90EC6BB18199C9600C2658A /* FdSpacerFactory.m in Sources */,
+				A90EC6B418199C9600C2658A /* FdNavController.m in Sources */,
+				A90EC6C018199C9600C2658A /* FdTextField.m in Sources */,
+				A90EC6E018199CB800C2658A /* WeViewGridLayout.m in Sources */,
+				A90EC6BF18199C9600C2658A /* FdSwitchFactory.m in Sources */,
+				A90EC6FA18199CEB00C2658A /* FdHTTPConnection.m in Sources */,
+				A90EC6FC18199CEB00C2658A /* FdServerBrowser.m in Sources */,
+				A90EC6BA18199C9600C2658A /* FdSpacer.m in Sources */,
+				A90EC6BE18199C9600C2658A /* FdSwitch.m in Sources */,
+				A90EC6E218199CB800C2658A /* WeViewLinearLayout.m in Sources */,
+				A90EC6B618199C9600C2658A /* FdProgressView.m in Sources */,
+				A90EC6BD18199C9600C2658A /* FdStackFactory.m in Sources */,
+				A90EC75718199E2800C2658A /* FdContact.m in Sources */,
+				A90EC6B518199C9600C2658A /* FdNavControllerFactory.m in Sources */,
+				A90EC6AF18199C9600C2658A /* FdButtonFactory.m in Sources */,
+				A90EC6C218199C9600C2658A /* FdTextView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A90EC76B1819A3E800C2658A /* FdViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A90EC76C1819A3E800C2658A /* en */,
+			);
+			name = FdViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+		A90EC76D1819A3E800C2658A /* FdViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A90EC76E1819A3E800C2658A /* en */,
+			);
+			name = FdViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		A90EC76F1819A3E800C2658A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A90EC7701819A3E800C2658A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		CC1A00F7177158E900F0C3D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CC1A00F8177158E900F0C3D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CC1A00FA177158E900F0C3D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1.0-Release",
+					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1-2.0-Release",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/GoogleCastFramework-2.1.0-Release",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FreddoPlayer/Freddo-Player-Prefix.pch";
+				INFOPLIST_FILE = "FreddoPlayer/Freddo-Player-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					./TestFlightSDK3,
+				);
+				OTHER_LDFLAGS = "-ObjC ";
+				PRODUCT_NAME = "Freddo Player";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		CC1A00FB177158E900F0C3D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1.0-Release",
+					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1-2.0-Release",
+					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/GoogleCastFramework-2.1.0-Release",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FreddoPlayer/Freddo-Player-Prefix.pch";
+				INFOPLIST_FILE = "FreddoPlayer/Freddo-Player-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					./TestFlightSDK3,
+				);
+				OTHER_LDFLAGS = "-ObjC ";
+				PRODUCT_NAME = "Freddo Player";
+				PROVISIONING_PROFILE = "";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CC1A00CE177158E900F0C3D6 /* Build configuration list for PBXProject "Freddo-Player" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC1A00F7177158E900F0C3D6 /* Debug */,
+				CC1A00F8177158E900F0C3D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CC1A00F9177158E900F0C3D6 /* Build configuration list for PBXNativeTarget "Freddo-Player" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC1A00FA177158E900F0C3D6 /* Debug */,
+				CC1A00FB177158E900F0C3D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CC1A00CB177158E900F0C3D6 /* Project object */;
+}
