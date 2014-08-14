@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+    <head>
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"></meta>
+        <title>FreddoPlayer v0.1 (iOS)</title>
+        <script type="text/javascript" src="script/dtalk.js"></script>
+        <script type="text/javascript">
+        	function shutdown() {
+        		if (DTalk.getReadyState() == 1) {
+
+        			var event = {
+                   		dtalk: "1.0",
+                   	    service: "dtalk.Services",
+                   	    action: "stop",
+                   	    params: "dtalk.service.Settings"
+                  	};
+                       
+                	DTalk.sendNotification(event);
+        		}
+        	}
+            function startup() {
+            	var status = document.getElementById('status');
+            	var runBtn = document.getElementById('run-btn');
+            	var urlInput = document.getElementById('url');
+            	//var settingsBtn = document.getElementById('settings-btn');
+            	runBtn.disabled = urlInput.disabled /*= settingsBtn.disabled*/ = true;
+            	
+                DTalk.onopen = function() {
+                    status.innerHTML = "<span style='color:green;'>OPEN</span>";
+                    runBtn.disabled = urlInput.disabled /*= settingsBtn.disabled*/ = false;
+                    
+                    var event = {
+                   	    dtalk: "1.0",
+                   	    service: "dtalk.Services",
+                   	    action: "start",
+                   	    params: "dtalk.service.Settings"
+                   	};
+                    
+                    DTalk.sendNotification(event);
+                }
+                
+                DTalk.onclose = function() {
+                    status.innerHTML = "<span style='color:red;'>CLOSED</span>";
+                    //settingsBtn.disabled = true;
+                }
+
+
+                //alert ("%%WEBSOCKET_URL%%");
+                DTalk.connect("%%WEBSOCKET_URL%%");
+            }
+            
+            function runApp() {
+            	if (DTalk.getReadyState() == 1) {
+            		var ws = "%%WEBSOCKET_URL%%";
+            		var urlInput = document.getElementById('url');
+            		var url = urlInput.value;
+
+            		if (url.indexOf("?") != -1)
+            			window.open(url + "&ws=" + encodeURIComponent(ws));
+            		else 
+            			window.open(url + "?ws=" + encodeURIComponent(ws));
+            	}
+            }
+            
+            function openSettings() {
+            	if (DTalk.getReadyState() == 1) {
+            		
+            		var event = {
+                  		dtalk: "1.0",
+                   	    service: "dtalk.service.Settings",
+                   	    action: "launch"
+                   	};
+            		
+            		DTalk.sendNotification(event);
+            	}
+            }
+        </script>
+        <style>
+        	body {
+        	    background-image: url('wallpaper.jpg');
+				background-repeat: no-repeat;
+				background-attachment: fixed;
+				background-position: center;
+				background-size: 100% auto;
+				background-color: black;
+				
+				color: #123;
+                text-shadow: 2px 2px 3px rgba(64,64,64,0.1);
+                font-family: times, Times New Roman, times-roman, georgia, serif;
+            }
+            .banner-outer {
+                margin-top: 12%;
+                text-align: center;
+            }
+            .banner {
+                display: inline-block;
+                text-align: center;
+                border: 1em solid #ccc;
+                border-radius: 1em;
+                background-color: rgba(240,250,255,.5);
+                padding: 1em 5em;
+            }
+            .ws {
+                display: inline-block;
+                margin-top: 3em;
+                padding: .333em;
+            }
+            #status {
+                font-size: 80%;
+            }
+            #url {
+            	width: 24rem;
+            	margin: 0 auto;
+            }
+            .footer {
+            	position: absolute;
+            	left: 0px; 
+            	right: 0px; 
+            	bottom: 0px;
+            	text-align: center;
+            	color: #ddd;
+            }
+        </style>
+    </head>
+    <body onload="startup();" onunload="shutdown();">
+
+        <div class="banner-outer">
+            <div class="banner">
+                <!-- <h2 class="title">Freddo Player v%%VERSION%%<br>(iOS)</h2> -->
+                <h2 class="title">Freddo Player version 1.5<br>(iOS)</h2>
+                <br>
+                <div class="ws"><code>%%WEBSOCKET_URL%%</code></div>
+                <div id="status">CLOSED</div>
+                <br>
+                <div>
+	           	    <input id="url" placeholder="Application URL" value="http://freddo.s3-website-us-east-1.amazonaws.com/index.html"></input>
+	           	    <button id="run-btn" onclick="runApp();">Run</button>
+	            </div>
+            </div>
+            <br>&nbsp;
+            <br>
+            <!-- <button id="settings-btn" onclick="openSettings();">Click to open Settings Activity</button> -->
+        </div>
+        
+        <div class="footer">&copy;2013-2014 ArkaSoft LLC. All Rights Reserved.</div>
+    </body>
+</html>
