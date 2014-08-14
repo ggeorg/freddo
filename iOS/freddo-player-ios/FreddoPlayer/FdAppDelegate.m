@@ -120,16 +120,16 @@ static const int ddLogLevel = LOG_LEVEL_VERBOSE;
     
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    BOOL isRenderer = [defaults boolForKey:@"pref_dtype_renderer"];
+//    BOOL isRenderer = [defaults boolForKey:@"pref_dtype_renderer"];
     
     // FreddoTV related TXT record dictionary
     NSMutableDictionary *txtRecordDict = [NSMutableDictionary dictionaryWithCapacity:8];
     [txtRecordDict setObject:@"1" forKey:@"dtalk"];
-    if (isRenderer) {
-        [txtRecordDict setObject:@"Renderer/1" forKey:@"dtype"];
-    } else {
+//    if (isRenderer) {
+//        [txtRecordDict setObject:@"Renderer/1" forKey:@"dtype"];
+//    } else {
         [txtRecordDict setObject:@"Controller/1" forKey:@"dtype"];
-    }
+//    }
     [httpServer setTXTRecordDictionary:txtRecordDict];
     
     // ---------------------------------------------------------------------------------------------------

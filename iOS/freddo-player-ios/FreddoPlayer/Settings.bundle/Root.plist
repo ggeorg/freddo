@@ -24,16 +24,6 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Is Renderer</string>
-			<key>Key</key>
-			<string>pref_dtype_renderer</string>
-			<key>DefaultValue</key>
-			<integer>0</integer>
-		</dict>
-		<dict>
-			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string></string>

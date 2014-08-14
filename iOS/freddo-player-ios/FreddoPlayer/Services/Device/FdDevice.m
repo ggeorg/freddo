@@ -70,12 +70,12 @@
 
 -(NSString *) getDeviceType {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    BOOL isRenderer = [defaults boolForKey:@"pref_dtype_renderer"];
-    if (isRenderer) {
-        return @"Renderer/1";
-    } else {
+//    BOOL isRenderer = [defaults boolForKey:@"pref_dtype_renderer"];
+//    if (isRenderer) {
+//        return @"Renderer/1";
+//    } else {
         return @"Controller/1";
-    }
+//    }
 }
 
 - (NSDictionary*)deviceProperties
