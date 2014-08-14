@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CC1A00D2177158E900F0C3D6"
-               BuildableName = "AVS HTML.app"
+               BuildableName = "Freddo Player.app"
                BlueprintName = "Freddo-Player"
                ReferencedContainer = "container:Freddo-Player.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CC1A00D2177158E900F0C3D6"
-            BuildableName = "AVS HTML.app"
+            BuildableName = "Freddo Player.app"
             BlueprintName = "Freddo-Player"
             ReferencedContainer = "container:Freddo-Player.xcodeproj">
          </BuildableReference>
@@ -52,7 +52,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CC1A00D2177158E900F0C3D6"
-            BuildableName = "AVS HTML.app"
+            BuildableName = "Freddo Player.app"
             BlueprintName = "Freddo-Player"
             ReferencedContainer = "container:Freddo-Player.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CC1A00D2177158E900F0C3D6"
-            BuildableName = "AVS HTML.app"
+            BuildableName = "Freddo Player.app"
             BlueprintName = "Freddo-Player"
             ReferencedContainer = "container:Freddo-Player.xcodeproj">
          </BuildableReference>

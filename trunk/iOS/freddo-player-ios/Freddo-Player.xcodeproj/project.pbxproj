@@ -1297,8 +1297,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1.0-Release",
-					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1-2.0-Release",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/GoogleCastFramework-2.1.0-Release",
 				);
@@ -1311,7 +1309,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC ";
 				PRODUCT_NAME = "Freddo Player";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "d58c39c2-87fd-4cd5-890e-7632e75f287a";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1325,8 +1323,6 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1.0-Release",
-					"/Users/ggeorg/Downloads/GoogleCastFramework-2.1-2.0-Release",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/GoogleCastFramework-2.1.0-Release",
 				);
@@ -1339,7 +1335,7 @@
 				);
 				OTHER_LDFLAGS = "-ObjC ";
 				PRODUCT_NAME = "Freddo Player";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "d58c39c2-87fd-4cd5-890e-7632e75f287a";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
