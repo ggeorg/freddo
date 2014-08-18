@@ -56,8 +56,8 @@ public abstract class FdScreenOrientation extends FdService {
 	public static final String LANDSCAPE_PRIMARY = "landscape-primary";
 	/** The orientation is in the secondary landscape mode. */
 	public static final String LANDSCAPE_SECONDARY = "landscape-secondary";
-	/** The orientation is either portrait-primary or portrait-secondary. */
 
+	/** The orientation is either portrait-primary or portrait-secondary. */
 	public static final String PORTRAIT = "portrait";
 	/** The orientation is either landscape-primary or landscape-secondary. */
 	public static final String LANDSCAPE = "landscape";
@@ -86,13 +86,13 @@ public abstract class FdScreenOrientation extends FdService {
 	// LOCK ORIENTATION
 	// -----------------------------------------------------------------------
 
-	public void doLockOrientation(JSONObject request) {
-		LOG.v(SRV_NAME, ">>> setUrl");
+	public void setOrientation(JSONObject options) {
+		LOG.v(SRV_NAME, ">>> setOrientation");
 
 		try {
-			//String orientation = options.getString("orientation");
-			//LOG.d(SRV_NAME, "Requested ScreenOrientation: %s", orientation);
-			//setOrientation(orientation);
+			String orientation = options.getString("orientation");
+			LOG.d(SRV_NAME, "Requested ScreenOrientation: %s", orientation);
+			setOrientation(orientation);
 		} catch (Exception e) {
 			LOG.e(SRV_NAME, e.getMessage());
 		}
