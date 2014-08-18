@@ -13,12 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk;
+package com.arkasoft.freddo.dtalk.j2ee.server;
 
-public interface AsyncCallback<T> {
+class DTalkConnectionEvent {
 
-  void onFailure(Throwable caught);
+  private final DTalkServerEndpoint conn;
+  private final boolean open;
 
-  void onSuccess(T result);
+  public DTalkConnectionEvent(DTalkServerEndpoint conn, boolean open) {
+    this.conn = conn;
+    this.open = open;
+  }
+
+  public DTalkServerEndpoint getConnection() {
+    return conn;
+  }
+
+  public boolean isOpen() {
+    return open;
+  }
 
 }

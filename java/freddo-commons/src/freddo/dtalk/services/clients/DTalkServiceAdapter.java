@@ -17,9 +17,9 @@ package freddo.dtalk.services.clients;
 
 import org.json.JSONObject;
 
-import freddo.dtalk.AsyncCallback;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkException;
+import freddo.dtalk.util.AsyncCallback;
 
 public class DTalkServiceAdapter {
   

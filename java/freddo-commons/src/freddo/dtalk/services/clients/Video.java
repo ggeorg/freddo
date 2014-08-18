@@ -18,11 +18,11 @@ package freddo.dtalk.services.clients;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import freddo.dtalk.AsyncCallback;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkEventListener;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkSubscribeHandle;
+import freddo.dtalk.util.AsyncCallback;
 
 public class Video extends Service {
 

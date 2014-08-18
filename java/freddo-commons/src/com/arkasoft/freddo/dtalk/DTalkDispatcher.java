@@ -15,9 +15,6 @@
  */
 package com.arkasoft.freddo.dtalk;
 
-import io.netty.channel.ChannelFuture;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +32,7 @@ import freddo.dtalk.events.DTalkChannelClosedEvent;
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
+import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
@@ -87,16 +85,17 @@ public final class DTalkDispatcher {
 		@Override
 		public void messageSent(String topic, final OutgoingMessageEvent message) {
 			LOG.v(TAG, ">>> mOutgoingMsgEventListener.messageSent: %s", topic);
-//			DTalkService.getInstance().getConfiguration().getThreadPool().execute(new Runnable() {
-//				@Override
-//				public void run() {
-					try {
-						send(message);
-					} catch (Throwable t) {
-						LOG.e(TAG, "Unhandled exception (%s).", getClass(), t);
-					}
-//				}
-//			});
+			// DTalkService.getInstance().getConfiguration().getThreadPool().execute(new
+			// Runnable() {
+			// @Override
+			// public void run() {
+			try {
+				send(message);
+			} catch (Throwable t) {
+				LOG.e(TAG, "Unhandled exception (%s).", getClass(), t);
+			}
+			// }
+			// });
 		}
 	};
 
@@ -309,20 +308,21 @@ public final class DTalkDispatcher {
 			// Get service info or recipient by name (recipient)
 			// We use direct access to the service map in service discovery instance.
 			try {
-			ZConfServiceInfo remoteServiceInfo = DTalkService.getInstance().getServiceInfoMap().get(to);
-			if (remoteServiceInfo != null) {
-				try {
-					String dTalkServiceAddr = DTalkService.getWebSocketAddress(remoteServiceInfo);
-					LOG.i(TAG, "Connect to: %s", dTalkServiceAddr);
-					(conn = new DTalkNettyClientConnection(new URI(dTalkServiceAddr))).connect();
-					// addChannel(to, ch);
-					DTalkConnectionRegistry.getInstance().register(to, conn);
-					// ch = getChannelByName(to);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				ZConfServiceInfo remoteServiceInfo = DTalkService.getInstance().getServiceInfoMap().get(to);
+				if (remoteServiceInfo != null) {
+					try {
+						String dTalkServiceAddr = DTalkService.getWebSocketAddress(remoteServiceInfo);
+						LOG.i(TAG, "Connect to: %s", dTalkServiceAddr);
+						(conn = new DTalkNettyClientConnection(new URI(dTalkServiceAddr))).connect();
+						// addChannel(to, ch);
+						DTalkConnectionRegistry.getInstance().register(to, conn);
+						// ch = getChannelByName(to);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			}} catch(IllegalStateException e) {
+			} catch (IllegalStateException e) {
 				LOG.w(TAG, e.getMessage());
 			}
 		}
@@ -351,17 +351,19 @@ public final class DTalkDispatcher {
 		jsonMsg.put(MessageEvent.KEY_TO, to);
 
 		LOG.d(TAG, "Message: %s", jsonMsg.toString());
-		Object result = conn.sendMessage(jsonMsg);
-		if (result != null && result instanceof ChannelFuture) {
-			((ChannelFuture) result).addListener(new GenericFutureListener<ChannelFuture>() {
-				@Override
-				public void operationComplete(ChannelFuture f) throws Exception {
-					if (!f.isSuccess()) {
-						LOG.w(TAG, "Failed to send message: %s", message);
-					}
+		conn.sendMessage(jsonMsg, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				LOG.e(TAG, "sendMessage failed:", caught);
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+				if (!result) {
+					LOG.e(TAG, "sendMessage failed");
 				}
-			});
-		}
+			}
+		});
 	}
 
 }

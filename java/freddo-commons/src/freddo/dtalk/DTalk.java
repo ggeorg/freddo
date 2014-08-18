@@ -27,12 +27,17 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.events.MessageEvent;
+import freddo.dtalk.events.OutgoingMessageEvent;
+import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 
 public final class DTalk implements MessageEvent {
   private static final String TAG = LOG.tag(DTalk.class);
 
   public static final String SERVICE_TYPE = "_http._tcp.local.";
+
+  /** Default {@link FdService} name prefix. */
+	public static final String DEFAULT_SRV_PREFIX = "dtalk.service.";
 
   // --------------------------------------------------------------------------
 
@@ -44,8 +49,8 @@ public final class DTalk implements MessageEvent {
   public static final String ACTION_RESOLVED = "resolved";
   public static final String ACTION_REMOVED = "removed";
 
-  private static final String ACTION_GET = "get";
-  private static final String ACTION_SET = "set";
+  public static final String ACTION_GET = "get";
+  public static final String ACTION_SET = "set";
 
   public static final String ACTION_START = "start";
   public static final String ACTION_STOP = "stop";
@@ -210,7 +215,9 @@ public final class DTalk implements MessageEvent {
   }
 
   public static <T> void invoke(String target, String service, String action, Object params, AsyncCallback<T> callback, long timeout) {
-    try {
+    LOG.v(TAG, ">>> invoke: target=%s, service=%s, action=%s, params=%s", target, service, action, params);
+  	
+  	try {
       DTalk.send(createMessage(target, service, action, params), callback, timeout);
     } catch (Exception e) {
       processInvocationException(e, callback);
@@ -296,7 +303,16 @@ public final class DTalk implements MessageEvent {
       sThreadPool.execute(new Runnable() {
         @Override
         public void run() {
-          MessageBus.sendMessage(service, message);
+        	String to = message.optString(DTalk.KEY_TO, null);
+        	if (to != null) {
+        		try {
+							MessageBus.sendMessage(new OutgoingMessageEvent(message));
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+        	} else {
+        		MessageBus.sendMessage(service, message);
+        	}
         }
       });
     } else {

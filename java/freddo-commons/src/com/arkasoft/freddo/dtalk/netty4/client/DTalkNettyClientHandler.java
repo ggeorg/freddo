@@ -116,7 +116,7 @@ public class DTalkNettyClientHandler extends SimpleChannelInboundHandler<Object>
         // incoming message
         //
 
-        LOG.d(TAG, "IncomingMessageEvent to: %s", from);
+        LOG.d(TAG, "IncomingMessageEvent from: %s", from);
         MessageBus.sendMessage(new IncomingMessageEvent(from, jsonBody));
 
         // }

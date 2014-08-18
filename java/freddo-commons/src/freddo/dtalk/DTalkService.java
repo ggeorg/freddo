@@ -72,6 +72,8 @@ public class DTalkService {
 
 		boolean runServiceDiscovery();
 
+		boolean registerService();
+
 	}
 
 	/**
@@ -227,7 +229,6 @@ public class DTalkService {
 				mServiceDiscovery = new DTalkDiscovery();
 			}
 
-			// XXX What is that?????????
 			LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
 			MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
 
@@ -370,8 +371,10 @@ public class DTalkService {
 			MessageBus.sendMessage(new DTalkServiceEvent(), threadPool);
 
 			// Unregister service.
-			mConfiguration.getNsdManager().unregisterService(mNsdRegistrationListener);
-			// mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
+			if (getConfiguration().registerService()) {
+				mConfiguration.getNsdManager().unregisterService(mNsdRegistrationListener);
+				// mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
+			}
 
 			// Disable WebPresence...
 			threadPool.execute(new Runnable() {
@@ -390,8 +393,10 @@ public class DTalkService {
 			MessageBus.sendMessage(new DTalkServiceEvent(mNsdServiceInfo), threadPool);
 
 			// Publish service.
-			mConfiguration.getNsdManager().registerService(mNsdServiceInfo, mNsdRegistrationListener);
-			// mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
+			if (getConfiguration().registerService()) {
+				mConfiguration.getNsdManager().registerService(mNsdServiceInfo, mNsdRegistrationListener);
+				// mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
+			}
 
 			// Enable/disable WebPresence...
 			threadPool.execute(new Runnable() {

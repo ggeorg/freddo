@@ -40,114 +40,125 @@ import org.json.JSONObject;
 
 import com.arkasoft.freddo.dtalk.DTalkConnection;
 
+import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 
 public class DTalkNettyClientConnection implements DTalkConnection {
-  private static final String TAG = LOG.tag(DTalkNettyClientConnection.class);
-  
-  private static EventLoopGroup group = null;
+	private static final String TAG = LOG.tag(DTalkNettyClientConnection.class);
 
-  private final URI uri;
-  
-  private Channel mChannel = null;
+	private static EventLoopGroup group = null;
 
-  public DTalkNettyClientConnection(URI uri) {
-    this.uri = uri;
-  }
+	private final URI uri;
 
-  public void connect() {
-    assert uri != null : "URI is null";
-    LOG.v(TAG, ">>> connect: %s", uri);
-    
-    if (group == null) {
-      group = new NioEventLoopGroup();
-    }
+	private Channel mChannel = null;
 
-    EventLoopGroup group = new NioEventLoopGroup();
-    try {
-      Bootstrap b = new Bootstrap();
-      String protocol = uri.getScheme();
-      if (!"ws".equals(protocol)) {
-        throw new IllegalArgumentException("Unsupported protocol: " + protocol);
-      }
+	public DTalkNettyClientConnection(URI uri) {
+		this.uri = uri;
+	}
 
-      HttpHeaders customHeaders = new DefaultHttpHeaders();
-      // customHeaders.add("MyHeader", "MyValue");
+	public void connect() {
+		assert uri != null : "URI is null";
+		LOG.v(TAG, ">>> connect: %s", uri);
 
-      // Connect with V13 (RFC 6455 aka HyBi-17).
-      final DTalkNettyClientHandler handler =
-          new DTalkNettyClientHandler(this, WebSocketClientHandshakerFactory.newHandshaker(uri,
-              WebSocketVersion.V13, null, false, customHeaders));
+		if (group == null) {
+			group = new NioEventLoopGroup();
+		}
 
-      b.group(group)
-          .channel(NioSocketChannel.class)
-          .handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            public void initChannel(SocketChannel ch) throws Exception {
-              ChannelPipeline pipeline = ch.pipeline();
-              pipeline.addLast("http-codec", new HttpClientCodec());
-              pipeline.addLast("aggregator", new HttpObjectAggregator(8192));
-              pipeline.addLast("ws-handler", handler);
-            }
-          });
+		EventLoopGroup group = new NioEventLoopGroup();
+		try {
+			Bootstrap b = new Bootstrap();
+			String protocol = uri.getScheme();
+			if (!"ws".equals(protocol)) {
+				throw new IllegalArgumentException("Unsupported protocol: " + protocol);
+			}
 
-      LOG.d(TAG, "WebSocket Client connecting...");
-      mChannel = b.connect(uri.getHost(), uri.getPort()).addListener(new GenericFutureListener<ChannelFuture>() {
-        @Override
-        public void operationComplete(ChannelFuture f) throws Exception {
-          if (!f.isSuccess()) {
-            LOG.w(TAG, "Connection error", f.cause());
-          }
-        }
-      }).sync().channel();
+			HttpHeaders customHeaders = new DefaultHttpHeaders();
+			// customHeaders.add("MyHeader", "MyValue");
 
-      LOG.d(TAG, "Handshake...");
-      handler.handshakeFuture().sync();
+			// Connect with V13 (RFC 6455 aka HyBi-17).
+			final DTalkNettyClientHandler handler =
+					new DTalkNettyClientHandler(this, WebSocketClientHandshakerFactory.newHandshaker(uri,
+							WebSocketVersion.V13, null, false, customHeaders));
 
-      // Ping
-      // System.out.println("WebSocket Client sending ping");
-      // ch.writeAndFlush(new PingWebSocketFrame(Unpooled.copiedBuffer(new
-      // byte[] {1, 2, 3, 4, 5,
-      // 6})));
+			b.group(group)
+					.channel(NioSocketChannel.class)
+					.handler(new ChannelInitializer<SocketChannel>() {
+						@Override
+						public void initChannel(SocketChannel ch) throws Exception {
+							ChannelPipeline pipeline = ch.pipeline();
+							pipeline.addLast("http-codec", new HttpClientCodec());
+							pipeline.addLast("aggregator", new HttpObjectAggregator(8192));
+							pipeline.addLast("ws-handler", handler);
+						}
+					});
 
-      // Close
-      // System.out.println("WebSocket Client sending close");
-      // ch.writeAndFlush(new CloseWebSocketFrame());
+			LOG.d(TAG, "WebSocket Client connecting...");
+			mChannel = b.connect(uri.getHost(), uri.getPort()).addListener(new GenericFutureListener<ChannelFuture>() {
+				@Override
+				public void operationComplete(ChannelFuture f) throws Exception {
+					if (!f.isSuccess()) {
+						LOG.w(TAG, "Connection error", f.cause());
+					}
+				}
+			}).sync().channel();
 
-    } catch (Exception e) {
-      LOG.e(TAG, "Error: %s", e.getMessage());
-      // e.printStackTrace();
+			LOG.d(TAG, "Handshake...");
+			handler.handshakeFuture().sync();
 
-      group.shutdownGracefully();
-      group = null;
-    }
-  }
-  
-  @Override
-  public Object getId() {
-    return null;
-  }
+			// Ping
+			// System.out.println("WebSocket Client sending ping");
+			// ch.writeAndFlush(new PingWebSocketFrame(Unpooled.copiedBuffer(new
+			// byte[] {1, 2, 3, 4, 5,
+			// 6})));
 
-  @Override
-  public Object sendMessage(JSONObject jsonMsg) throws JSONException {
-    return mChannel.writeAndFlush(new TextWebSocketFrame(jsonMsg.toString()));
-  }
+			// Close
+			// System.out.println("WebSocket Client sending close");
+			// ch.writeAndFlush(new CloseWebSocketFrame());
 
-  @Override
-  public void onMessage(JSONObject message) throws JSONException {
-    // TODO Auto-generated method stub
-    
-  }
+		} catch (Exception e) {
+			LOG.e(TAG, "Error: %s", e.getMessage());
+			// e.printStackTrace();
 
-  @Override
-  public void close() {
-    // TODO we need to send close frame.
-    mChannel.close();
-  }
+			group.shutdownGracefully();
+			group = null;
+		}
+	}
 
-  @Override
-  public boolean isOpen() {
-    return mChannel.isOpen();
-  }
+	@Override
+	public Object getId() {
+		return null;
+	}
+
+	@Override
+	public void sendMessage(JSONObject jsonMsg, final AsyncCallback<Boolean> callback) throws JSONException {
+		try {
+			mChannel.writeAndFlush(new TextWebSocketFrame(jsonMsg.toString())).addListener(new GenericFutureListener<ChannelFuture>() {
+				@Override
+				public void operationComplete(ChannelFuture channelFuture) throws Exception {
+					callback.onSuccess(channelFuture.isSuccess());
+				}
+			});
+		} catch (Throwable caught) {
+			callback.onFailure(caught);
+		}
+	}
+
+	@Override
+	public void onMessage(JSONObject message) throws JSONException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void close() {
+		if (mChannel != null) {
+			mChannel.close();
+		}
+	}
+
+	@Override
+	public boolean isOpen() {
+		return mChannel != null && mChannel.isOpen();
+	}
 
 }

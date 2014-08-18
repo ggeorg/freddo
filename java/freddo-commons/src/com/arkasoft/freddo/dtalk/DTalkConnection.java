@@ -18,13 +18,15 @@ package com.arkasoft.freddo.dtalk;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import freddo.dtalk.util.AsyncCallback;
+
 public interface DTalkConnection {
   
   Object getId();
 
   void connect();
 
-  Object sendMessage(JSONObject message) throws JSONException;
+  void sendMessage(JSONObject message, AsyncCallback<Boolean> callback) throws JSONException;
 
   // XXX not used so far
   // could be a common message handler for all types of connections
