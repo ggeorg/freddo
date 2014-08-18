@@ -16,24 +16,27 @@
 package com.arkasoft.freddo.dtalk.netty4.server;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.arkasoft.freddo.dtalk.DTalkConnection;
 
+import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 
 public class DTalkNettyServerConnection implements DTalkConnection {
 	private static final String TAG = LOG.tag(DTalkNettyServerConnection.class);
- 
+
 	private final Channel mChannel;
 
 	@Deprecated
 	final WebSocketServerHandshaker mHandshaker;
-	
+
 	private Object mId;
 
 	public DTalkNettyServerConnection(Channel channel, WebSocketServerHandshaker handshaker) {
@@ -43,25 +46,34 @@ public class DTalkNettyServerConnection implements DTalkConnection {
 		// DTalkChannelInbountHandler).
 		mHandshaker = handshaker;
 	}
-	 
-  @Override
-  public Object getId() {
-    return mId;
-  }
-  
-  void setId(Object id) {
-    mId = id;
-  }
-  
-  @Override
-  public void connect() {
-    // do nothing
-  }
 
 	@Override
-	public Object sendMessage(JSONObject jsonMsg) {
+	public Object getId() {
+		return mId;
+	}
+
+	void setId(Object id) {
+		mId = id;
+	}
+
+	@Override
+	public void connect() {
+		// do nothing
+	}
+
+	@Override
+	public void sendMessage(JSONObject jsonMsg, final AsyncCallback<Boolean> callback) {
 		LOG.v(TAG, ">>> sendMessage: (%s) %s", mChannel, jsonMsg);
-		return mChannel.writeAndFlush(new TextWebSocketFrame(jsonMsg == null ? "" : jsonMsg.toString()));
+		try {
+			mChannel.writeAndFlush(new TextWebSocketFrame(jsonMsg == null ? "" : jsonMsg.toString())).addListener(new GenericFutureListener<ChannelFuture>() {
+				@Override
+				public void operationComplete(ChannelFuture channelFuture) throws Exception {
+					callback.onSuccess(channelFuture.isSuccess());
+				}
+			});
+		} catch (Throwable caught) {
+			callback.onFailure(caught);
+		}
 	}
 
 	@Override
@@ -72,13 +84,14 @@ public class DTalkNettyServerConnection implements DTalkConnection {
 
 	@Override
 	public void close() {
-		LOG.v(TAG, ">>> close: (%s)", mChannel);
-		mChannel.close();
+		if (mChannel != null) {
+			mChannel.close();
+		}
 	}
 
-  @Override
-  public boolean isOpen() {
-    return mChannel.isOpen();
-  }
+	@Override
+	public boolean isOpen() {
+		return mChannel != null && mChannel.isOpen();
+	}
 
 }

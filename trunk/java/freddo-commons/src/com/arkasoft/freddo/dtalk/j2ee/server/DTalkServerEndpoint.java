@@ -39,6 +39,7 @@ import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.IncomingMessageEvent;
 import freddo.dtalk.events.MessageEvent;
+import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 
 @ServerEndpoint(value = "/dtalksrv", configurator = DTalkConfigurator.class)
@@ -93,10 +94,12 @@ public class DTalkServerEndpoint implements DTalkConnection {
 			// req.isUserInRole(arg0));
 			LOG.v(TAG, "=================================");
 		}
-		
+
 		final String id = String.format("%s%s", DTalkService.LOCAL_CHANNEL_PREFIX, mSession.getId());
 		DTalkConnectionRegistry.getInstance().register(id, this);
-		//MessageBus.sendMessage(new DTalkConnectionEvent(this, true));
+
+		// Notify context listener about it...
+		MessageBus.sendMessage(new DTalkConnectionEvent(this, true));
 	}
 
 	@OnClose
@@ -105,7 +108,9 @@ public class DTalkServerEndpoint implements DTalkConnection {
 
 		final String id = String.format("%s%s", DTalkService.LOCAL_CHANNEL_PREFIX, mSession.getId());
 		DTalkConnectionRegistry.getInstance().remove(id);
-		//MessageBus.sendMessage(new DTalkConnectionEvent(this, false));
+
+		// Notify context listener about it..
+		MessageBus.sendMessage(new DTalkConnectionEvent(this, false));
 
 		mSession = null;
 	}
@@ -226,7 +231,7 @@ public class DTalkServerEndpoint implements DTalkConnection {
 			return false;
 		return true;
 	}
-	
+
 	// -----------------------------------------------------------------------
 	// DTalkConnection implementation
 	// -----------------------------------------------------------------------
@@ -239,19 +244,23 @@ public class DTalkServerEndpoint implements DTalkConnection {
 	@Override
 	public void connect() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public Object sendMessage(JSONObject message) throws JSONException {
-		sendMessage(message.toString());
-		return null;
+	public void sendMessage(JSONObject message, AsyncCallback<Boolean> callback) throws JSONException {
+		try {
+			sendMessage(message.toString());
+			callback.onSuccess(Boolean.TRUE);
+		} catch (Throwable caught) {
+			callback.onFailure(caught);
+		}
 	}
 
 	@Override
 	public void onMessage(JSONObject message) throws JSONException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

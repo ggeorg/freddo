@@ -13,16 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package freddo.dtalk.services;
+package freddo.dtalk.util;
 
-import org.json.JSONObject;
+public interface AsyncCallback<T> {
 
-import freddo.dtalk.DTalkServiceContext;
+  void onFailure(Throwable caught);
 
-public interface FdServiceFactory {
-  
-  FdService create(DTalkServiceContext context, JSONObject options);
-
-  String getType();
+  void onSuccess(T result);
 
 }

@@ -27,68 +27,81 @@ import freddo.dtalk.util.LOG;
  * </p>
  */
 public class DTalkException extends Exception {
-  private static final long serialVersionUID = 5691944770816935981L;
-  private static final String TAG = LOG.tag(DTalkException.class);
+	private static final long serialVersionUID = 5691944770816935981L;
+	private static final String TAG = LOG.tag(DTalkException.class);
 
-  /**
-   * Parse error Invalid JSON was received by the server. An error occurred on
-   * the server while parsing the JSON text.
-   */
-  public static final int INVALID_JSON = -32700;
+	/**
+	 * Parse error Invalid JSON was received by the server. An error occurred on
+	 * the server while parsing the JSON text.
+	 */
+	public static final int INVALID_JSON = -32700;
 
-  /**
-   * Invalid Request The JSON sent is not a valid Request object.
-   */
-  public static final int INVALID_REQUEST = -32600;
+	/**
+	 * Invalid Request The JSON sent is not a valid Request object.
+	 */
+	public static final int INVALID_REQUEST = -32600;
 
-  /**
-   * Method not found The method does not exist / is not available.
-   */
-  public static final int METHOD_NOT_FOUND = -32601;
+	/**
+	 * Method not found The method does not exist / is not available.
+	 */
+	public static final int METHOD_NOT_FOUND = -32601;
 
-  /**
-   * Invalid params Invalid method parameter(s).
-   */
-  public static final int INVALID_PARAMS = -32602;
+	/**
+	 * Invalid params Invalid method parameter(s).
+	 */
+	public static final int INVALID_PARAMS = -32602;
 
-  /**
-   * Internal error Internal JSON-RPC error.
-   */
-  public static final int INTERNAL_ERROR = -32603;
-  
-  /**
-   * Request timeout.
-   */
-  public static final int REQUEST_TIMEOUT = -32699;
+	/**
+	 * Internal error Internal JSON-RPC error.
+	 */
+	public static final int INTERNAL_ERROR = -32603;
 
-  private final int mCode;
+	/**
+	 * Request timeout.
+	 */
+	public static final int REQUEST_TIMEOUT = -32699;
 
-  public DTalkException(int code, String message) {
-    super(message);
-    mCode = code;
-  }
+	private final int mCode;
+	private final JSONObject mData;
 
-  public int getCode() {
-    return mCode;
-  }
-  
-  // --------------------------------------------------------------------------
-  // JSON serialization
-  // --------------------------------------------------------------------------
-  
-  private JSONObject mJSON = null;
-  
-  public JSONObject toJSON() {
-    if (mJSON == null) {
-      mJSON = new JSONObject();
-      try {
-        mJSON.put("code", getCode());
-        mJSON.put("message", getMessage());
-      } catch (JSONException e) {
-        LOG.e(TAG, e.getMessage());
-      }
-    }
-    return mJSON;
-  }
+	public DTalkException(int code, String message) {
+		this(code, message, null);
+	}
+
+	public DTalkException(int code, String message, JSONObject data) {
+		super(message);
+		mCode = code;
+		mData = data;
+	}
+
+	public int getCode() {
+		return mCode;
+	}
+
+	public JSONObject getData() {
+		return mData;
+	}
+
+	// --------------------------------------------------------------------------
+	// JSON serialization
+	// --------------------------------------------------------------------------
+
+	private JSONObject mJSON = null;
+
+	public JSONObject toJSON() {
+		if (mJSON == null) {
+			mJSON = new JSONObject();
+			try {
+				mJSON.put(DTalk.KEY_ERROR_CODE, getCode());
+				mJSON.put(DTalk.KEY_ERROR_MESSAGE, getMessage());
+				if (mData != null) {
+					mJSON.put(DTalk.KEY_ERROR_DATA, mData);
+				}
+			} catch (JSONException e) {
+				LOG.e(TAG, e.getMessage());
+			}
+		}
+		return mJSON;
+	}
 
 }

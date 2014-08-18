@@ -40,104 +40,28 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
   //private final Map<String, DTalkConnectionImpl> mConnections = new ConcurrentHashMap<String, DTalkConnectionImpl>();
 
   /** DTalkConnectionEvent listener. */
-//  private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
-//    @Override
-//    public void messageSent(String topic, DTalkConnectionEvent message) {
-//      DTalkConnectionImpl conn = message.getConnection();
-//      if (message.isOpen()) {
-//        addConnection(conn);
-//      } else {
-//        removeConnection(conn);
-//      }
-//    }
-//  };
+  private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
+    @Override
+    public void messageSent(String topic, DTalkConnectionEvent message) {
+      DTalkServerEndpoint conn = message.getConnection();
+      if (message.isOpen()) {
+        onConnectionOpen(conn);
+      } else {
+        onConnectionClose(conn);
+      }
+    }
+  };
 
-  /** IncomingMessageEvent listener. */
-//  private final MessageBusListener<IncomingMessageEvent> incomingEventListener = new MessageBusListener<IncomingMessageEvent>() {
-//    @Override
-//    public void messageSent(String topic, IncomingMessageEvent message) {
-//      try {
-//        dispatchMessage(message);
-//      } catch (Exception e) {
-//        // TODO Auto-generated catch block
-//        e.printStackTrace();
-//      }
-//    }
-//  };
+  protected void onConnectionOpen(DTalkServerEndpoint conn) {
+  	// do nothing here
+  }
 
-  /** OutgoingMessageEvent listener. */
-//  private final MessageBusListener<OutgoingMessageEvent> outgoingEventListener = new MessageBusListener<OutgoingMessageEvent>() {
-//    @Override
-//    public void messageSent(String topic, OutgoingMessageEvent message) {
-//      try {
-//        sendMessage(message);
-//      } catch (Exception e) {
-//        // TODO Auto-generated catch block
-//        e.printStackTrace();
-//      }
-//    }
-//  };
+  protected void onConnectionClose(DTalkServerEndpoint conn) {
+  	// do nothing here
+  }
 
-//  protected void addConnection(DTalkConnectionImpl conn) {
-//    LOG.v(TAG, ">>> addConnection: %s", conn);
-//    mConnections.put(conn.getSession().getId(), conn);
-//  }
-
-//  protected void removeConnection(DTalkConnectionImpl conn) {
-//    LOG.v(TAG, ">>> removeConnection: %s", conn);
-//    mConnections.remove(conn.getSession().getId());
-//  }
-
-//  protected void resetConnections() {
-//    LOG.v(TAG, ">>> resetConnection");
-//    
-//    mConnections.clear();
-//  }
-
-//  public DTalkConnectionImpl getConnection(String id) {
-//    LOG.v(TAG, ">>> getConnection: %s", id);
-//
-//    // remove prefix (we added in DTalkConnection).
-//    if (id.startsWith(DTalkService.LOCAL_CHANNEL_PREFIX)) {
-//      id = id.substring(DTalkService.LOCAL_CHANNEL_PREFIX.length());
-//    }
-//
-//    return mConnections.get(id);
-//  }
-
-//  protected void sendMessage(OutgoingMessageEvent message) throws Exception {
-//    LOG.v(TAG, ">>> sendMessage: %s", message);
-//    String to = message.getTo();
-//    JSONObject jsonMsg = message.getMsg();
-//    sendMessage(to, jsonMsg.toString());
-//  }
-
-//  protected void sendMessage(String to, String message) {
-//    LOG.v(TAG, ">>> sendMessage to: %s, message: %s", to, message);
-//    if (to != null) { // TODO message validation
-//      DTalkConnectionImpl conn = getConnection(to);
-//      if (conn != null) {
-//        conn.sendMessage(message);
-//      } else {
-//        LOG.w(TAG, "Connection %s not found!", to);
-//      }
-//
-//    } else {
-//      // TODO broadcast?
-//    }
-//  }
-
-//  protected void dispatchMessage(IncomingMessageEvent message) throws Exception {
-//    JSONObject jsonMsg = message.getMsg();
-//    String service = jsonMsg.optString(MessageEvent.KEY_BODY_SERVICE);
-//    String action = jsonMsg.optString(MessageEvent.KEY_BODY_ACTION);
-//    if (service != null && action != null) {
-//      MessageBus.sendMessage(service, jsonMsg);
-//    }
-//  }
 
   protected abstract void stopServices();
-
   // {
   // synchronized (serviceList) {
   // for (Iterator<Service> iter = serviceList.iterator(); iter.hasNext();) {

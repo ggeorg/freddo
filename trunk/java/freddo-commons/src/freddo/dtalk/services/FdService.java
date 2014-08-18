@@ -17,8 +17,6 @@ package freddo.dtalk.services;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,62 +26,101 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.DTalk;
+import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 
+/**
+ * Services must extend this class.
+ */
 public abstract class FdService implements MessageBusListener<JSONObject> {
 	private static final String TAG = LOG.tag(FdService.class);
 
-	protected static final String SRV_PREFIX = "dtalk.service.";
+	private final DTalkServiceContext mContext;
 
-	private final DTalkServiceContext context;
-	private final String name;
-	protected final String replyName;
+	private final String mName;
+	protected final String mReplyName;
 
-	private boolean disposed = false;
-
-	final Map<String, String> refCntMap = new ConcurrentHashMap<String, String>();
+	private boolean mDisposed = false;
 
 	protected FdService(DTalkServiceContext context, String name, final JSONObject options) {
-		this.context = context;
-		this.name = name;
-		this.replyName = '$' + name;
+		this.mContext = context;
+		this.mName = name;
+		this.mReplyName = '$' + name;
 
 		MessageBus.subscribe(getName(), this);
 	}
 
 	protected DTalkServiceContext getContext() {
-		return context;
+		return mContext;
 	}
 
 	protected String getName() {
-		return name;
+		return mName;
 	}
-	
-	@Deprecated
-	protected abstract void start(); // TODO rename to onCreate()
 
-	protected abstract void reset();
-	
+	/**
+	 * The final call you receive before your service is disposed.
+	 * <p>
+	 * Note: except of {@link FdServiceMgr}'s {@code #onDispose()} method,
+	 * {@code #onDispose()} for any other service will run in UI thread.
+	 * 
+	 * @see #dispose()
+	 */
+	protected abstract void onDisposed();
+
+	/**
+	 * Check if service was disposed.
+	 * 
+	 * @return {@code true} if service is desposed; {@code false} otherwise.
+	 */
 	protected final boolean isDisposed() {
-		return disposed;
+		return mDisposed;
 	}
 
-	public final void dispose() { // TODO rename to onDestroy()
+	/**
+	 * Dispose this service.
+	 * <p>
+	 * Note: this method is called by {@link FdServiceMgr#dispose()}.
+	 * <p>
+	 * Note: except of {@link FdServiceMgr}'s {@code #dispose()} method,
+	 * {@code #dispose()} for any other service will run in UI thread.
+	 */
+	public final void dispose() {
 		LOG.v(LOG.tag(getClass()), ">>> dispose");
 
-		disposed = true;
-		reset();
+		if (!isDisposed()) {
+			mDisposed = true;
+			onDisposed();
 
-		if (MessageBus.hasListener(getName(), this)) {
-			MessageBus.unsubscribe(getName(), this);
+			if (MessageBus.hasListener(getName(), this)) {
+				MessageBus.unsubscribe(getName(), this);
+			}
 		}
 	}
 
+	// -----------------------------------------------------------------------
+	// MESSAGE HANDLER API
+	// -----------------------------------------------------------------------
+
+	/**
+	 * Incoming message handler which synchronizes incoming message handling with
+	 * the UI thread.
+	 * 
+	 * @param topic
+	 * @param message
+	 */
 	@Override
-	public void messageSent(final String topic, final JSONObject message) {
+	public final void messageSent(final String topic, final JSONObject message) {
+		LOG.v(getName(), ">>> messageSent");
+
+		if (isDisposed()) {
+			LOG.e(getName(), "Service disposed!!!");
+			return;
+		}
+
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -94,20 +131,42 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 		});
 	}
 
-	protected void runOnUiThread(Runnable r) {
+	/**
+	 * Utility method for synchronizing execution with the UI thread.
+	 * 
+	 * @see DTalkServiceContext#runOnUiThread(Runnable)
+	 */
+	protected final void runOnUiThread(Runnable r) {
 		getContext().runOnUiThread(r);
 	}
 
+	/**
+	 * Incoming message handler.
+	 * <p>
+	 * Note: this handler is executed in the UI thread.
+	 * 
+	 * @param topic
+	 * @param message
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private boolean onMessage(String topic, JSONObject message) {
-		String action = message.optString(DTalk.KEY_BODY_ACTION);
-		if ("get".equals(action)) {
+		if (isDisposed()) {
+			LOG.e(getName(), "Service disposed!!!");
+			return false;
+		}
+
+		final String action = message.optString(DTalk.KEY_BODY_ACTION, null);
+		if (DTalk.ACTION_GET.equals(action)) {
 			String property = message.optString(MessageEvent.KEY_BODY_PARAMS, null);
 			if (property != null && property.length() > 0) {
 				invoke("get" + cap1stChar(property), message);
 				return true;
 			}
-		} else if ("set".equals(action)) {
+		} else if (DTalk.ACTION_SET.equals(action)) {
+
+			// TODO need to test it
+
 			JSONObject options = message.optJSONObject(DTalk.KEY_BODY_PARAMS);
 			if (options != null) {
 				// NOTE: we avoid ConcurrentModificationException
@@ -121,6 +180,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 				}
 				return true;
 			}
+
 		} else if (action != null && action.length() > 0) {
 			invoke("do" + cap1stChar(action), message);
 			return true;
@@ -128,20 +188,34 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 		return false;
 	}
 
+	/*
+	 * Utility method to invoke a Java method by name.
+	 */
 	private void invoke(String method, JSONObject message) {
-		LOG.v(TAG, ">>> invoke: %s::%s", getClass().getName(), method);
+		LOG.v(getName(), ">>> invoke: %s::%s", getClass().getName(), method);
 
 		try {
 			Method m = getClass().getMethod(method, JSONObject.class);
 			m.invoke(this, message);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.e(getName(), e.getMessage(), e);
 		}
 	}
 
+	/*
+	 * Utility method to capitalize the first character of a string.
+	 */
+	private static String cap1stChar(String str) {
+		String result = str;
+		if (str.length() > 0) {
+			String first = str.substring(0, 1);
+			result = str.replaceFirst(first, first.toUpperCase());
+		}
+		return result;
+	}
+
 	// --------------------------------------------------------------------------
-	// RESPONSE
+	// RESPONSE & ERROR RESPONSE API
 	// --------------------------------------------------------------------------
 
 	private static final JSONObject newResponse(JSONObject request) throws JSONException {
@@ -189,7 +263,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 		}
 	}
 
-	protected static void sendErrorResponse(JSONObject request, Object error) {
+	private static void sendErrorResponse(JSONObject request, Object error) {
 		try {
 			JSONObject response = newResponse(request);
 			if (response != null) {
@@ -197,9 +271,12 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 				sendResponse(response);
 			}
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.e(TAG, e.getMessage());
 		}
+	}
+
+	protected static void sendErrorResponse(JSONObject request, int code, String message) {
+		sendErrorResponse(request, code, message, null);
 	}
 
 	protected static void sendErrorResponse(JSONObject request, int code, String message, JSONObject data) {
@@ -212,86 +289,108 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 			}
 			sendErrorResponse(request, error);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.e(TAG, e.getMessage());
 		}
 	}
 
-	// --------------------------------------------------------------------------
-
-	protected JSONObject getJSONObject(JSONObject options, String key) {
-		JSONObject object = !options.isNull(key) ? options.optJSONObject(key) : null;
-		options.remove(key);
-		return object;
+	protected static void sendErrorResponse(JSONObject request, DTalkException e) {
+		sendErrorResponse(request, e.toJSON());
 	}
 
-	protected JSONArray getJSONArray(JSONObject options, String key) {
-		JSONArray array = !options.isNull(key) ? options.optJSONArray(key) : null;
-		options.remove(key);
-		return array;
-	}
+	// -----------------------------------------------------------------------
+	// EVENT BROADCASTING API
+	// -----------------------------------------------------------------------
 
-	protected int getInt(JSONObject options, String key) {
-		int value = options.optInt(key);
-		options.remove(key);
-		return value;
-	}
-
-	protected double getDouble(JSONObject options, String key) {
-		double value = options.optDouble(key);
-		options.remove(key);
-		return value;
-	}
-
-	protected boolean getBoolean(JSONObject options, String key) {
-		boolean value = options.optBoolean(key);
-		options.remove(key);
-		return value;
-	}
-
-	protected String getString(JSONObject options, String key) {
-		String value = !options.isNull(key) ? options.optString(key) : null;
-		options.remove(key);
-		return value;
-	}
-
-	private JSONObject newEvent(String event) throws JSONException {
+	/**
+	 * Create new broadcast event.
+	 * 
+	 * @param event
+	 *          the event name.
+	 * @return
+	 * @throws JSONException
+	 */
+	protected JSONObject newEvent(String event) throws JSONException {
 		JSONObject message = new JSONObject();
 		message.put(MessageEvent.KEY_BODY_VERSION, "1.0");
-		message.put(MessageEvent.KEY_BODY_SERVICE, replyName + "." + event);
+		message.put(MessageEvent.KEY_BODY_SERVICE, mReplyName + "." + event);
 		return message;
 	}
 
+	/**
+	 * Broadcast event to all subscribers.
+	 * 
+	 * @param event
+	 *          the event name.
+	 */
 	protected void fireEvent(String event) {
 		try {
 			JSONObject message = newEvent(event);
 			MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.e(getName(), e.getMessage());
 		}
 	}
 
+	/**
+	 * Broadcast event to all subscribers.
+	 * 
+	 * @param event
+	 *          the event name.
+	 * @param params
+	 *          event parameters
+	 */
 	protected void fireEvent(String event, Object params) {
 		try {
 			JSONObject message = newEvent(event);
 			message.put(MessageEvent.KEY_BODY_PARAMS, params);
 			MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.e(getName(), e.getMessage());
 		}
 	}
 
-	/*
-	 * Utility method to capitalize the first character of a string.
-	 */
-	private static String cap1stChar(String str) {
-		String result = str;
-		if (str.length() > 0) {
-			String first = str.substring(0, 1);
-			result = str.replaceFirst(first, first.toUpperCase());
-		}
-		return result;
+	// --------------------------------------------------------------------------
+
+	@Deprecated
+	protected JSONObject getJSONObject(JSONObject options, String key) {
+		JSONObject object = !options.isNull(key) ? options.optJSONObject(key) : null;
+		options.remove(key);
+		return object;
 	}
+
+	@Deprecated
+	protected JSONArray getJSONArray(JSONObject options, String key) {
+		JSONArray array = !options.isNull(key) ? options.optJSONArray(key) : null;
+		options.remove(key);
+		return array;
+	}
+
+	@Deprecated
+	protected int getInt(JSONObject options, String key) {
+		int value = options.optInt(key);
+		options.remove(key);
+		return value;
+	}
+
+	@Deprecated
+	protected double getDouble(JSONObject options, String key) {
+		double value = options.optDouble(key);
+		options.remove(key);
+		return value;
+	}
+
+	@Deprecated
+	protected boolean getBoolean(JSONObject options, String key) {
+		boolean value = options.optBoolean(key);
+		options.remove(key);
+		return value;
+	}
+
+	@Deprecated
+	protected String getString(JSONObject options, String key) {
+		String value = !options.isNull(key) ? options.optString(key) : null;
+		options.remove(key);
+		return value;
+	}
+
 }

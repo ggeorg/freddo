@@ -15,9 +15,9 @@
  */
 package freddo.dtalk.services.clients;
 
-import freddo.dtalk.AsyncCallback;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkException;
+import freddo.dtalk.util.AsyncCallback;
 
 public abstract class Service {
   private final String mName;

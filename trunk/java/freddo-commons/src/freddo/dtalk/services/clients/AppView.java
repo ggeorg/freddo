@@ -21,8 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import freddo.dtalk.AsyncCallback;
 import freddo.dtalk.DTalkException;
+import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 
 public class AppView extends Service {
