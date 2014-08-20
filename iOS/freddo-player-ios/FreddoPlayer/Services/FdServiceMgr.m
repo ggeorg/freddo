@@ -21,7 +21,6 @@
 #import "FdSettingsFactory.h"
 #import "FdAppViewFactory.h"
 #import "FdPresenceFactory.h"
-#import "FdChromecastFactory.h"
 
 #import "DDLog.h"
 
@@ -55,7 +54,6 @@ static NSMutableDictionary *services;
         services = [[NSMutableDictionary alloc] init];
         
         [factories setValue:[[FdVideoFactory alloc] init] forKey:@"dtalk.service.Video"];
-        [factories setValue:[[FdChromecastFactory alloc] init] forKey:@"dtalk.service.Chromecast"];
         [factories setValue:[[FdAccelerometerFactory alloc] init] forKey:@"dtalk.service.Accelerometer"];
         [factories setValue:[[FdCompassFactory alloc] init] forKey:@"dtalk.service.Compass"];
         [factories setValue:[[FdLocationFactory alloc] init] forKey:@"dtalk.service.Geolocation"];
