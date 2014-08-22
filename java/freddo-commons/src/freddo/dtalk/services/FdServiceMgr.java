@@ -30,11 +30,6 @@ import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.LOG;
 
 public class FdServiceMgr extends FdService {
-	
-	/**
-	 * DTalk service name.
-	 */
-	public static final String TYPE = "dtalk.Services";
 
 	/* A map to register all running services. */
 	private final Map<String, FdService> mServices;
@@ -46,7 +41,7 @@ public class FdServiceMgr extends FdService {
 	 * @param options configuration options.
 	 */
 	public FdServiceMgr(DTalkServiceContext context, JSONObject options) {
-		super(context, TYPE, options);
+		super(context, "dtalk.Services", options);
 		mServices = new ConcurrentHashMap<String, FdService>();
 	}
 
@@ -69,6 +64,8 @@ public class FdServiceMgr extends FdService {
 		runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				LOG.d(getName(), "Calling dispose() on each service...");
+				
 				Iterator<Map.Entry<String, FdService>> serviceIter = mServices.entrySet().iterator();
 				while (serviceIter.hasNext()) {
 					FdService service = serviceIter.next().getValue();
