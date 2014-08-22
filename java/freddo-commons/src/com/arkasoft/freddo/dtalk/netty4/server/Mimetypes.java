@@ -18,7 +18,7 @@ package com.arkasoft.freddo.dtalk.netty4.server;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MimetypesFileTypeMap {
+public class Mimetypes {
 
   private final static Map<String, String[]> mimeTypes = new ConcurrentHashMap<String, String[]>();
 

@@ -47,11 +47,12 @@ class DTalkDiscovery {
 
   public void shutdown() {
     LOG.v(TAG, ">>> shutdown");
+    mServiceInfoMap.clear();
     updateServiceListener(null);
   }
 
   private void updateServiceListener(final DTalkDiscoveryListener serviceListener) {
-    final ZConfManager nsd = DTalkService.getInstance().getConfiguration().getNsdManager();
+    final ZConfManager nsd = DTalkService.getInstance().getConfiguration().getZConfManager();
 
     // Remove listener...
     if (mDiscoveryListener != null) {
@@ -119,8 +120,9 @@ class DTalkDiscovery {
         return;
       }
     }
-
-    if (info != null && !info.getServiceName().equals(DTalkService.getInstance().getLocalServiceInfo().getServiceName())) {
+    
+    ZConfServiceInfo localServiceInfo = DTalkService.getInstance().getLocalServiceInfo();
+    if (info != null && localServiceInfo != null && !info.getServiceName().equals(localServiceInfo.getServiceName())) {
       // NOTE: self is excluded!!!
       mServiceInfoMap.put(info.getServiceName(), info);
 
@@ -148,7 +150,7 @@ class DTalkDiscovery {
     @Override
     public void onServiceFound(ZConfServiceInfo serviceInfo) {
       LOG.v(TAG, ">>> onServiceFound: %s", serviceInfo.getServiceName());
-      DTalkService.getInstance().getConfiguration().getNsdManager().resolveService(serviceInfo, mResolveListener);
+      DTalkService.getInstance().getConfiguration().getZConfManager().resolveService(serviceInfo, mResolveListener);
     }
 
     @Override

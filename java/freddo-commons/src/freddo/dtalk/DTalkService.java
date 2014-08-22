@@ -15,10 +15,10 @@
  */
 package freddo.dtalk;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +26,11 @@ import java.util.concurrent.ExecutorService;
 
 import com.arkasoft.freddo.dtalk.DTalkConnectionRegistry;
 import com.arkasoft.freddo.dtalk.DTalkDispatcher;
+import com.arkasoft.freddo.dtalk.DTalkServer;
+import com.arkasoft.freddo.dtalk.netty4.server.DTalkNettyServerImpl;
+import com.arkasoft.freddo.dtalk.netty4.server.DTalkNettyServerInitializer;
+import com.arkasoft.freddo.dtalk.netty4.server.NettyConfig;
 import com.arkasoft.freddo.dtalk.netty4.server.WebPresenceService;
-import com.arkasoft.freddo.dtalk.netty4.server.WebSocketServer;
 import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
@@ -38,7 +41,7 @@ import freddo.dtalk.zeroconf.ZConfManager;
 import freddo.dtalk.zeroconf.ZConfRegistrationListener;
 import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
-public class DTalkService {
+public class DTalkService implements Runnable {
 	private static final String TAG = LOG.tag(DTalkService.class);
 
 	public static final String LOCAL_CHANNEL_PREFIX = "dtalk-";
@@ -48,7 +51,7 @@ public class DTalkService {
 	 */
 	public static interface Configuration {
 
-		ZConfManager getNsdManager();
+		ZConfManager getZConfManager();
 
 		String getDeviceId();
 
@@ -68,7 +71,7 @@ public class DTalkService {
 
 		String getHardwareAddress(String separator);
 
-		InetAddress getInetAddress();
+		InetAddress getInetAddress() throws IOException;
 
 		boolean runServiceDiscovery();
 
@@ -90,7 +93,6 @@ public class DTalkService {
 		if (sInstance == null) {
 			throw new IllegalStateException("DTalkService not initialized.");
 		}
-
 		return sInstance;
 	}
 
@@ -110,8 +112,7 @@ public class DTalkService {
 		if (sInstance == null) {
 			synchronized (DTalkService.class) {
 				if (sInstance == null) {
-					sInstance = new DTalkService(config);
-					return sInstance;
+					return sInstance = new DTalkService(config);
 				}
 			}
 		}
@@ -169,12 +170,13 @@ public class DTalkService {
 	// --------------------------------------------------------------------------
 
 	private final Configuration mConfiguration;
-	private final WebSocketServer mWebSocketServer;
+
+	private final DTalkServer mDTalkServer;
+	private final DTalkDiscovery mServiceDiscovery;
+
+	private ZConfServiceInfo mNsdServiceInfo = null;
 
 	private boolean mStarted = false;
-
-	private DTalkDiscovery mServiceDiscovery = null;
-	private ZConfServiceInfo mNsdServiceInfo = null;
 
 	/**
 	 * {@code DTalkService} constructor.
@@ -183,7 +185,14 @@ public class DTalkService {
 	 */
 	private DTalkService(Configuration configuration) {
 		mConfiguration = configuration;
-		mWebSocketServer = new WebSocketServer();
+
+		// Create DTalkServer...
+		NettyConfig nettyConfig = new NettyConfig(new InetSocketAddress(getConfiguration().getPort()));
+		DTalkNettyServerInitializer initializer = new DTalkNettyServerInitializer();
+		mDTalkServer = new DTalkNettyServerImpl(nettyConfig, initializer);
+
+		// Create DTalkDiscovery...
+		mServiceDiscovery = getConfiguration().runServiceDiscovery() ? new DTalkDiscovery() : null;
 
 		// Start dispatcher...
 		DTalkDispatcher.start();
@@ -194,18 +203,17 @@ public class DTalkService {
 	}
 
 	public ZConfServiceInfo getLocalServiceInfo() {
-		synchronized (this) {
-			return mNsdServiceInfo;
-		}
+		assert mStarted == true : "DTalkService not started.";
+		return mNsdServiceInfo;
 	}
 
-	// In case there is no discovery running this map can be used as the roster (experimental).
+	// In case there is no discovery running this map is used.
 	private static final Map<String, ZConfServiceInfo> EMPTY_SERVICEINFO_MAP = new ConcurrentHashMap<String, ZConfServiceInfo>();
 
 	public Map<String, ZConfServiceInfo> getServiceInfoMap() {
-		synchronized (this) {
-			return mServiceDiscovery != null ? Collections.unmodifiableMap(mServiceDiscovery.mServiceInfoMap) : EMPTY_SERVICEINFO_MAP;
-		}
+		assert mStarted == true : "DTalkService not started.";
+		// XXX Collections.unmodifiableMap?
+		return mServiceDiscovery != null ? mServiceDiscovery.mServiceInfoMap : EMPTY_SERVICEINFO_MAP;
 	}
 
 	/**
@@ -213,56 +221,42 @@ public class DTalkService {
 	 */
 	public void startup() {
 		LOG.v(TAG, ">>> startup");
-
+		mConfiguration.getThreadPool().execute(this);
+	}
+	
+	@Override
+	public void run() {
 		synchronized (this) {
 			if (mStarted) {
 				LOG.w(TAG, "DTalkService already started.");
 				return;
 			}
-			mStarted = true; // TODO move it to the end
-
-			if (getConfiguration().runServiceDiscovery()) {
-				if (mServiceDiscovery != null) {
-					mServiceDiscovery.shutdown();
-					mServiceDiscovery = null;
-				}
-				mServiceDiscovery = new DTalkDiscovery();
-			}
 
 			LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
 			MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
 
-			mConfiguration.getThreadPool().execute(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						// this will block execution until server is down...
-						mWebSocketServer.startup(new Runnable() {
-							@Override
-							public void run() {
-								// Publish DTalkService...
-								synchronized (DTalkService.this) {
-									publishService();
-								}
+			// Start DTalkServer...
+			try {
+				mDTalkServer.startServer();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-								if (getConfiguration().runServiceDiscovery()) {
-									// Start the service discovery...
-									if (mServiceDiscovery != null) {
-										mServiceDiscovery.startup();
-									}
-								}
+			// Publish DTalkService...
+			synchronized (DTalkService.this) {
+				publishService();
+			}
 
-								LOG.i(TAG, "DTalkService is started.");
-							}
-						});
-
-						// server is down...
-						shutdown();
-					} catch (Throwable t) {
-						LOG.e(TAG, "Uncaught exception in WebSocketServer startup: ", t);
-					}
+			if (getConfiguration().runServiceDiscovery()) {
+				// Start the service discovery...
+				if (mServiceDiscovery != null) {
+					mServiceDiscovery.startup();
 				}
-			});
+			}
+
+			mStarted = true;
+			LOG.i(TAG, "DTalkService started.");
 		}
 	}
 
@@ -270,37 +264,38 @@ public class DTalkService {
 	 * Shutdown {@code DTalkService}.
 	 */
 	public void shutdown() {
-		LOG.v(TAG, ">>> shutdown");
+		LOG.v(TAG, ">>> shutdown: %b", mStarted);
 
 		synchronized (this) {
 			if (!mStarted) {
 				LOG.w(TAG, "DTalkService not started.");
 				return;
 			}
-			mStarted = false; // move this to the end
+			mStarted = false;
 
-			try {
-				LOG.d(TAG, "Unsubscribe from: %s", WebPresenceEvent.class.getName());
-				MessageBus.unsubscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
-			} catch (Exception e) {
-				// ignore
-			}
+			LOG.d(TAG, "Unsubscribe from: %s", WebPresenceEvent.class.getName());
+			MessageBus.unsubscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
 
 			// Shutdown service discovery...
 			if (mServiceDiscovery != null) {
 				mServiceDiscovery.shutdown();
-				mServiceDiscovery = null;
 			}
 
 			// Close client connections...
 			DTalkConnectionRegistry.getInstance().reset();
 
-			// Stop WebSocket server...
+			// Close ZConfManager...
 			unpublishService();
-			mWebSocketServer.shutdown();
-		}
 
-		LOG.i(TAG, "DTalkService is down.");
+			// Stop WebSocket server...
+			try {
+				mDTalkServer.stopServer();
+			} catch (Exception e) {
+				LOG.e(TAG, e.getMessage());
+			}
+
+			LOG.i(TAG, "DTalkService stopped.");
+		}
 	}
 
 	/**
@@ -339,7 +334,7 @@ public class DTalkService {
 		// ...
 
 		try {
-			InetSocketAddress address = mWebSocketServer.getAddress();
+			InetSocketAddress address = mDTalkServer.getSocketAddress();
 			updateServiceInfo(new ZConfServiceInfo(targetName, DTalk.SERVICE_TYPE, props, mConfiguration.getInetAddress(), address.getPort()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -372,17 +367,17 @@ public class DTalkService {
 
 			// Unregister service.
 			if (getConfiguration().registerService()) {
-				mConfiguration.getNsdManager().unregisterService(mNsdRegistrationListener);
+				mConfiguration.getZConfManager().unregisterService(mNsdRegistrationListener);
 				// mConfiguration.getJmDNS().unregisterService(mLocalServiceInfo);
 			}
 
 			// Disable WebPresence...
-			threadPool.execute(new Runnable() {
-				@Override
-				public void run() {
+//			threadPool.execute(new Runnable() {
+//				@Override
+//				public void run() {
 					enableWebPresence(false);
-				}
-			});
+//				}
+//			});
 		}
 
 		mNsdServiceInfo = serviceInfo;
@@ -394,17 +389,17 @@ public class DTalkService {
 
 			// Publish service.
 			if (getConfiguration().registerService()) {
-				mConfiguration.getNsdManager().registerService(mNsdServiceInfo, mNsdRegistrationListener);
+				mConfiguration.getZConfManager().registerService(mNsdServiceInfo, mNsdRegistrationListener);
 				// mConfiguration.getJmDNS().registerService(mLocalServiceInfo);
 			}
 
 			// Enable/disable WebPresence...
-			threadPool.execute(new Runnable() {
-				@Override
-				public void run() {
+//			threadPool.execute(new Runnable() {
+//				@Override
+//				public void run() {
 					enableWebPresence(mConfiguration.isWebPresenceEnabled());
-				}
-			});
+//				}
+//			});
 		}
 	}
 
@@ -483,7 +478,7 @@ public class DTalkService {
 	// --------------------------------------------------------------------------
 
 	public InetSocketAddress getWebSocketServerAddress() {
-		return mWebSocketServer.getAddress();
+		return mDTalkServer.getSocketAddress();
 	}
 
 	public String getLocalServiceAddress() {
@@ -497,7 +492,7 @@ public class DTalkService {
 		StringBuilder sb = new StringBuilder();
 		sb.append("ws://localhost:");
 		sb.append(address.getPort());
-		sb.append(WebSocketServer.WEBSOCKET_PATH);
+		sb.append(DTalkServer.DTALKSRV_PATH);
 		return sb.toString();
 	}
 
@@ -505,7 +500,18 @@ public class DTalkService {
 		StringBuilder sb = new StringBuilder();
 		sb.append("ws://");
 		sb.append(info.getHost().getHostAddress()).append(':').append(info.getPort());
-		sb.append(WebSocketServer.WEBSOCKET_PATH);
+		sb.append(DTalkServer.DTALKSRV_PATH);
+		return sb.toString();
+	}
+
+	@Deprecated
+	public String getLocalResourceAddress(File resource) {
+		ZConfServiceInfo info = getLocalServiceInfo();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("http://");
+		sb.append(info.getHost().getHostAddress()).append(':').append(info.getPort());
+		sb.append(resource.getAbsolutePath());
 		return sb.toString();
 	}
 

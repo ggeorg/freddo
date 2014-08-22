@@ -1,4 +1,4 @@
-package com.arkasoft.freddo.dtalk.zeroconf.jmdns;
+package com.arkasoft.freddo.dtalk.zeroconf;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -23,8 +23,8 @@ import freddo.dtalk.zeroconf.ZConfServiceInfo;
 /**
  * JmDNS implementation of ZConfManager.
  */
-public class JmDNSManagerImpl implements ZConfManager {
-  private static final String TAG = LOG.tag(JmDNSManagerImpl.class);
+public class JmDNSZConfManagerImpl implements ZConfManager {
+  private static final String TAG = LOG.tag(JmDNSZConfManagerImpl.class);
 
   /* convert from ZConfServiceInfo to JmDNS ServiceInfo. */
   private static ServiceInfo convertToJmDNS(ZConfServiceInfo serviceInfo) {
@@ -57,9 +57,20 @@ public class JmDNSManagerImpl implements ZConfManager {
   private Map<ZConfDiscoveryListener, DiscoveryListenerImpl> mDiscoveryListeners = null;
   private Map<ZConfRegistrationListener, RegistrationListenerImpl> mRegistrationListeners = null;
 
-  public JmDNSManagerImpl(JmDNS jmdns, ExecutorService threadPool) {
+  public JmDNSZConfManagerImpl(JmDNS jmdns, ExecutorService threadPool) {
     mJmDNS = jmdns;
     mThreadPool = threadPool;
+    
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+    	public void run() {
+    		LOG.i(TAG, "Closing JmDNS.");
+    		try {
+    			mJmDNS.close();
+    		} catch (IOException e) {
+    			LOG.e(TAG, e.getMessage(), e);
+    		}
+    	}
+    });
   }
 
   @Override
@@ -246,7 +257,8 @@ public class JmDNSManagerImpl implements ZConfManager {
       return mServiceInfo;
     }
 
-    void setServiceInfo(ServiceInfo serviceInfo) {
+    @SuppressWarnings("unused")
+		void setServiceInfo(ServiceInfo serviceInfo) {
       mServiceInfo = serviceInfo;
     }
 

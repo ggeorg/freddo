@@ -42,22 +42,6 @@ public class FdServiceMgr extends FdService {
 	/**
 	 * Service manager constructor.
 	 * 
-	 * @param options configuration options.
-	 */
-	@Deprecated
-	public FdServiceMgr(JSONObject options) {
-		this(new DTalkServiceContext() {
-			@Override
-			public void runOnUiThread(Runnable r) {
-				// XXX should we start a new thread here?
-				r.run();
-			}
-		}, options);
-	}
-
-	/**
-	 * Service manager constructor.
-	 * 
 	 * @param context the service runtime context.
 	 * @param options configuration options.
 	 */
@@ -72,6 +56,9 @@ public class FdServiceMgr extends FdService {
 	 * @param service
 	 */
 	public void registerService(FdService service) {
+		if (mServices.containsValue(service.getName())) {
+			throw new IllegalStateException("Service '" + service.getName() + "' was registered before.");
+		}
 		mServices.put(service.getName(), service);
 	}
 

@@ -74,7 +74,7 @@ public class FileRequestHandler implements HttpRequestHandler {
     if (path.contains(File.separator + '.') ||
         path.contains('.' + File.separator) ||
         path.startsWith(".") || path.endsWith(".") || INSECURE_URI.matcher(path).matches()) {
-      WebSocketServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN));
+      DTalkNettyServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN));
       return;
     }
 
@@ -86,12 +86,12 @@ public class FileRequestHandler implements HttpRequestHandler {
     File file = new File(path);
     if (file.isHidden() || !file.exists() || file.isDirectory()) {
       LOG.w(TAG, "Not found: %s", file);
-      WebSocketServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
+      DTalkNettyServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
       return;
     }
 
     if (!file.isFile()) {
-      WebSocketServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN));
+    	DTalkNettyServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN));
       return;
     }
 
@@ -101,7 +101,7 @@ public class FileRequestHandler implements HttpRequestHandler {
       raf = new RandomAccessFile(file, "r");
     } catch (FileNotFoundException fnfe) {
       LOG.d(TAG, "File %s not found, sending: 404", file.getName());
-      WebSocketServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
+      DTalkNettyServerHandler.sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND));
       return;
     }
     long fileLength = raf.length();
@@ -110,8 +110,8 @@ public class FileRequestHandler implements HttpRequestHandler {
 
     HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
     setContentLength(response, fileLength);
-    WebSocketServerHandler.setContentTypeHeader(response, path);
-    WebSocketServerHandler.setDateAndCacheHeaders(response, file);
+    DTalkNettyServerHandler.setContentTypeHeader(response, path);
+    DTalkNettyServerHandler.setDateAndCacheHeaders(response, file);
     if (isKeepAlive(req)) {
       response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
     }

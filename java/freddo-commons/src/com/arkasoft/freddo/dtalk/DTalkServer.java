@@ -18,6 +18,8 @@ package com.arkasoft.freddo.dtalk;
 import java.net.InetSocketAddress;
 
 public interface DTalkServer {
+	
+	static final String DTALKSRV_PATH = "/dtalksrv";
   
   void startServer() throws Exception;
 
