@@ -55,6 +55,7 @@ import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.WebPresenceEvent;
 import freddo.dtalk.util.Base64;
 import freddo.dtalk.util.LOG;
+import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
 public class WebPresenceService {
   private static final String TAG = LOG.tag(WebPresenceService.class);
@@ -63,7 +64,7 @@ public class WebPresenceService {
 
   private Channel ch = null;
 
-  public void publish(URI uri, JmDNS jmdns, ServiceInfo serviceInfo) {
+  public void publish(URI uri, JmDNS jmdns, ZConfServiceInfo serviceInfo) {
     LOG.v(TAG, ">>> publishService: %s", serviceInfo);
     LOG.v(TAG, ">>> publishService: %s", uri);
 
@@ -80,18 +81,18 @@ public class WebPresenceService {
 
       JSONObject presence = new JSONObject();
 
-      Enumeration<String> pNames = serviceInfo.getPropertyNames();
-      while (pNames.hasMoreElements()) {
-        String property = pNames.nextElement();
-        presence.put(property, serviceInfo.getPropertyString(property));
-      }
-
-      presence.put(DTalk.KEY_NAME, serviceInfo.getName());
-// TODO      presence.put(DTalk.KEY_SERVER, DTalkService.getAddress(serviceInfo));
-      presence.put(DTalk.KEY_PORT, serviceInfo.getPort());
-
-      HttpHeaders customHeaders = new DefaultHttpHeaders();
-      customHeaders.add("presence", presence.toString());
+//      Enumeration<String> pNames = serviceInfo.getPropertyNames();
+//      while (pNames.hasMoreElements()) {
+//        String property = pNames.nextElement();
+//        presence.put(property, serviceInfo.getPropertyString(property));
+//      }
+//
+//      presence.put(DTalk.KEY_NAME, serviceInfo.getName());
+//      presence.put(DTalk.KEY_SERVER, DTalkService.getAddress(serviceInfo));
+//      presence.put(DTalk.KEY_PORT, serviceInfo.getPort());
+//
+     HttpHeaders customHeaders = new DefaultHttpHeaders();
+//      customHeaders.add("presence", presence.toString());
 
       // We don't need this...
       String pr = Base64.encodeBytes(presence.toString().getBytes());

@@ -23,6 +23,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -45,7 +46,7 @@ public class DTalkNettyServerImpl extends AbstractDTalkNettyServer {
 
   private ServerBootstrap mBootstrap;
 
-  protected DTalkNettyServerImpl(NettyConfig nettyConfig, ChannelInitializer<? extends Channel> channelInitializer) {
+  public DTalkNettyServerImpl(NettyConfig nettyConfig, ChannelInitializer<? extends Channel> channelInitializer) {
     super(nettyConfig, channelInitializer);
   }
 
@@ -69,12 +70,17 @@ public class DTalkNettyServerImpl extends AbstractDTalkNettyServer {
           .channel(NioServerSocketChannel.class)
           .handler(new LoggingHandler(LogLevel.INFO))
           .childHandler(getChannelInitializer())
-          .bind(mNettyConfig.getSocketAddress()).channel();
+          .bind(mNettyConfig.getSocketAddress())
+          .sync().channel();
       
       ALL_CHANNELS.add(ch);
       
+      // Set actual socket address...
+      getNettyConfig().setSocketAddress((InetSocketAddress) ch.localAddress());
+      LOG.i(TAG, "Web socket server started at port %d.", getSocketAddress().getPort());
+      
     } catch(Exception e) {
-      LOG.e(TAG, "Server start error: %.\nShutting down.", e.getMessage());
+      LOG.e(TAG, "Server start error: %s.\nShutting down.", e.getMessage());
       super.stopServer();
       throw e;
     }

@@ -1,4 +1,4 @@
-package com.arkasoft.freddo.dtalk.zeroconf.android;
+package com.arkasoft.freddo.dtalk.zeroconf;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +21,8 @@ import freddo.dtalk.zeroconf.ZConfResolveListener;
  * https://code.google.com/p/android/issues/detail?id=35810
  * 
  */
-public class NsdManagerImpl implements ZConfManager {
-  private static final String TAG = LOG.tag(NsdManagerImpl.class);
+public class AndroidZConfManagerImpl implements ZConfManager {
+  private static final String TAG = LOG.tag(AndroidZConfManagerImpl.class);
   
   /** @see: https://code.google.com/p/android/issues/detail?id=35810 */
   public static final boolean ISSUE35810_RESOLVED = false;
@@ -58,7 +58,7 @@ public class NsdManagerImpl implements ZConfManager {
   private Map<ZConfDiscoveryListener, DiscoveryListenerImpl> mDiscoveryListeners = null;
   private Map<ZConfRegistrationListener, RegistrationListenerImpl> mRegistrationListeners = null;
 
-  public NsdManagerImpl(NsdManager nsd) {
+  public AndroidZConfManagerImpl(NsdManager nsd) {
     mNsdManager = nsd;
   }
 

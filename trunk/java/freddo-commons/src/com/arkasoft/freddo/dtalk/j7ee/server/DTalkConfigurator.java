@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.arkasoft.freddo.dtalk.j2ee.server;
+package com.arkasoft.freddo.dtalk.j7ee.server;
 
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;

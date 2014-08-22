@@ -20,8 +20,8 @@ import javax.websocket.server.HandshakeRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.dtalk.j2ee.server.DTalkServerEndpoint;
-import com.arkasoft.freddo.dtalk.j2ee.server.DTalkContextListener;
+import com.arkasoft.freddo.dtalk.j7ee.server.DTalkContextListener;
+import com.arkasoft.freddo.dtalk.j7ee.server.DTalkServerEndpoint;
 
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkServiceContext;
