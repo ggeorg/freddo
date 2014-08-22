@@ -23,8 +23,8 @@ import freddo.dtalk.zeroconf.ZConfServiceInfo;
 /**
  * JmDNS implementation of ZConfManager.
  */
-public class JmDNSZConfManagerImpl implements ZConfManager {
-  private static final String TAG = LOG.tag(JmDNSZConfManagerImpl.class);
+public class JmDNSZConfManager implements ZConfManager {
+  private static final String TAG = LOG.tag(JmDNSZConfManager.class);
 
   /* convert from ZConfServiceInfo to JmDNS ServiceInfo. */
   private static ServiceInfo convertToJmDNS(ZConfServiceInfo serviceInfo) {
@@ -57,20 +57,9 @@ public class JmDNSZConfManagerImpl implements ZConfManager {
   private Map<ZConfDiscoveryListener, DiscoveryListenerImpl> mDiscoveryListeners = null;
   private Map<ZConfRegistrationListener, RegistrationListenerImpl> mRegistrationListeners = null;
 
-  public JmDNSZConfManagerImpl(JmDNS jmdns, ExecutorService threadPool) {
+  public JmDNSZConfManager(JmDNS jmdns, ExecutorService threadPool) {
     mJmDNS = jmdns;
     mThreadPool = threadPool;
-    
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-    	public void run() {
-    		LOG.i(TAG, "Closing JmDNS.");
-    		try {
-    			mJmDNS.close();
-    		} catch (IOException e) {
-    			LOG.e(TAG, e.getMessage(), e);
-    		}
-    	}
-    });
   }
 
   @Override

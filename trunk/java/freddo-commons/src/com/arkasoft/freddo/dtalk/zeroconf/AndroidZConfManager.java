@@ -21,8 +21,8 @@ import freddo.dtalk.zeroconf.ZConfResolveListener;
  * https://code.google.com/p/android/issues/detail?id=35810
  * 
  */
-public class AndroidZConfManagerImpl implements ZConfManager {
-  private static final String TAG = LOG.tag(AndroidZConfManagerImpl.class);
+public class AndroidZConfManager implements ZConfManager {
+  private static final String TAG = LOG.tag(AndroidZConfManager.class);
   
   /** @see: https://code.google.com/p/android/issues/detail?id=35810 */
   public static final boolean ISSUE35810_RESOLVED = false;
@@ -58,7 +58,7 @@ public class AndroidZConfManagerImpl implements ZConfManager {
   private Map<ZConfDiscoveryListener, DiscoveryListenerImpl> mDiscoveryListeners = null;
   private Map<ZConfRegistrationListener, RegistrationListenerImpl> mRegistrationListeners = null;
 
-  public AndroidZConfManagerImpl(NsdManager nsd) {
+  public AndroidZConfManager(NsdManager nsd) {
     mNsdManager = nsd;
   }
 
