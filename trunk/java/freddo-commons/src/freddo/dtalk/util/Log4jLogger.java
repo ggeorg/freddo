@@ -2,7 +2,7 @@ package freddo.dtalk.util;
 
 import freddo.dtalk.util.LOG.Logger;
 
-public class Log4jLogger implements Logger {
+public class Log4JLogger implements Logger {
 
 	@Override
 	public void d(String tag, String msg) {

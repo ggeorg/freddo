@@ -37,8 +37,10 @@ public class FdServiceMgr extends FdService {
 	/**
 	 * Service manager constructor.
 	 * 
-	 * @param context the service runtime context.
-	 * @param options configuration options.
+	 * @param context
+	 *          the service runtime context.
+	 * @param options
+	 *          configuration options.
 	 */
 	public FdServiceMgr(DTalkServiceContext context, JSONObject options) {
 		super(context, "dtalk.Services", options);
@@ -65,21 +67,25 @@ public class FdServiceMgr extends FdService {
 			@Override
 			public void run() {
 				LOG.d(getName(), "Calling dispose() on each service...");
-				
+
 				Iterator<Map.Entry<String, FdService>> serviceIter = mServices.entrySet().iterator();
 				while (serviceIter.hasNext()) {
 					FdService service = serviceIter.next().getValue();
 					serviceIter.remove();
-					service.dispose();
+					try {
+						service.dispose();
+					} catch (Throwable t) {
+						LOG.e(getName(), t.getMessage(), t);
+					}
 				}
 			}
 		});
 	}
-	
+
 	// -----------------------------------------------------------------------
 	// SERVICE MANAGER API
 	// -----------------------------------------------------------------------
-	
+
 	/**
 	 * GET SERVICES request handler.
 	 * 
@@ -91,7 +97,7 @@ public class FdServiceMgr extends FdService {
 
 		try {
 			sendResponse(request, getServices());
-		} catch(DTalkException e) {
+		} catch (DTalkException e) {
 			sendErrorResponse(request, e.getCode(), e.getMessage(), e.getData());
 		}
 	}
@@ -114,7 +120,7 @@ public class FdServiceMgr extends FdService {
 	}
 
 	// -----------------------------------------------------------------------
-	
+
 	@Deprecated
 	public void doStart(JSONObject request) {
 		LOG.v(getName(), ">>> doStart: %s", request);

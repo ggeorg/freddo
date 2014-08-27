@@ -40,7 +40,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 
 	private final DTalkServiceContext mContext;
 
-	private final String mName;
+	protected final String mName;
 	protected final String mReplyName;
 
 	private boolean mDisposed = false;
@@ -93,11 +93,12 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 
 		if (!isDisposed()) {
 			mDisposed = true;
-			onDisposed();
 
 			if (MessageBus.hasListener(getName(), this)) {
 				MessageBus.unsubscribe(getName(), this);
 			}
+			
+			onDisposed();
 		}
 	}
 
