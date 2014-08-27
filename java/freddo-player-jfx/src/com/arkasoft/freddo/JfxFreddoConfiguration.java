@@ -3,35 +3,22 @@ package com.arkasoft.freddo;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import com.arkasoft.freddo.dtalk.zeroconf.JmDNSZConfManagerImpl;
+import com.arkasoft.freddo.dtalk.zeroconf.JmDNSZConfManager;
 import com.arkasoft.freddo.jmdns.JmDNS;
 
 import freddo.dtalk.DTalkServiceConfiguration;
-import freddo.dtalk.util.LOG;
 import freddo.dtalk.zeroconf.ZConfManager;
 
 public class JfxFreddoConfiguration extends DTalkServiceConfiguration {
-	private static final String TAG = LOG.tag(JfxFreddoConfiguration.class);
 	
 	/** Instance of JmDNS. */
-	private volatile JmDNS mJmDNS = null;
+	private final JmDNS mJmDNS;
 
 	/** Instance of ZConfManager. */
 	private volatile ZConfManager mZConfManager = null;
 	
-	private JmDNS getJmDNS() {
-		if (mJmDNS == null) {
-			synchronized(JmDNS.class) {
-				if (mJmDNS == null) {
-					try {
-						mJmDNS = JmDNS.create();
-					} catch (IOException e) {
-						LOG.e(TAG, e.getMessage(), e);
-					}
-				}
-			}
-		}
-		return mJmDNS;
+	public JfxFreddoConfiguration(JmDNS jmDNS) {
+		mJmDNS = jmDNS;
 	}
 
 	@Override
@@ -39,7 +26,7 @@ public class JfxFreddoConfiguration extends DTalkServiceConfiguration {
 		if (mZConfManager == null) {
 			synchronized (ZConfManager.class) {
 				if (mZConfManager == null) {
-					mZConfManager = new JmDNSZConfManagerImpl(getJmDNS(), getThreadPool());
+					mZConfManager = new JmDNSZConfManager(mJmDNS, getThreadPool());
 				}
 			}
 		}
@@ -68,7 +55,7 @@ public class JfxFreddoConfiguration extends DTalkServiceConfiguration {
 
 	@Override
 	public InetAddress getInetAddress() throws IOException {
-		return getJmDNS().getInterface();
+		return mJmDNS.getInterface();
 	}
 
 	@Override
