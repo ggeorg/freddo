@@ -23,8 +23,10 @@ import freddo.dtalk.DTalkEventListener;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkSubscribeHandle;
 import freddo.dtalk.util.AsyncCallback;
+import freddo.dtalk.util.LOG;
 
 public class Video extends Service {
+	private static final String TAG = LOG.tag(Video.class);
 
   public Video() {
     this(null);
@@ -51,10 +53,14 @@ public class Video extends Service {
   }
 
   public void setSrc(String src) throws DTalkException {
+  	LOG.d(TAG, ">>> setSrc: %s", src);
+  	
     DTalkServiceAdapter.set(this, "src", src);
   }
 
   public void setSrc(String src, double startPositionPercent) throws DTalkException {
+  	LOG.d(TAG, ">>> setSrc: %s (%f)", src, startPositionPercent);
+  	
     try {
       JSONObject options = new JSONObject();
       options.put("src", src);
