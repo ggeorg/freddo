@@ -75,10 +75,10 @@ import com.arkasoft.freddo.messagebus.MessageBus;
  */
 public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object> {
 	private static final String TAG = LOG.tag(DTalkNettyServerHandler.class);
-	
-  public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
-  public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
-  public static final int HTTP_CACHE_SECONDS = 60;
+
+	public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+	public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
+	public static final int HTTP_CACHE_SECONDS = 60;
 
 	private HttpRequestHandler mFileHandler;
 
@@ -120,11 +120,11 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 		}
 
 		if (path.startsWith(DTalkServer.DTALKSRV_PATH)) {
-			
+
 			//
 			// WebSocket handshake.
 			//
-			
+
 			WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(req), null, false);
 			WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(req);
 			if (handshaker == null) {
@@ -140,11 +140,11 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 			}
 
 		} else {
-			
+
 			//
 			// HTTP Request handling.
 			//
-			
+
 			String[] parts = path.split("/");
 			String handlerKey = parts.length <= 2 ? "/" : "/" + parts[1];
 
@@ -167,7 +167,7 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 				mFileHandler = new FileRequestHandler(System.getProperty("user.dir"));
 			}
 			mFileHandler.handleHttpRequest(ctx, req, path);
-			
+
 		}
 	}
 
@@ -197,168 +197,173 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 
 	private void handleWebSocketFrame(ChannelHandlerContext ctx, WebSocketFrame frame) {
 		LOG.v(TAG, ">>> handleWebSocketFrame: %s", frame.getClass());
-		
+
 		final Channel channel = ctx.channel();
 
-	// Check for ping frame
+		// Check for ping frame
 		if (frame instanceof PingWebSocketFrame) {
 			channel.write(new PongWebSocketFrame(frame.content().retain()));
 			return;
 		}
 
-	// Check for pong frame
+		// Check for pong frame
 		if (frame instanceof PongWebSocketFrame) {
 			return;
 		}
 
-    final DTalkNettyServerConnection conn = (DTalkNettyServerConnection) DTalkConnectionRegistry.getInstance().get(channel);
-    if (conn == null) {
-      // should not happen...
-      LOG.e(TAG, "*** THIS SHOULD NOT HAPPEN ***");
-      LOG.e(TAG, "Connection not registered!!!");
-      // TODO close channel and return.
-      return;
-    }
+		final DTalkNettyServerConnection conn = (DTalkNettyServerConnection) DTalkConnectionRegistry.getInstance().get(channel);
+		if (conn == null) {
+			// should not happen...
+			LOG.e(TAG, "*** THIS SHOULD NOT HAPPEN ***");
+			LOG.e(TAG, "Connection not registered!!!");
+			// TODO close channel and return.
+			return;
+		}
 
-    // Check for closing frame
-    if (frame instanceof CloseWebSocketFrame) {
-      DTalkConnectionRegistry.getInstance().remove(channel);
-      if (conn.getId() != null) {
-        // Notify listeners that channel was closed...
-        MessageBus.sendMessage(new DTalkChannelClosedEvent((String)conn.getId()));
-      }
-      
-      @SuppressWarnings("deprecation")
-      WebSocketServerHandshaker handshaker = conn.mHandshaker;
-      if (handshaker != null) {
-        handshaker.close(channel, (CloseWebSocketFrame) frame.retain());
-      }
-      conn.close();
-      return;
-    }
-    
-    if (!(frame instanceof TextWebSocketFrame)) {
-      throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
-    }
+		// Check for closing frame
+		if (frame instanceof CloseWebSocketFrame) {
+			DTalkConnectionRegistry.getInstance().remove(channel);
+			if (conn.getId() != null) {
+				// Notify listeners that channel was closed...
+				MessageBus.sendMessage(new DTalkChannelClosedEvent((String) conn.getId()));
+			}
 
-    // Got message...
-    String message = ((TextWebSocketFrame) frame).text();
-    LOG.d(TAG, "Got message: %s", message);
+			@SuppressWarnings("deprecation")
+			WebSocketServerHandshaker handshaker = conn.mHandshaker;
+			if (handshaker != null) {
+				handshaker.close(channel, (CloseWebSocketFrame) frame.retain());
+			}
+			conn.close();
+			return;
+		}
 
-    try {
+		if (!(frame instanceof TextWebSocketFrame)) {
+			throw new UnsupportedOperationException(String.format("%s frame types not supported", frame.getClass().getName()));
+		}
 
-      JSONObject jsonMsg = new JSONObject(message);
+		// Got message...
+		String message = ((TextWebSocketFrame) frame).text();
+		LOG.d(TAG, "Got message: %s", message);
 
-      String localServiceName = DTalkService.getInstance().getLocalServiceInfo().getServiceName();
+		try {
 
-      String to = jsonMsg.optString(DTalk.KEY_TO, null);
-      String from = jsonMsg.optString(DTalk.KEY_FROM, null);
-      String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
+			JSONObject jsonMsg = new JSONObject(message);
 
-      // clean up message
-      jsonMsg.remove(MessageEvent.KEY_FROM);
-      jsonMsg.remove(MessageEvent.KEY_TO);
+			String localServiceName = DTalkService.getInstance().getLocalServiceInfo().getServiceName();
 
-      // if (body != null) {
+			String to = jsonMsg.optString(DTalk.KEY_TO, null);
+			String from = jsonMsg.optString(DTalk.KEY_FROM, null);
+			String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
 
-      JSONObject jsonBody = jsonMsg; // new JSONObject(body);
+			// clean up message
+			jsonMsg.remove(MessageEvent.KEY_FROM);
+			jsonMsg.remove(MessageEvent.KEY_TO);
 
-      if (service == null) {
-        LOG.w(TAG, "Invalid Message");
-        JSONObject _jsonBody = jsonBody;
-        jsonBody = new JSONObject();
-        jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
-        jsonBody.put(MessageEvent.KEY_BODY_PARAMS, _jsonBody);
-      }
+			// if (body != null) {
 
-      if (to != null && !to.equals(localServiceName)) {
+			JSONObject jsonBody = jsonMsg; // new JSONObject(body);
 
-        //
-        // outgoing message
-        //
+			if (service == null) {
+				LOG.w(TAG, "Invalid Message");
+				JSONObject _jsonBody = jsonBody;
+				jsonBody = new JSONObject();
+				jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
+				jsonBody.put(MessageEvent.KEY_BODY_PARAMS, _jsonBody);
+			}
 
-        LOG.d(TAG, "OutgoingMessageEvent to: %s", to);
-        MessageBus.sendMessage(new OutgoingMessageEvent(to, jsonBody));
+			if (to != null && !to.equals(localServiceName)) {
 
-      } else {
+				//
+				// outgoing message
+				//
 
-        //
-        // incoming message
-        //
+				LOG.d(TAG, "OutgoingMessageEvent to: %s", to);
+				MessageBus.sendMessage(new OutgoingMessageEvent(to, jsonBody));
 
-        if (from == null) {
-          // anonymous message...
-          if (service != null && !service.startsWith("$")) {
-            // if its not a broadcast message add 'from'...
-            from = String.format("%s%d", DTalkService.LOCAL_CHANNEL_PREFIX, channel.hashCode());
-          }
-          // else: see DTalkDispatcher for message forwarding.
-        }
-        
-        if (from != null) {
-          // Set the connection id.
-          conn.setId(from);
+			} else {
 
-          // create double entry in DTalkConnectionRegistry...
-          DTalkConnectionRegistry.getInstance().register(from, conn);
-        }
+				//
+				// incoming message
+				//
 
-        LOG.d(TAG, "IncomingMessageEvent from: %s", from);
-        MessageBus.sendMessage(new IncomingMessageEvent(from, jsonBody));
-      }
+				if (from == null) {
+					// anonymous message...
+					if (service != null && !service.startsWith("$")) {
+						// if its not a broadcast message add 'from'...
+						from = String.format("%s%d", DTalkService.LOCAL_CHANNEL_PREFIX, channel.hashCode());
+					}
+					// else: see DTalkDispatcher for message forwarding.
+				}
 
-      // }
+				if (from != null) {
+					// Set the connection id.
+					conn.setId(from);
 
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    
+					// create double entry in DTalkConnectionRegistry...
+					DTalkConnectionRegistry.getInstance().register(from, conn);
+				}
+
+				LOG.d(TAG, "IncomingMessageEvent from: %s", from);
+				MessageBus.sendMessage(new IncomingMessageEvent(from, jsonBody));
+			}
+
+			// }
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
-	
-  /**
-   * Sets the Date header for the HTTP response
-   * 
-   * @param response HTTP response
-   */
-  public static void setDateHeader(FullHttpResponse response) {
-    SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-    dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
 
-    Calendar time = new GregorianCalendar();
-    response.headers().set(DATE, dateFormatter.format(time.getTime()));
-  }
-	
-  /**
-   * Sets the Date and Cache headers for the HTTP Response
-   * 
-   * @param response HTTP response
-   * @param fileToCache file to extract content type
-   */
-  public static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
-    SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
-    dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
+	/**
+	 * Sets the Date header for the HTTP response
+	 * 
+	 * @param response
+	 *          HTTP response
+	 */
+	public static void setDateHeader(FullHttpResponse response) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
 
-    // Date header
-    Calendar time = new GregorianCalendar();
-    response.headers().set(DATE, dateFormatter.format(time.getTime()));
+		Calendar time = new GregorianCalendar();
+		response.headers().set(DATE, dateFormatter.format(time.getTime()));
+	}
 
-    // Add cache headers
-    time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
-    response.headers().set(EXPIRES, dateFormatter.format(time.getTime()));
-    response.headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
-    response.headers().set(LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
-  }
-	
-  /**
-   * Sets the content type header for the HTTP Response
-   * 
-   * @param response HTTP response
-   * @param file file name to extract content type
-   */
-  public static void setContentTypeHeader(HttpResponse response, String file) {
-    response.headers().set(CONTENT_TYPE, Mimetypes.getTypeForFileName(file)[0]);
-  }
+	/**
+	 * Sets the Date and Cache headers for the HTTP Response
+	 * 
+	 * @param response
+	 *          HTTP response
+	 * @param fileToCache
+	 *          file to extract content type
+	 */
+	public static void setDateAndCacheHeaders(HttpResponse response, File fileToCache) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
+
+		// Date header
+		Calendar time = new GregorianCalendar();
+		response.headers().set(DATE, dateFormatter.format(time.getTime()));
+
+		// Add cache headers
+		time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
+		response.headers().set(EXPIRES, dateFormatter.format(time.getTime()));
+		response.headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
+		response.headers().set(LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
+	}
+
+	/**
+	 * Sets the content type header for the HTTP Response
+	 * 
+	 * @param response
+	 *          HTTP response
+	 * @param file
+	 *          file name to extract content type
+	 */
+	public static void setContentTypeHeader(HttpResponse response, String file) {
+		response.headers().set(CONTENT_TYPE, Mimetypes.getTypeForFileName(file)[0]);
+	}
 
 	public static void sendHttpResponse(ChannelHandlerContext ctx, FullHttpRequest req, FullHttpResponse res) {
 		// Generate an error page if response getStatus code is not OK (200).
@@ -397,6 +402,12 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 			sRequestHandlers = new ConcurrentHashMap<String, HttpRequestHandler>();
 		}
 		sRequestHandlers.put(uri, handler);
+	}
+
+	public static void removeRequestHandler(String uri) {
+		if (sRequestHandlers == null) {
+			sRequestHandlers.remove(uri);
+		}
 	}
 
 	protected static HttpRequestHandler getRequestHandler(String uri) {
