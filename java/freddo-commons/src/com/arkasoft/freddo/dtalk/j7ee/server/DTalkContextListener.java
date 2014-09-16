@@ -15,102 +15,110 @@
  */
 package com.arkasoft.freddo.dtalk.j7ee.server;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.json.JSONObject;
-
-import com.arkasoft.freddo.dtalk.DTalkDispatcher;
-import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.DTalkService;
+import freddo.dtalk.DTalkServiceConfiguration;
 import freddo.dtalk.DTalkServiceContext;
-import freddo.dtalk.events.IncomingMessageEvent;
-import freddo.dtalk.events.MessageEvent;
-import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
+import freddo.dtalk.zeroconf.ZConfManager;
 
 public abstract class DTalkContextListener implements ServletContextListener, DTalkServiceContext {
-  private static final String TAG = LOG.tag(DTalkContextListener.class);
+	private static final String TAG = LOG.tag(DTalkContextListener.class);
 
-  //private final Map<String, DTalkConnectionImpl> mConnections = new ConcurrentHashMap<String, DTalkConnectionImpl>();
+	// private final Map<String, DTalkConnectionImpl> mConnections = new
+	// ConcurrentHashMap<String, DTalkConnectionImpl>();
 
-  /** DTalkConnectionEvent listener. */
-  private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
-    @Override
-    public void messageSent(String topic, DTalkConnectionEvent message) {
-      DTalkServerEndpoint conn = message.getConnection();
-      if (message.isOpen()) {
-        onConnectionOpen(conn);
-      } else {
-        onConnectionClose(conn);
-      }
-    }
-  };
+	/** DTalkConnectionEvent listener. */
+	private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
+		@Override
+		public void messageSent(String topic, DTalkConnectionEvent message) {
+			DTalkServerEndpoint conn = message.getConnection();
+			if (message.isOpen()) {
+				onConnectionOpen(conn);
+			} else {
+				onConnectionClose(conn);
+			}
+		}
+	};
 
-  protected void onConnectionOpen(DTalkServerEndpoint conn) {
-  	// do nothing here
-  }
+	protected void onConnectionOpen(DTalkServerEndpoint conn) {
+		// do nothing here
+	}
 
-  protected void onConnectionClose(DTalkServerEndpoint conn) {
-  	// do nothing here
-  }
+	protected void onConnectionClose(DTalkServerEndpoint conn) {
+		// do nothing here
+	}
 
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		LOG.v(TAG, ">>> contextInitialized");
 
-  protected abstract void stopServices();
-  // {
-  // synchronized (serviceList) {
-  // for (Iterator<Service> iter = serviceList.iterator(); iter.hasNext();) {
-  // Service c = iter.next();
-  // try {
-  // c.stop();
-  // } catch (Exception e) {
-  // // Ignore
-  // } finally {
-  // iter.remove();
-  // }
-  // }
-  // }
-  // }
+		//
+		// TODO read configuration settings
+		//
 
-  @Override
-  public void contextInitialized(ServletContextEvent sce) {
-    LOG.v(TAG, ">>> contextInitialized");
+		DTalkService.init(getDTalkServiceConfiguration(sce));
+		DTalkService.getInstance().startup();
 
-    //
-    // TODO read configuration settings
-    //
-    
- // Start DTalkService...
-    try {
-      DTalkDispatcher.start();
-    } catch (Throwable t) {
-      t.printStackTrace();
-    }
+		// MessageBus.subscribe(DTalkConnectionEvent.class.getName(),
+		// dtalkConnectionEL);
+		// MessageBus.subscribe(OutgoingMessageEvent.class.getName(),
+		// outgoingEventListener);
+		// MessageBus.subscribe(IncomingMessageEvent.class.getName(),
+		// incomingEventListener);
+	}
 
-//    resetConnections();
-//
-//    MessageBus.subscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
-//    MessageBus.subscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
-//    MessageBus.subscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
-  }
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
+		LOG.v(TAG, ">>> contextDestroyed");
 
-  @Override
-  public void contextDestroyed(ServletContextEvent sce) {
-    LOG.v(TAG, ">>> contextDestroyed");
+		// Shutdown DTalkService
+		DTalkService.getInstance().shutdown();
 
-//    try {
-//      stopServices();
-//    } finally {
-//      MessageBus.unsubscribe(IncomingMessageEvent.class.getName(), incomingEventListener);
-//      MessageBus.unsubscribe(OutgoingMessageEvent.class.getName(), outgoingEventListener);
-//      MessageBus.unsubscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
-//    }
-//
-//    resetConnections();
-  }
+		// Shutdown executor service
+		ExecutorService threadPool = DTalkService.getInstance().getConfiguration().getThreadPool();
+		DTalkServiceConfiguration.shutdownAndWaitTermination(threadPool, 3333L);
+	}
+
+	protected DTalkService.Configuration getDTalkServiceConfiguration(ServletContextEvent sce) {
+		final ServletContext ctx = sce.getServletContext();
+		return new DTalkServiceConfiguration() {
+			@Override
+			public boolean isHosted() {
+				return true;
+			}
+
+			@Override
+			public String getType() {
+				return "DTalkServer/1";
+			}
+
+			@Override
+			public ZConfManager getZConfManager() {
+				return null;
+			}
+
+			@Override
+			public boolean runServiceDiscovery() {
+				return false;
+			}
+
+			@Override
+			public boolean registerService() {
+				return false;
+			}
+
+			@Override
+			public int getPort() {
+				return Integer.parseInt((String) ctx.getInitParameter("dtalksrv.port"));
+			}
+		};
+	}
 }
