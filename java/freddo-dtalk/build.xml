@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build-jar" name="freddo-commons">
+<project basedir="." default="build-jar" name="freddo-dtalk">
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="target" value="1.6" />
 	<property name="source" value="1.6" />
@@ -7,7 +7,7 @@
 	<property environment="env" />
 	<property file="build.properties" />
 	
-	<path id="com.arkasoft.freddo-commons.classpath">
+	<path id="com.arkasoft.freddo-dtalk.classpath">
 		<pathelement location="bin" />
 		<fileset dir="lib" includes="**/*.jar" />
 	</path>
@@ -32,7 +32,7 @@
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin"
 			includeantruntime="false" source="${source}" target="${target}">
 			<src path="src" />
-			<classpath refid="com.arkasoft.freddo-commons.classpath" />
+			<classpath refid="com.arkasoft.freddo-dtalk.classpath" />
 		</javac>
 	</target>
 	<target depends="build" name="build-jar">
