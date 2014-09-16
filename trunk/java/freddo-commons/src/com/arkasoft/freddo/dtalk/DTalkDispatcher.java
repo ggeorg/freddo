@@ -345,7 +345,14 @@ public final class DTalkDispatcher {
 					jsonMsg.put(MessageEvent.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
 				}
 			} else if (!jsonMsg.has(MessageEvent.KEY_FROM)) {
-				jsonMsg.put(MessageEvent.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
+				LOG.i(TAG, "--------------------------------------- 1");
+				try {
+					jsonMsg.put(MessageEvent.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
+				} catch (Throwable e) {
+					e.printStackTrace();
+					return;
+				}
+				LOG.i(TAG, "--------------------------------------- 2");
 			}
 		}
 		jsonMsg.put(MessageEvent.KEY_TO, to);

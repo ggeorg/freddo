@@ -16,7 +16,5 @@
 package freddo.dtalk;
 
 public interface DTalkSubscribeHandle {
-
   void remove();
-
 }
