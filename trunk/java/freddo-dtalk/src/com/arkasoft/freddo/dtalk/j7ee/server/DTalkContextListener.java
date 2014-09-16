@@ -15,8 +15,6 @@
  */
 package com.arkasoft.freddo.dtalk.j7ee.server;
 
-import java.util.concurrent.ExecutorService;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -81,10 +79,6 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 
 		// Shutdown DTalkService
 		DTalkService.getInstance().shutdown();
-
-		// Shutdown executor service
-		ExecutorService threadPool = DTalkService.getInstance().getConfiguration().getThreadPool();
-		DTalkServiceConfiguration.shutdownAndWaitTermination(threadPool, 3333L);
 	}
 
 	protected DTalkService.Configuration getDTalkServiceConfiguration(ServletContextEvent sce) {

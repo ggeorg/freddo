@@ -152,27 +152,4 @@ public abstract class DTalkServiceConfiguration implements DTalkService.Configur
 		return sb.toString();
 	}
 
-	/**
-	 * Shuts down an ExecutorService in two phases, first by calling shutdown to
-	 * reject incoming tasks, and then calling shutdownNow, if necessary, to
-	 * cancel any lingering tasks.
-	 */
-	public static void shutdownAndWaitTermination(ExecutorService pool, long timeout) {
-		try {
-			// Wait a while for existing tasks to terminate
-			if (!pool.awaitTermination(timeout, TimeUnit.MILLISECONDS)) {
-				pool.shutdownNow(); // Cancel currently executing tasks
-				// Wait a while for tasks to respond to being cancelled
-				if (!pool.awaitTermination(timeout, TimeUnit.MILLISECONDS)) {
-					System.err.println("Pool did not terminate");
-				}
-			}
-		} catch (InterruptedException ie) {
-			// (Re-)Cancel if current thread also interrupted
-			pool.shutdownNow();
-			// Preserve interrupt status
-			Thread.currentThread().interrupt();
-		}
-	}
-
 }
