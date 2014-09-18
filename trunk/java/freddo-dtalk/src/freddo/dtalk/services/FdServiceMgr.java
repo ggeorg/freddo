@@ -23,7 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.MessageEvent;
@@ -39,11 +38,9 @@ public class FdServiceMgr extends FdService {
 	 * 
 	 * @param context
 	 *          the service runtime context.
-	 * @param options
-	 *          configuration options.
 	 */
-	public FdServiceMgr(DTalkServiceContext context, JSONObject options) {
-		super(context, "dtalk.Services", options);
+	public FdServiceMgr(DTalkServiceContext context) {
+		super(context, "dtalk.Services");
 		mServices = new ConcurrentHashMap<String, FdService>();
 	}
 
@@ -113,7 +110,7 @@ public class FdServiceMgr extends FdService {
 				service.put("name", srvName);
 				result.put(service);
 			} catch (JSONException e) {
-				throw new DTalkException(DTalk.ERROR_SERVER_ERROR, e.getMessage());
+				throw new DTalkException(DTalkException.INTERNAL_ERROR, e.getMessage());
 			}
 		}
 		return result;

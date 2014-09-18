@@ -14,6 +14,7 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.DTalk;
+import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.events.MessageEvent;
@@ -44,8 +45,8 @@ public class FdPresence extends FdService {
 
 	private MessageBusListener<JSONObject> mDtalkPresenceListener;
 
-	public FdPresence(DTalkServiceContext activity, JSONObject options) {
-		super(activity, DTalk.DEFAULT_SRV_PREFIX + "Presence", options);
+	public FdPresence(DTalkServiceContext activity) {
+		super(activity, DTalk.DEFAULT_SRV_PREFIX + "Presence");
 
 		mDtalkPresenceListener = new MessageBusListener<JSONObject>() {
 			@Override
@@ -131,9 +132,9 @@ public class FdPresence extends FdService {
 		try {
 			sendResponse(request, addToRoster(jsonToServiceInfo(request.getJSONObject(DTalk.KEY_BODY_PARAMS))));
 		} catch (JSONException e) {
-			sendErrorResponse(request, DTalk.ERROR_PARSE_ERROR, e.getMessage());
+			sendErrorResponse(request, DTalkException.INVALID_JSON, e.getMessage());
 		} catch (Exception e) {
-			sendErrorResponse(request, DTalk.ERROR_SERVER_ERROR, e.getMessage());
+			sendErrorResponse(request, DTalkException.INTERNAL_ERROR, e.getMessage());
 		}
 	}
 

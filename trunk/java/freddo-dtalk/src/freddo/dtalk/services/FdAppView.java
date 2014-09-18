@@ -9,8 +9,8 @@ import freddo.dtalk.util.LOG;
 
 public abstract class FdAppView extends FdUiService {
 
-	protected FdAppView(DTalkServiceContext context, JSONObject options) {
-		super(context, DTalk.DEFAULT_SRV_PREFIX + "AppView", options);
+	protected FdAppView(DTalkServiceContext context) {
+		super(context, DTalk.DEFAULT_SRV_PREFIX + "AppView");
 	}
 
 	@Override

@@ -15,23 +15,14 @@
  */
 package freddo.dtalk.jsr356.services;
 
-import javax.websocket.server.HandshakeRequest;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.arkasoft.freddo.dtalk.j7ee.server.DTalkContextListener;
-import com.arkasoft.freddo.dtalk.j7ee.server.DTalkServerEndpoint;
-
-import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkServiceContext;
 import freddo.dtalk.services.FdService;
 
 @Deprecated
 public abstract class FdJSR356Service extends FdService {
 
-  protected FdJSR356Service(DTalkServiceContext context, String name, JSONObject options) {
-    super(context, name, options);
+  protected FdJSR356Service(DTalkServiceContext context, String name) {
+    super(context, name);
   }
   
 //  public HandshakeRequest getHandshakeRequest(JSONObject message) throws JSONException {

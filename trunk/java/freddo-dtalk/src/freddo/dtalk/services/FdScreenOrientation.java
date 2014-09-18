@@ -62,8 +62,8 @@ public abstract class FdScreenOrientation extends FdService {
 	/** The orientation is either landscape-primary or landscape-secondary. */
 	public static final String LANDSCAPE = "landscape";
 
-	protected FdScreenOrientation(DTalkServiceContext context, JSONObject options) {
-		super(context, SRV_NAME, options);
+	protected FdScreenOrientation(DTalkServiceContext context) {
+		super(context, SRV_NAME);
 	}
 
 	// -----------------------------------------------------------------------

@@ -22,7 +22,6 @@ import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.arkasoft.freddo.jmdns.NetworkTopologyDiscovery;
 
@@ -69,7 +68,7 @@ public abstract class DTalkServiceConfiguration implements DTalkService.Configur
 	
 	@Override
 	public String getTargetName() {
-		return getInetSocketAddress().getHostName();
+		return getSocketAddress().getHostName();
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public abstract class DTalkServiceConfiguration implements DTalkService.Configur
 	}
 
 	@Override
-	public InetSocketAddress getInetSocketAddress() {
+	public InetSocketAddress getSocketAddress() {
 		if (mInetSocketAddress == null) {
 			InetAddress addr;
 			try {
@@ -123,7 +122,7 @@ public abstract class DTalkServiceConfiguration implements DTalkService.Configur
 		}
 
 		try {
-			NetworkInterface ni = NetworkInterface.getByInetAddress(getInetSocketAddress().getAddress());
+			NetworkInterface ni = NetworkInterface.getByInetAddress(getSocketAddress().getAddress());
 			mHwAddr = ni.getHardwareAddress();
 		} catch (Exception e) {
 			if (LOG.isLoggable(LOG.INFO)) {
