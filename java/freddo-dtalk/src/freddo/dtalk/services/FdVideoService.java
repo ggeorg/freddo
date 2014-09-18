@@ -10,8 +10,8 @@ import freddo.dtalk.util.LOG;
 
 public abstract class FdVideoService extends FdUiService {
 
-	protected FdVideoService(DTalkServiceContext context, JSONObject options) {
-		super(context, DTalk.DEFAULT_SRV_PREFIX + "Video", options);
+	protected FdVideoService(DTalkServiceContext context) {
+		super(context, DTalk.DEFAULT_SRV_PREFIX + "Video");
 	}
 
 	@Override

@@ -73,7 +73,7 @@ public class DTalkService implements Runnable {
 
 		String getHardwareAddress(String separator);
 
-		InetSocketAddress getInetSocketAddress();
+		InetSocketAddress getSocketAddress();
 
 		boolean runServiceDiscovery();
 
@@ -199,7 +199,7 @@ public class DTalkService implements Runnable {
 
 		// Create DTalkServer.
 		if (!mConfiguration.isHosted()) {
-			NettyConfig nettyConfig = new NettyConfig(mConfiguration.getInetSocketAddress());
+			NettyConfig nettyConfig = new NettyConfig(mConfiguration.getSocketAddress());
 			DTalkNettyServerInitializer initializer = new DTalkNettyServerInitializer();
 			mDTalkServer = new DTalkNettyServerImpl(nettyConfig, initializer);
 		} else {
@@ -368,7 +368,7 @@ public class DTalkService implements Runnable {
 		props.put(DTalk.KEY_PRESENCE_DTYPE, mConfiguration.getType());
 		// ...
 
-		InetSocketAddress address = mConfiguration.getInetSocketAddress();
+		InetSocketAddress address = getSocketAddress();
 		updateServiceInfo(new ZConfServiceInfo(targetName, DTalk.SERVICE_TYPE, props, address.getAddress(), address.getPort()));
 	}
 
@@ -500,9 +500,12 @@ public class DTalkService implements Runnable {
 	// Utility methods
 	// --------------------------------------------------------------------------
 
-	/** @deprecated Use configuration.getInetSocketAddress() */
-	public InetSocketAddress getWebSocketServerAddress() {
-		return mConfiguration.getInetSocketAddress();
+	public InetSocketAddress getSocketAddress() {
+		if (mDTalkServer != null) {
+			return mDTalkServer.getSocketAddress();
+		} else {
+			return mConfiguration.getSocketAddress();
+		}
 	}
 
 	public String getLocalServiceAddress() {
@@ -512,7 +515,7 @@ public class DTalkService implements Runnable {
 
 	public String getServiceAddressForLocalhost() {
 		// NOTE: avoids locking.
-		final InetSocketAddress address = mConfiguration.getInetSocketAddress();
+		final InetSocketAddress address = getSocketAddress();
 		StringBuilder sb = new StringBuilder();
 		sb.append("ws://localhost:");
 		sb.append(address.getPort());

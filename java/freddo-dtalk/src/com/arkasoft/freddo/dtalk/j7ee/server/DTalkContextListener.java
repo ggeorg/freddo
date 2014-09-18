@@ -15,6 +15,8 @@
  */
 package com.arkasoft.freddo.dtalk.j7ee.server;
 
+import java.util.concurrent.ExecutorService;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -62,7 +64,7 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 		// TODO read configuration settings
 		//
 
-		DTalkService.init(getDTalkServiceConfiguration(sce));
+		DTalkService.init(getConfiguration(sce));
 		DTalkService.getInstance().startup();
 
 		// MessageBus.subscribe(DTalkConnectionEvent.class.getName(),
@@ -80,8 +82,24 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 		// Shutdown DTalkService
 		DTalkService.getInstance().shutdown();
 	}
+	
+	@Override
+	public void runOnUiThread(Runnable r) {
+		r.run();
+	}
 
-	protected DTalkService.Configuration getDTalkServiceConfiguration(ServletContextEvent sce) {
+	@Override
+	public void assertBackgroundThread() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public ExecutorService getThreadPool() {
+		return DTalkService.getInstance().getConfiguration().getThreadPool();
+	}
+
+	protected DTalkService.Configuration getConfiguration(ServletContextEvent sce) {
 		final ServletContext ctx = sce.getServletContext();
 		return new DTalkServiceConfiguration() {
 			@Override

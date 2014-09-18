@@ -45,7 +45,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 
 	private boolean mDisposed = false;
 
-	protected FdService(DTalkServiceContext context, String name, final JSONObject options) {
+	protected FdService(DTalkServiceContext context, String name) {
 		this.mContext = context;
 		this.mName = name;
 		this.mReplyName = '$' + name;
