@@ -1,10 +1,6 @@
 package freddo.dtalk.services;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,7 +103,7 @@ public class FdPresence extends FdService {
 		Map<String, ZConfServiceInfo> serviceInfoMap = DTalkService.getInstance().getServiceInfoMap();
 		for (String key : serviceInfoMap.keySet()) {
 			try {
-				result.put(serviceInfoToJSON(serviceInfoMap.get(key)));
+				result.put(ZConfServiceInfo.serviceInfoToJSON(serviceInfoMap.get(key)));
 			} catch (JSONException e) {
 				LOG.w(getName(), e.getMessage());
 			}
@@ -130,7 +126,7 @@ public class FdPresence extends FdService {
 		LOG.v(getName(), ">>> getList");
 
 		try {
-			sendResponse(request, addToRoster(jsonToServiceInfo(request.getJSONObject(DTalk.KEY_BODY_PARAMS))));
+			sendResponse(request, addToRoster(ZConfServiceInfo.jsonToServiceInfo(request.getJSONObject(DTalk.KEY_BODY_PARAMS))));
 		} catch (JSONException e) {
 			sendErrorResponse(request, DTalkException.INVALID_JSON, e.getMessage());
 		} catch (Exception e) {
@@ -143,45 +139,6 @@ public class FdPresence extends FdService {
 		return true;
 	}
 	
-	// -----------------------------------------------------------------------
-	// UTILITY METHODS
-	// -----------------------------------------------------------------------
-	
-	/**
-	 * Utility method to convert a {@link ZConfServiceInfo} to {@link JSONObject}.
-	 */
-	protected JSONObject serviceInfoToJSON(ZConfServiceInfo serviceInfo) throws JSONException {
-		final JSONObject jsonObj = new JSONObject();
-
-		Set<String> pNames = serviceInfo.getTxtRecord().keySet();
-		for (String property : pNames) {
-			jsonObj.put(property, serviceInfo.getTxtRecordValue(property));
-		}
-
-		jsonObj.put(DTalk.KEY_NAME, serviceInfo.getServiceName());
-		jsonObj.put(DTalk.KEY_SERVER, serviceInfo.getHost().getHostAddress());
-		jsonObj.put(DTalk.KEY_PORT, serviceInfo.getPort());
-
-		return jsonObj;
-	}
-	
-	/**
-	 * Utility method to covert a {@link JSONObject} to {@link ZConfServiceInfo}.
-	 */
-	protected ZConfServiceInfo jsonToServiceInfo(JSONObject jsonObj) throws JSONException, UnknownHostException {
-		final String serviceName = jsonObj.getString(DTalk.KEY_NAME);
-		final String host = jsonObj.getString(DTalk.KEY_SERVER);
-		final int port = jsonObj.getInt(DTalk.KEY_PORT);
-		
-		final Map<String, String> txtRecord = new HashMap<String, String>();
-		txtRecord.put(DTalk.KEY_PRESENCE_DTALK, "1");
-		if (jsonObj.has(DTalk.KEY_PRESENCE_DTYPE)) {
-			txtRecord.put(DTalk.KEY_PRESENCE_DTYPE, jsonObj.getString(DTalk.KEY_PRESENCE_DTYPE));
-		}
-		
-		return new ZConfServiceInfo(serviceName, DTalk.SERVICE_TYPE, txtRecord, InetAddress.getByName(host), port);
-	}
-
 	// -----------------------------------------------------------------------
 
 	@Deprecated

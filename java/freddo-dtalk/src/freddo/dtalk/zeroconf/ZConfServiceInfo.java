@@ -2,12 +2,71 @@ package freddo.dtalk.zeroconf;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import freddo.dtalk.DTalk;
 
 public class ZConfServiceInfo implements Serializable {
   private static final long serialVersionUID = 4939216888818215064L;
+  
+	/**
+	 * Utility method to convert a {@link ZConfServiceInfo} to {@link JSONObject}.
+	 */
+	public static JSONObject serviceInfoToJSON(ZConfServiceInfo serviceInfo) throws JSONException {
+		final JSONObject jsonObj = new JSONObject();
+
+		Set<String> pNames = serviceInfo.getTxtRecord().keySet();
+		for (String property : pNames) {
+			jsonObj.put(property, serviceInfo.getTxtRecordValue(property));
+		}
+
+		jsonObj.put(DTalk.KEY_NAME, serviceInfo.getServiceName());
+		jsonObj.put(DTalk.KEY_SERVER, serviceInfo.getHost().getHostAddress());
+		jsonObj.put(DTalk.KEY_PORT, serviceInfo.getPort());
+
+		return jsonObj;
+	}
+	
+	/**
+	 * Utility method to covert a {@link JSONObject} to {@link ZConfServiceInfo}.
+	 */
+	public static ZConfServiceInfo jsonToServiceInfo(JSONObject jsonObj) throws JSONException, UnknownHostException {
+		final String serviceName = jsonObj.getString(DTalk.KEY_NAME);
+		final String host = jsonObj.getString(DTalk.KEY_SERVER);
+		final int port = jsonObj.getInt(DTalk.KEY_PORT);
+		
+		final Map<String, String> txtRecord = new HashMap<String, String>();
+		txtRecord.put(DTalk.KEY_PRESENCE_DTALK, "1");
+		if (jsonObj.has(DTalk.KEY_PRESENCE_DTYPE)) {
+			txtRecord.put(DTalk.KEY_PRESENCE_DTYPE, jsonObj.getString(DTalk.KEY_PRESENCE_DTYPE));
+		}
+		
+		return new ZConfServiceInfo(serviceName, DTalk.SERVICE_TYPE, txtRecord, InetAddress.getByName(host), port);
+	}
+  
+	/**
+	 * Utility method to create a new {@link ZConfServiceInfo}.
+	 * 
+	 * @param serviceName
+	 * @param host
+	 * @param port
+	 * @param dtype
+	 * @return
+	 */
+	public static ZConfServiceInfo newZConfServiceInfo(String serviceName, InetAddress host, int port, String dtype) {
+		final Map<String, String> txtRecord = new HashMap<String, String>();
+		txtRecord.put(DTalk.KEY_PRESENCE_DTALK, "1");
+		txtRecord.put(DTalk.KEY_PRESENCE_DTYPE, dtype);
+		return new ZConfServiceInfo(serviceName, DTalk.SERVICE_TYPE, txtRecord, host, port);
+	}
 
   private String mServiceName;
 
