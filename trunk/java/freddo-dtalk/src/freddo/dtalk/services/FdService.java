@@ -97,7 +97,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 			if (MessageBus.hasListener(getName(), this)) {
 				MessageBus.unsubscribe(getName(), this);
 			}
-			
+
 			onDisposed();
 		}
 	}
@@ -122,14 +122,22 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 			return;
 		}
 
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				if (!onMessage(topic, message)) {
-					LOG.d(TAG, "Unhandled message: %s", topic);
+		if (this instanceof FdUiService) {
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					messageSentImpl(topic, message);
 				}
-			}
-		});
+			});
+		} else {
+			messageSentImpl(topic, message);
+		}
+	}
+
+	private void messageSentImpl(String topic, JSONObject message) {
+		if (!onMessage(topic, message)) {
+			LOG.d(TAG, "Unhandled message: %s", topic);
+		}
 	}
 
 	/**
