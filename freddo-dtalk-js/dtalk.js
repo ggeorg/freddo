@@ -26,35 +26,34 @@
  * 
  ******************************************************************************/
 (function() {
+		
 	window.DTalk = {
 
 		/**
 		 * Debug flag; set to 'false' in production environment.
 		 */
-		debug : true,
+		debug: true,
 
-		_ws : null,
-		_connect : function(url) {
-			this._ws = new WebSocket(url || this.getURLParameter("ws"));
+		_ws: null,
+		_connect: function(url) {
+			DTalk._ws = new WebSocket(url || DTalk.getURLParameter("ws"));
 		},
-		connect : function(url) {
+
+		/** Connect to WebSocket url. */
+		connect: function(url) {
 			if (window.XDTalk) {
 				try {
-					this.getReadyState = function() {
+					DTalk.getReadyState = function() {
 						return 1;
 					};
-					this.send = function(message) {
+					DTalk.send = function(message) {
 						XDTalk.send(message);
 					};
-					this.subscribe = function(topic, target) {
-						if (target) {
-							DTalk._subscribeTo(topic, target);
-						}
+					DTalk.subscribe = function(topic, target) {
+						DTalk._subscribeTo(topic, target);
 					};
-					this.unsubscribe = function(topic, from) {
-						if (from) {
-							DTalk._unsubscribeFrom(topic, from);
-						}
+					DTalk.unsubscribe = function(topic, from) {
+						DTalk._unsubscribeFrom(topic, from);
 					};
 
 					// call onopen
@@ -62,36 +61,32 @@
 						if (DTalk.onopen) {
 							DTalk.onopen.apply(DTalk, arguments);
 						}
+						
+						// fire 'dtalk.onopen' event.
 						DTalk.publish("dtalk.onopen", {
-							dtalk : "1.0",
-							service : "dtalk.onopen"
+							dtalk: "1.0",
+							service: "dtalk.onopen"
 						});
 					}, 0);
 
 				} catch (e) {
-					console.error(e);
+					console.log(e);
 				}
 			} else if (window.AndroidDTalk) {
 				try {
-					this.getReadyState = function() {
+					DTalk.getReadyState = function() {
 						return 1;
 					};
-					this.send = function(message) {
+					DTalk.send = function(message) {
 						AndroidDTalk.send(message);
 					};
-					this.subscribe = function(topic, target) {
+					DTalk.subscribe = function(topic, target) {
 						AndroidDTalk.subscribe(topic);
-
-						if (target) {
-							DTalk._subscribeTo(topic, target);
-						}
+						DTalk._subscribeTo(topic, target);
 					};
-					this.unsubscribe = function(topic, from) {
+					DTalk.unsubscribe = function(topic, from) {
 						AndroidDTalk.unsubscribe(topic);
-
-						if (from) {
-							DTalk._unsubscribeFrom(topic, from);
-						}
+						DTalk._unsubscribeFrom(topic, from);
 					};
 
 					// call onopen
@@ -99,6 +94,8 @@
 						if (DTalk.onopen) {
 							DTalk.onopen.apply(DTalk, arguments);
 						}
+						
+						// fire 'dtalk. onopen' event.
 						DTalk.publish("dtalk.onopen", {
 							dtalk : "1.0",
 							service : "dtalk.onopen"
@@ -106,54 +103,61 @@
 					}, 0);
 
 				} catch (e) {
-					console.error(e);
+					console.log(e);
 				}
 			} else {
 				if (!window.WebSocket) {
+					// Workaround for Mozilla (Gecko).
 					window.WebSocket = window.MozWebSocket;
 				}
 				if (window.WebSocket) {
 					try {
-						this._connect(url);
-						this._ws.onopen = function() {
+						DTalk._connect(url);
+						DTalk._ws.onopen = function() {
 							if (DTalk.onopen) {
 								DTalk.onopen.apply(DTalk, arguments);
 							}
+							
+							// fire 'dtalk. onopen' event.
 							DTalk.publish("dtalk.onopen", {
 								dtalk : "1.0",
 								service : "dtalk.onopen"
 							});
 						};
-						this._ws.onmessage = function(evt) {
+						DTalk._ws.onmessage = function(evt) {
 							try {
 								var msg = JSON.parse(evt.data);
-								DTalk.publish(msg.service, msg);
+								if (msg.service) {
+									//console.log(evt.data);
+									DTalk.publish(msg.service, msg);
+								}
 							} catch (e) {
-								console.error(e);
+								console.log(e);
 							}
 						};
-						this._ws.onclose = function() {
+						DTalk._ws.onclose = function() {
 							DTalk._ws = null;
 
 							if (DTalk.onclose) {
 								DTalk.onclose.apply(DTalk, arguments);
 							}
 						};
-						this._ws.onerror = function() {
-							alert("WebSocket Error!");
+						DTalk._ws.onerror = function() {
+							// TODO
 						};
-						this.getReadyState = function() {
+						DTalk.getReadyState = function() {
 							return DTalk._ws.readyState;
 						};
-						this.send = function(message) {
+						DTalk.send = function(message) {
 							try {
 								DTalk._ws.send(message);
 							} catch (e) {
-								console.error(e);
+								console.log(e);
 							}
 						};
-						this.subscribe = function(topic, target) {
+						DTalk.subscribe = function(topic, target) {
 							var subscribe = {
+								dtalk : "1.0",
 								service : "dtalk.Dispatcher",
 								action : "subscribe",
 								params : topic
@@ -163,8 +167,9 @@
 							// subscribe also to target...
 							DTalk._subscribeTo(topic, target);
 						};
-						this.unsubscribe = function(topic, target) {
+						DTalk.unsubscribe = function(topic, target) {
 							var unsubscribe = {
+								dtalk : "1.0",
 								service : "dtalk.Dispatcher",
 								action : "unsubscribe",
 								params : topic
@@ -175,10 +180,10 @@
 							DTalk._unsubscribeFrom(topic, target);
 						};
 					} catch (e) {
-						console.error(e);
+						console.log(e);
 					}
 				} else {
-					alert("Your browser seems to not support WebSocket !");
+					console.log("Your browser seems to not support WebSocket !");
 				}
 			}
 		},
@@ -189,14 +194,14 @@
 		 * ready to send and receive data. The event is a simple one with the
 		 * name "open".
 		 */
-		onopen : null,
+		onopen: null,
 
 		/**
 		 * An event listener to be called when the WebSocket connection's
 		 * readyState changes to CLOSED. The listener receives a CloseEvent
 		 * named "close".
 		 */
-		onclose : null,
+		onclose: null,
 
 		/**
 		 * Return WebSocket connection state:
@@ -208,7 +213,7 @@
 		 *  3: The connection is closed or couldn't opened.
 		 * </pre>
 		 */
-		getReadyState : function() {
+		getReadyState: function() {
 			return 3;
 		},
 
@@ -225,7 +230,7 @@
 		 * @param data
 		 *            Custom data.
 		 */
-		_createEvent : function(type, data) {
+		_newDOMEvent: function(type, data) {
 
 			// Create the event.
 			var event = document.createEvent('Event');
@@ -246,13 +251,13 @@
 		 * <p>
 		 * NOTE: Android's WebView does not support the WebSocket.
 		 */
-		_publish : function(topic, data) {
+		_publish: function(topic, data) {
 			setTimeout(function() {
 				try {
 					// DTalk.publish(topic, JSON.parse(DTalk.decode(data)));
 					DTalk.publish(topic, JSON.parse(data));
 				} catch (e) {
-					console.error(e);
+					console.log(e);
 				}
 			}, 0);
 		},
@@ -266,38 +271,46 @@
 		 * <p>
 		 * The target of the event is {@code window}.
 		 */
-		publish : function(topic, data) {
+		publish: function(topic, data) {
 			try {
-				// alert(topic + ' : ' + JSON.stringify(data));
-				window.dispatchEvent(DTalk._createEvent(topic, data));
+				window.dispatchEvent(DTalk._newDOMEvent(topic, data));
 			} catch (e) {
-				console.error(e);
+				console.log("Failed to publish: " + topic 
+					+ '. Reason: ' + e);
 			}
 		},
 
 		/** Send text message. */
-		send : function(message) {
-			console.error("DTalk.send() is called before DTalk.connect().");
+		send: function(message) {
+			console.log("DTalk.send() is called before DTalk.connect().");
+		},
+		
+		/** Creates a new DTalk message event. */
+		newEvent: function(target, service, action, params) {
+			return {
+				dtalk: "1.0", 
+				to: target,
+				service: service,
+				action: action,
+				params: params
+			};
 		},
 
 		/**
 		 * A convenience method to send a notification event that is internally
 		 * stringify'd
 		 */
-		sendNotification : function(message) {
+		sendNotification: function(message) {
 			DTalk.send(JSON.stringify(message));
 		},
 
 		/** Send request. */
-		timerH : null,
-		sendRequest : function(message, callback, timeout) {
+		sendRequest: function(message, callback, timeout) {
 			if (!message.id) {
 				message.id = DTalk.createUniqueId(message.service);
 			}
 
-			var timerH;
-
-			var target = ('to' in message) ? message.to : null;
+			var timerH, target = ('to' in message) ? message.to : null;
 
 			var eventH = function(event) {
 				try {
@@ -308,23 +321,51 @@
 					// callback.call(this, event.data);
 					callback.call(this, event);
 				} catch (e) {
-					console.error(e);
+					console.log(e);
 				}
 			};
 
 			DTalk.addEventListener(message.id, eventH, true, target);
 
 			timerH = setTimeout(function() {
+
+				/*
 				DTalk.removeEventListener(message.id, eventH, true, target);
-				var event = DTalk._createEvent(message.id, {
+				
+				var event = DTalk._newDOMEvent(message.id, {
 					dtalk : "1.0",
 					service : message.id,
 					error : "timeout"
 				});
 				callback.call(this, event);
+				*/
+				
+				DTalk.publish(message.id, {
+					dtalk : "1.0",
+					service : message.id,
+					error : "timeout"
+				});
+				
 			}, timeout || 33333);
 
 			DTalk.send(JSON.stringify(message));
+		},
+		
+		doSet: function(service, props, target) {
+			DTalk.sendNotification(DTalk.newEvent(target, service, 'set', props));	
+		},
+		
+		doGet: function(service, property, callback, target, timeout) {
+			DTalk.sendRequest(DTalk.newEvent(target, service, 'get', property), callback, timeout);		
+		},
+		
+		doAction: function(service, action, params, callback, target, timeout) {
+			var evt = DTalk.newEvent(target, service, action, params);
+			if (!callback) {
+				DTalk.sendNotification(evt);	
+			} else {
+				DTalk.sendRequest(evt, callback, timeout);
+			}
 		},
 
 		/**
@@ -353,7 +394,8 @@
 		 *            or simply a JavaScript function.
 		 * 
 		 * @param register,
-		 *            target (optional)
+		 *
+		 * @target (optional)
 		 * 
 		 * @see removeEventListener
 		 */
@@ -365,20 +407,27 @@
 
 				if (arguments.length >= 3 && (typeof arguments[2] === "boolean")) {
 					register = arguments[2];
-					if (arguments.length > 3)
+					if (arguments.length > 3) {
 						target = arguments[3];
+					}
 				}
 
 				if (register && (DTalk.getReadyState() === 1))
-					this.subscribe(event, target);
+					DTalk.subscribe(event, target);
 
 			} catch (e) {
-				console.error(e);
+				console.log(e);
 			}
+			
+			return {
+				remove: function() {
+					DTalk.removeEventListener(event, listener, register, target);
+				}
+			};
 		},
 
 		/** Remove event listener. */
-		removeEventListener : function(event, listener) {
+		removeEventListener: function(event, listener) {
 			var unregister=false, target;
 
 			try {
@@ -391,72 +440,122 @@
 				}
 
 				if (unregister && (DTalk.getReadyState() === 1))
-					this.unsubscribe(event, target);
+					DTalk.unsubscribe(event, target);
 
 			} catch (e) {
-				console.error(e);
+				console.log(e);
 			}
 		},
 
 		// TODO documentation
-		subscribe : function(topic, target) {
-			console.error("First open a connection before sending a message !");
+		subscribe: function(topic, target) {
+			console.log("First open a connection before sending a message !");
 		},
 
-		_subscribeTo : function(topic, target) {
-			var subscribe = {
-				service : "dtalk.Dispatcher",
-				action : "subscribe",
-				params : topic
-			};
-
+		_subscribeTo: function(topic, target) {
 			if (target) {
-				subscribe.to = target;
+				var subscribe = {
+					dtalk: "1.0",
+					to: target,
+					service: "dtalk.Dispatcher",
+					action: "subscribe",
+					params: topic
+				};
+				DTalk.send(JSON.stringify(subscribe));
 			}
-
-			DTalk.send(JSON.stringify(subscribe));
 		},
 
 		// TODO documentation
-		unsubscribe : function(topic, target) {
-			console.error("First open a connection before sending a message !");
+		unsubscribe: function(topic, target) {
+			console.log("First open a connection before sending a message !");
 		},
 
-		_unsubscribeFrom : function(topic, target) {
-			var unsubscribe = {
-				service : "dtalk.Dispatcher",
-				action : "unsubscribe",
-				params : topic
-			};
-
+		_unsubscribeFrom: function(topic, target) {
 			if (target) {
-				unsubscribe.to = target;
+				var unsubscribe = {
+					dtalk: "1.0",
+					to: target,
+					service: "dtalk.Dispatcher",
+					action: "unsubscribe",
+					params: topic
+				};
+				DTalk.send(JSON.stringify(unsubscribe));
 			}
-
-			DTalk.send(JSON.stringify(unsubscribe));
+		},
+		
+		/** Register JS service. */
+		registerService: function(service) {
+			if (service && service.name) {
+				return DTalk.addEventListener(service.name, function(e) {
+					var e = e.data;
+					if (e && e.action) {
+						var action = e.action;
+						switch(action) {
+						case 'get':
+							var getter = 'get_' + e.params;
+							if (getter in service) {
+								try {
+									service[getter].call(service, e);
+								} catch(e) {
+									// TODO api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, e);
+								}
+							} else {
+								// TODO api.sendErrorResponse(e, dtalk.kINVALID_REQUEST, 'The property is not available');	
+							}
+							break;
+						case 'set':
+							var properties = e.params;
+							for (var p in properties) {
+								var setter = 'set_' + p;
+								if (setter in service) {
+									try {
+										service[setter].call(service, properties[p]);
+									} catch(e) {
+										console.log(e);	
+									}
+								}
+							}
+							// NOTE: 'set' does not return errors
+							break;
+						default:
+							var method = 'do_' + e.action;
+							if (method in service) {
+								try {
+									service[method].call(service, e);
+								} catch(e) {
+									// TODO api.sendErrorResponse(e,  dtalk.kINTERNAL_ERROR, e);
+								}
+							} else {
+								// TODO api.sendErrorResponse(e, dtalk.kACTION_NOT_FOUND, 'The action is not available');	
+							}
+							break;
+						}
+					}
+				}, true);
+			}
 		},
 
 		/** Base64 encoding. */
-		encode : function(str) {
+		encode: function(str) {
 			return window.btoa(window.unescape(window.encodeURIComponent(str)));
 		},
 
 		/** Base64 decoding. */
-		decode : function(str) {
+		decode: function(str) {
 			return window.decodeURIComponent(window.escape(window.atob(str)));
 		},
 
 		/** Create unique ID. */
-		_uniqueId : null,
+		_uniqueId: null,
 		createUniqueId : function(prefix) {
 			if (!DTalk._uniqueId) {
 				DTalk._uniqueId = (new Date()).getTime();
 			}
-			return (prefix || 'id') + (DTalk._uniqueId++);
+			return (prefix || '') + '#R-' + (DTalk._uniqueId++);
 		},
 
 		/** Get URL parameter: 2 different implementations to test. */
-		getURLParam : function(name) {
+		getURLParam: function(name) {
 			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
 			var regexS = "[\\?&]" + name + "=([^&#]*)";
 			var regex = new RegExp(regexS);
@@ -466,14 +565,13 @@
 			else
 				return decodeURIComponent(results[1]);
 		},
-		getURLParameter : function(name) {
+		getURLParameter: function(name) {
 			return decodeURIComponent(((new RegExp("[?|&]" + name + "=" + "([^&;]+?)(&|#|;|$)")).exec(location.search) || [ , "" ])[1].replace(/\+/g, "%20")) || null;
 		}
 	};
 	
 	// iOS reconnect event...
 	DTalk.addEventListener("freddo.websocket.reconnect", function(event) {
-		alert(event.data.port);
 		DTalk.connect("ws://localhost:" + parseInt(event.data.port) + "/dtalksrv");
 	}, false);
 	
