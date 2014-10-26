@@ -23,9 +23,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkServiceContext;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.LOG;
 
 public class FdServiceMgr extends FdService {
@@ -60,9 +60,9 @@ public class FdServiceMgr extends FdService {
 	protected void onDisposed() {
 		LOG.v(getName(), ">>> onDisposed");
 
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
+//		runOnUiThread(new Runnable() {
+//			@Override
+//			public void run() {
 				LOG.d(getName(), "Calling dispose() on each service...");
 
 				Iterator<Map.Entry<String, FdService>> serviceIter = mServices.entrySet().iterator();
@@ -75,8 +75,8 @@ public class FdServiceMgr extends FdService {
 						LOG.e(getName(), t.getMessage(), t);
 					}
 				}
-			}
-		});
+//			}
+//		});
 	}
 
 	// -----------------------------------------------------------------------
@@ -95,7 +95,7 @@ public class FdServiceMgr extends FdService {
 		try {
 			sendResponse(request, getServices());
 		} catch (DTalkException e) {
-			sendErrorResponse(request, e.getCode(), e.getMessage(), e.getData());
+			sendErrorResponse(request, e);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class FdServiceMgr extends FdService {
 	@Deprecated
 	public void doStart(JSONObject request) {
 		LOG.v(getName(), ">>> doStart: %s", request);
-		String service = request.optString(MessageEvent.KEY_BODY_PARAMS, "");
+		String service = request.optString(DTalk.KEY_BODY_PARAMS, "");
 		sendResponse(request, mServices.containsKey(service));
 	}
 

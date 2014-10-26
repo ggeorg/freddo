@@ -13,7 +13,6 @@ import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.DTalkServiceContext;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.LOG;
 import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
@@ -48,11 +47,11 @@ public class FdPresence extends FdService {
 			@Override
 			public void messageSent(String topic, JSONObject message) {
 				try {
-					if (message.get(MessageEvent.KEY_BODY_ACTION).equals(DTalk.ACTION_RESOLVED)) {
+					if (message.get(DTalk.KEY_BODY_ACTION).equals(DTalk.ACTION_RESOLVED)) {
 						JSONObject params = message.getJSONObject(DTalk.KEY_BODY_PARAMS);
 						LOG.d(getName(), "Presence resolved: %s", params);
 						FdPresence.this.fireEvent("onresolved", params);
-					} else if (message.get(MessageEvent.KEY_BODY_ACTION).equals(DTalk.ACTION_REMOVED)) {
+					} else if (message.get(DTalk.KEY_BODY_ACTION).equals(DTalk.ACTION_REMOVED)) {
 						JSONObject params = message.getJSONObject(DTalk.KEY_BODY_PARAMS);
 						LOG.d(getName(), "Presence removed: %s", params);
 						FdPresence.this.fireEvent("onremoved", params);

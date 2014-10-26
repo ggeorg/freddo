@@ -26,7 +26,6 @@ import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.DTalkChannelClosedEvent;
 import freddo.dtalk.events.IncomingMessageEvent;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 import io.netty.buffer.ByteBuf;
@@ -256,8 +255,8 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 			String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
 
 			// clean up message
-			jsonMsg.remove(MessageEvent.KEY_FROM);
-			jsonMsg.remove(MessageEvent.KEY_TO);
+			jsonMsg.remove(DTalk.KEY_FROM);
+			jsonMsg.remove(DTalk.KEY_TO);
 
 			// if (body != null) {
 
@@ -267,8 +266,8 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 				LOG.w(TAG, "Invalid Message");
 				JSONObject _jsonBody = jsonBody;
 				jsonBody = new JSONObject();
-				jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
-				jsonBody.put(MessageEvent.KEY_BODY_PARAMS, _jsonBody);
+				jsonBody.put(DTalk.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
+				jsonBody.put(DTalk.KEY_BODY_PARAMS, _jsonBody);
 			}
 
 			if (to != null && !to.equals(localServiceName)) {

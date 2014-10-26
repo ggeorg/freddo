@@ -18,7 +18,9 @@ package freddo.dtalk.events;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class IncomingMessageEvent implements MessageEvent {
+import freddo.dtalk.DTalk;
+
+public class IncomingMessageEvent {
 
   private final JSONObject msg;
 
@@ -28,11 +30,11 @@ public class IncomingMessageEvent implements MessageEvent {
 
   public IncomingMessageEvent(String from, JSONObject msg) throws JSONException {
     this.msg = msg;
-    this.msg.put(KEY_FROM, from);
+    this.msg.put(DTalk.KEY_FROM, from);
   }
 
   public String getFrom() {
-    return msg.optString(KEY_FROM, null);
+    return msg.optString(DTalk.KEY_FROM, null);
   }
 
   public JSONObject getMsg() {

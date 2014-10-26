@@ -15,6 +15,7 @@
  */
 package freddo.dtalk.services;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
@@ -28,7 +29,6 @@ import com.arkasoft.freddo.messagebus.MessageBusListener;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkException;
 import freddo.dtalk.DTalkServiceContext;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.LOG;
 
@@ -135,9 +135,15 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 	}
 
 	private void messageSentImpl(String topic, JSONObject message) {
-		if (!onMessage(topic, message)) {
-			LOG.d(TAG, "Unhandled message: %s", topic);
-		}
+			try {
+				onMessage(topic, message);
+			} catch (DTalkException e) {
+				sendErrorResponse(message, e);
+			} catch (JSONException e) {
+				sendErrorResponse(message, DTalkException.INVALID_JSON, e.getMessage());
+			} catch (Throwable t) {
+				sendErrorResponse(message, DTalkException.INTERNAL_ERROR, t.getMessage());
+			}
 	}
 
 	/**
@@ -159,26 +165,23 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private boolean onMessage(String topic, JSONObject message) {
+	private void onMessage(String topic, JSONObject message) throws DTalkException, JSONException {
 		if (isDisposed()) {
 			LOG.e(getName(), "Service disposed!!!");
-			return false;
 		}
 
 		final String action = message.optString(DTalk.KEY_BODY_ACTION, null);
 		if (DTalk.ACTION_GET.equals(action)) {
-			String property = message.optString(MessageEvent.KEY_BODY_PARAMS, null);
+			String property = message.optString(DTalk.KEY_BODY_PARAMS, null);
 			if (property != null && property.length() > 0) {
 				invoke("get" + cap1stChar(property), message);
-				return true;
+			} else {
+				sendErrorResponse(message, DTalkException.INVALID_REQUEST, "No such property");
 			}
 		} else if (DTalk.ACTION_SET.equals(action)) {
-
-			// TODO need to test it
-
-			JSONObject options = message.optJSONObject(DTalk.KEY_BODY_PARAMS);
+			JSONObject options = message.getJSONObject(DTalk.KEY_BODY_PARAMS);
 			if (options != null) {
-				// NOTE: we avoid ConcurrentModificationException
+				// avoid ConcurrentModificationException
 				String[] keys = new String[options.length()];
 				int i = 0;
 				for (Iterator<String> it = options.keys(); it.hasNext();) {
@@ -187,14 +190,12 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 				for (String key : keys) {
 					invoke("set" + cap1stChar(key), options);
 				}
-				return true;
 			}
-
 		} else if (action != null && action.length() > 0) {
 			invoke("do" + cap1stChar(action), message);
-			return true;
+		} else {
+			sendErrorResponse(message, DTalkException.INVALID_REQUEST, "Invalid request");
 		}
-		return false;
 	}
 
 	/*
@@ -206,8 +207,12 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 		try {
 			Method m = getClass().getMethod(method, JSONObject.class);
 			m.invoke(this, message);
+		} catch (NoSuchMethodException e) {
+			LOG.e(TAG, e.getMessage());
+			sendErrorResponse(message, DTalkException.METHOD_NOT_FOUND, "No such action");
 		} catch (Exception e) {
-			LOG.e(getName(), e.getMessage(), e);
+			LOG.e(TAG, e.getMessage());
+			sendErrorResponse(message, DTalkException.INTERNAL_ERROR, e.getMessage());
 		}
 	}
 
@@ -233,10 +238,10 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 			final JSONObject response = new JSONObject();
 			final String from = request.optString(DTalk.KEY_FROM, null);
 			if (from != null) {
-				response.put(MessageEvent.KEY_TO, from);
+				response.put(DTalk.KEY_TO, from);
 			}
-			response.put(MessageEvent.KEY_BODY_VERSION, "1.0");
-			response.put(MessageEvent.KEY_BODY_SERVICE, id);
+			response.put(DTalk.KEY_BODY_VERSION, "1.0");
+			response.put(DTalk.KEY_BODY_SERVICE, id);
 			return response;
 		} else {
 			return null;
@@ -263,7 +268,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 		try {
 			JSONObject response = newResponse(request);
 			if (response != null) {
-				response.put(MessageEvent.KEY_BDOY_RESULT, value);
+				response.put(DTalk.KEY_BDOY_RESULT, value);
 				sendResponse(response);
 			}
 		} catch (JSONException e) {
@@ -276,7 +281,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 		try {
 			JSONObject response = newResponse(request);
 			if (response != null) {
-				response.put(MessageEvent.KEY_BODY_ERROR, error);
+				response.put(DTalk.KEY_BODY_ERROR, error);
 				sendResponse(response);
 			}
 		} catch (JSONException e) {
@@ -320,8 +325,8 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 	 */
 	protected JSONObject newEvent(String event) throws JSONException {
 		JSONObject message = new JSONObject();
-		message.put(MessageEvent.KEY_BODY_VERSION, "1.0");
-		message.put(MessageEvent.KEY_BODY_SERVICE, mReplyName + "." + event);
+		message.put(DTalk.KEY_BODY_VERSION, "1.0");
+		message.put(DTalk.KEY_BODY_SERVICE, mReplyName + "." + event);
 		return message;
 	}
 
@@ -334,7 +339,7 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 	protected void fireEvent(String event) {
 		try {
 			JSONObject message = newEvent(event);
-			MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
+			MessageBus.sendMessage(message.optString(DTalk.KEY_BODY_SERVICE), message);
 		} catch (JSONException e) {
 			LOG.e(getName(), e.getMessage());
 		}
@@ -351,8 +356,8 @@ public abstract class FdService implements MessageBusListener<JSONObject> {
 	protected void fireEvent(String event, Object params) {
 		try {
 			JSONObject message = newEvent(event);
-			message.put(MessageEvent.KEY_BODY_PARAMS, params);
-			MessageBus.sendMessage(message.optString(MessageEvent.KEY_BODY_SERVICE), message);
+			message.put(DTalk.KEY_BODY_PARAMS, params);
+			MessageBus.sendMessage(message.optString(DTalk.KEY_BODY_SERVICE), message);
 		} catch (JSONException e) {
 			LOG.e(getName(), e.getMessage());
 		}
