@@ -30,7 +30,6 @@ import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.DTalkChannelClosedEvent;
 import freddo.dtalk.events.IncomingMessageEvent;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.events.OutgoingMessageEvent;
 import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
@@ -305,6 +304,10 @@ public final class DTalkDispatcher {
 		}
 
 		if (conn == null) {
+			// Connecting as a client.
+			//
+			//
+			
 			// Get service info or recipient by name (recipient)
 			// We use direct access to the service map in service discovery instance.
 			try {
@@ -341,13 +344,13 @@ public final class DTalkDispatcher {
 		final String to = message.getTo();
 		if (service != null) {
 			if (service.startsWith("$")) {
-				if (to.startsWith("x-dtalk-") && !jsonMsg.has(MessageEvent.KEY_FROM)) {
-					jsonMsg.put(MessageEvent.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
+				if (to.startsWith("x-dtalk-") && !jsonMsg.has(DTalk.KEY_FROM)) {
+					jsonMsg.put(DTalk.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
 				}
-			} else if (!jsonMsg.has(MessageEvent.KEY_FROM)) {
+			} else if (!jsonMsg.has(DTalk.KEY_FROM)) {
 				LOG.i(TAG, "--------------------------------------- 1");
 				try {
-					jsonMsg.put(MessageEvent.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
+					jsonMsg.put(DTalk.KEY_FROM, DTalkService.getInstance().getLocalServiceInfo().getServiceName());
 				} catch (Throwable e) {
 					e.printStackTrace();
 					return;
@@ -355,7 +358,7 @@ public final class DTalkDispatcher {
 				LOG.i(TAG, "--------------------------------------- 2");
 			}
 		}
-		jsonMsg.put(MessageEvent.KEY_TO, to);
+		jsonMsg.put(DTalk.KEY_TO, to);
 
 		LOG.d(TAG, "Message: %s", jsonMsg.toString());
 		conn.sendMessage(jsonMsg, new AsyncCallback<Boolean>() {

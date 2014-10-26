@@ -38,7 +38,6 @@ import com.arkasoft.freddo.messagebus.MessageBus;
 import freddo.dtalk.DTalk;
 import freddo.dtalk.DTalkService;
 import freddo.dtalk.events.IncomingMessageEvent;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.AsyncCallback;
 import freddo.dtalk.util.LOG;
 
@@ -128,8 +127,8 @@ public class DTalkServerEndpoint implements DTalkConnection {
 			String service = jsonMsg.optString(DTalk.KEY_BODY_SERVICE, null);
 
 			// clean up message
-			jsonMsg.remove(MessageEvent.KEY_FROM);
-			jsonMsg.remove(MessageEvent.KEY_TO);
+			jsonMsg.remove(DTalk.KEY_FROM);
+			jsonMsg.remove(DTalk.KEY_TO);
 
 			JSONObject jsonBody = jsonMsg;
 
@@ -137,8 +136,8 @@ public class DTalkServerEndpoint implements DTalkConnection {
 				LOG.w(TAG, "Invalid Message");
 				JSONObject _jsonBody = jsonBody;
 				jsonBody = new JSONObject();
-				jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
-				jsonBody.put(MessageEvent.KEY_BODY_PARAMS, _jsonBody);
+				jsonBody.put(DTalk.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
+				jsonBody.put(DTalk.KEY_BODY_PARAMS, _jsonBody);
 			}
 
 			//

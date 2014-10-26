@@ -24,6 +24,7 @@ public abstract class FdBluetooth extends FdService {
 	}
 
 	/**
+	 * Obtain a list of devices using using device discovery.
 	 * 
 	 * @param request
 	 */
@@ -72,6 +73,7 @@ public abstract class FdBluetooth extends FdService {
 	protected abstract JSONArray getBondedDevices() throws DTalkException;
 
 	/**
+	 * Query the power state of the Bluetooth device.
 	 * 
 	 * @param request
 	 */

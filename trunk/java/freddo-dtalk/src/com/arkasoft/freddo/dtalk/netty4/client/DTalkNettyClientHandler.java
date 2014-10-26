@@ -15,8 +15,8 @@
  */
 package com.arkasoft.freddo.dtalk.netty4.client;
 
+import freddo.dtalk.DTalk;
 import freddo.dtalk.events.IncomingMessageEvent;
-import freddo.dtalk.events.MessageEvent;
 import freddo.dtalk.util.LOG;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -97,19 +97,19 @@ public class DTalkNettyClientHandler extends SimpleChannelInboundHandler<Object>
 
 //        String localServiceName = DTalkService.getInstance().getLocalServiceInfo().getName();
 //
-//        String to = jsonMsg.optString(MessageEvent.KEY_TO, null);
-        String from = jsonMsg.optString(MessageEvent.KEY_FROM, null);
-        // String body = jsonMsg.optString(MessageEvent.KEY_BODY, null);
+//        String to = jsonMsg.optString(DTalk.KEY_TO, null);
+        String from = jsonMsg.optString(DTalk.KEY_FROM, null);
+        // String body = jsonMsg.optString(DTalk.KEY_BODY, null);
 
         // if (body != null) {
 
         JSONObject jsonBody = jsonMsg; // new JSONObject(body);
 
-        if (!jsonBody.has(MessageEvent.KEY_BODY_SERVICE)) {
+        if (!jsonBody.has(DTalk.KEY_BODY_SERVICE)) {
           JSONObject _jsonBody = jsonBody;
           jsonBody = new JSONObject();
-          jsonBody.put(MessageEvent.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
-          jsonBody.put(MessageEvent.KEY_BODY_PARAMS, _jsonBody);
+          jsonBody.put(DTalk.KEY_BODY_SERVICE, "dtalk.InvalidMessage");
+          jsonBody.put(DTalk.KEY_BODY_PARAMS, _jsonBody);
         }
 
         //

@@ -175,7 +175,7 @@ public class DTalkService implements Runnable {
 	private final Configuration mConfiguration;
 
 	/** The embedded WebSocket server to use. */
-	private final DTalkServer mDTalkServer;
+	private DTalkServer mDTalkServer;
 	
 	/** The discovery service to use. */
 	private final DTalkDiscovery mServiceDiscovery;
@@ -196,15 +196,6 @@ public class DTalkService implements Runnable {
 
 		// Store configuration object.
 		mConfiguration = configuration;
-
-		// Create DTalkServer.
-		if (!mConfiguration.isHosted()) {
-			NettyConfig nettyConfig = new NettyConfig(mConfiguration.getSocketAddress());
-			DTalkNettyServerInitializer initializer = new DTalkNettyServerInitializer();
-			mDTalkServer = new DTalkNettyServerImpl(nettyConfig, initializer);
-		} else {
-			mDTalkServer = null;
-		}
 
 		// Create DTalkDiscoveryService.
 		mServiceDiscovery = mConfiguration.runServiceDiscovery() ? new DTalkDiscovery() : null;
@@ -256,6 +247,15 @@ public class DTalkService implements Runnable {
 			// We subscribe anyway, its simpler (no configuration check).
 			LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
 			MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
+			
+			// Create DTalkServer.
+			if (!mConfiguration.isHosted()) {
+				NettyConfig nettyConfig = new NettyConfig(mConfiguration.getSocketAddress());
+				DTalkNettyServerInitializer initializer = new DTalkNettyServerInitializer();
+				mDTalkServer = new DTalkNettyServerImpl(nettyConfig, initializer);
+			} else {
+				mDTalkServer = null;
+			}
 
 			// Start DTalkServer...
 			if (mDTalkServer != null) {
@@ -325,8 +325,8 @@ public class DTalkService implements Runnable {
 			}
 			
 			// Shutdown executor service.
-			ExecutorService threadPool = DTalkService.getInstance().getConfiguration().getThreadPool();
-			shutdownAndWaitTermination(threadPool, 3333L);
+//			ExecutorService threadPool = DTalkService.getInstance().getConfiguration().getThreadPool();
+//			shutdownAndWaitTermination(threadPool, 3333L);
 
 			// Just print a message.
 			LOG.i(TAG, "DTalkService stopped.");
