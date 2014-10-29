@@ -1,5 +1,5 @@
 /*******************************************************************************
- * dtalk.js
+ * dtalk.js (0.9.4)
  * 
  * Reference implementation of DTalk client, as specified by DTalk
  * specification.
@@ -15,19 +15,16 @@
  * language governing permissions and limitations under the License.
  * 
  ******************************************************************************/
-
-/*******************************************************************************
- * VERSION: 0.9.3
- * 
- *  - Added: DTalk.subscribe() & DTalk.unsubscribe()
- *  - WebPresence support added
- *  - Use always DTalk.connect(); by default this connects to the given 'ws' url
- *    parameter.
- * 
- ******************************************************************************/
 (function() {
 		
 	window.DTalk = {
+
+		INVALID_JSON: -32700,
+		INVALID_REQUEST: -32600,
+		METHOD_NOT_FOUND: -32601,
+		INVALID_PARAMS: -32602,
+		INTERNAL_ERROR: -32603,
+		REQUEST_TIMEOUT: -32699,
 
 		/**
 		 * Debug flag; set to 'false' in production environment.
@@ -310,7 +307,8 @@
 				message.id = DTalk.createUniqueId(message.service);
 			}
 
-			var timerH, target = ('to' in message) ? message.to : null;
+			var timerH
+			  , target = ('to' in message) ? message.to : null;
 
 			var eventH = function(event) {
 				try {
@@ -325,25 +323,20 @@
 				}
 			};
 
+			// TODO usually replies are direct, maybe we should not 
+			// involve message dispatcher.
 			DTalk.addEventListener(message.id, eventH, true, target);
 
 			timerH = setTimeout(function() {
 
-				/*
-				DTalk.removeEventListener(message.id, eventH, true, target);
-				
-				var event = DTalk._newDOMEvent(message.id, {
-					dtalk : "1.0",
-					service : message.id,
-					error : "timeout"
-				});
-				callback.call(this, event);
-				*/
-				
+				// FIXME Timeout has to be an object
 				DTalk.publish(message.id, {
-					dtalk : "1.0",
-					service : message.id,
-					error : "timeout"
+					dtalk: "1.0",
+					service: message.id,
+					error: {
+						code: DTalk.REQUEST_TIMEOUT,
+						message: "Timeout"
+					}
 				});
 				
 			}, timeout || 33333);
