@@ -17,6 +17,7 @@ package freddo.dtalk;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,11 @@ import com.arkasoft.freddo.dtalk.DTalkConnectionRegistry;
 import com.arkasoft.freddo.dtalk.DTalkDiscovery;
 import com.arkasoft.freddo.dtalk.DTalkDispatcher;
 import com.arkasoft.freddo.dtalk.DTalkServer;
+
+//
+// TODO split this file so that in a JavaEE environment we don't need netty...
+//
+
 import com.arkasoft.freddo.dtalk.netty4.server.DTalkNettyServerImpl;
 import com.arkasoft.freddo.dtalk.netty4.server.DTalkNettyServerInitializer;
 import com.arkasoft.freddo.dtalk.netty4.server.NettyConfig;
@@ -41,7 +47,7 @@ import freddo.dtalk.zeroconf.ZConfManager;
 import freddo.dtalk.zeroconf.ZConfRegistrationListener;
 import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
-public class DTalkService implements Runnable {
+public class DTalkService {
 	private static final String TAG = LOG.tag(DTalkService.class);
 
 	public static final String LOCAL_CHANNEL_PREFIX = "dtalk-";
@@ -176,7 +182,7 @@ public class DTalkService implements Runnable {
 
 	/** The embedded WebSocket server to use. */
 	private DTalkServer mDTalkServer;
-	
+
 	/** The discovery service to use. */
 	private final DTalkDiscovery mServiceDiscovery;
 
@@ -228,61 +234,61 @@ public class DTalkService implements Runnable {
 	public void startup() {
 		LOG.v(TAG, ">>> startup");
 
-		mConfiguration.getThreadPool().execute(this);
-	}
+		mConfiguration.getThreadPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				synchronized (DTalkService.this) {
+					LOG.d(TAG, "Starting...");
 
-	@Override
-	public void run() {
-		LOG.v(TAG, ">>> run");
+					if (mStarted) {
+						LOG.w(TAG, "DTalkService already started.");
+						return;
+					}
 
-		synchronized (this) {
-			if (mStarted) {
-				LOG.w(TAG, "DTalkService already started.");
-				return;
-			}
-			
-			// Update state.
-			mStarted = true;
+					// Update state.
+					mStarted = true;
 
-			// We subscribe anyway, its simpler (no configuration check).
-			LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
-			MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
-			
-			// Create DTalkServer.
-			if (!mConfiguration.isHosted()) {
-				NettyConfig nettyConfig = new NettyConfig(mConfiguration.getSocketAddress());
-				DTalkNettyServerInitializer initializer = new DTalkNettyServerInitializer();
-				mDTalkServer = new DTalkNettyServerImpl(nettyConfig, initializer);
-			} else {
-				mDTalkServer = null;
-			}
+					// We subscribe anyway, its simpler (no configuration check).
+					LOG.d(TAG, "Subscribe for: %s", WebPresenceEvent.class.getName());
+					MessageBus.subscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
 
-			// Start DTalkServer...
-			if (mDTalkServer != null) {
-				try {
-					mDTalkServer.startServer();
-				} catch (Exception e) {
-					LOG.e(TAG, "Failed to start DTalkServer: %s.", e.getMessage(), e);
+					// Create DTalkServer.
+					if (!mConfiguration.isHosted()) {
+						NettyConfig nettyConfig = new NettyConfig(mConfiguration.getSocketAddress());
+						DTalkNettyServerInitializer initializer = new DTalkNettyServerInitializer();
+						mDTalkServer = new DTalkNettyServerImpl(nettyConfig, initializer);
+					} else {
+						mDTalkServer = null;
+					}
 
-					// Just shutdown...
-					shutdown();
+					// Start DTalkServer...
+					if (mDTalkServer != null) {
+						try {
+							mDTalkServer.startServer();
+						} catch (Exception e) {
+							LOG.e(TAG, "Failed to start DTalkServer: %s.", e.getMessage(), e);
 
-					// and return.
-					return;
+							// Just shutdown...
+							shutdown();
+
+							// and return.
+							return;
+						}
+					}
+
+					// Publish DTalkService...
+					publishService();
+
+					// Start service discovery...
+					if (mServiceDiscovery != null) {
+						mServiceDiscovery.startup();
+					}
+
+					// Just print a message.
+					LOG.i(TAG, "DTalkService started.");
 				}
 			}
-
-			// Publish DTalkService...
-			publishService();
-
-			// Start service discovery...
-			if (mServiceDiscovery != null) {
-				mServiceDiscovery.startup();
-			}
-
-			// Just print a message.
-			LOG.i(TAG, "DTalkService started.");
-		}
+		});
 	}
 
 	/**
@@ -291,46 +297,54 @@ public class DTalkService implements Runnable {
 	public void shutdown() {
 		LOG.v(TAG, ">>> shutdown");
 
-		synchronized (this) {
-			if (!mStarted) {
-				LOG.w(TAG, "DTalkService not started.");
-				return;
-			}
+		mConfiguration.getThreadPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				synchronized (this) {
+					LOG.d(TAG, "Shutting down...");
 
-			// Update state.
-			mStarted = false;
+					if (!mStarted) {
+						LOG.w(TAG, "DTalkService not started.");
+						return;
+					}
 
-			// We unsubscribe from web presence events (see startup code).
-			LOG.d(TAG, "Unsubscribe from: %s", WebPresenceEvent.class.getName());
-			MessageBus.unsubscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
+					// Update state.
+					mStarted = false;
 
-			// Shutdown service discovery...
-			if (mServiceDiscovery != null) {
-				mServiceDiscovery.shutdown();
-			}
+					// Unsubscribe from web presence events (see startup code).
+					LOG.d(TAG, "Unsubscribe from: %s", WebPresenceEvent.class.getName());
+					MessageBus.unsubscribe(WebPresenceEvent.class.getName(), mWebPresenceEventListener);
 
-			// Close client connections...
-			DTalkConnectionRegistry.getInstance().reset();
+					// Shutdown service discovery...
+					if (mServiceDiscovery != null) {
+						mServiceDiscovery.shutdown();
+					}
 
-			// Unpublish DTalkService...
-			unpublishService();
+					// Close client connections...
+					DTalkConnectionRegistry.getInstance().reset();
 
-			// Stop WebSocket server...
-			if (mDTalkServer != null) {
-				try {
-					mDTalkServer.stopServer();
-				} catch (Exception e) {
-					LOG.e(TAG, e.getMessage());
+					// Unpublish DTalkService...
+					unpublishService();
+
+					// Stop WebSocket server...
+					if (mDTalkServer != null) {
+						try {
+							mDTalkServer.stopServer();
+						} catch (Exception e) {
+							LOG.e(TAG, e.getMessage());
+						}
+					}
+
+					// Shutdown executor service.
+					// ExecutorService threadPool =
+					// DTalkService.getInstance().getConfiguration().getThreadPool();
+					// shutdownAndWaitTermination(threadPool, 3333L);
+
+					// Just print a message.
+					LOG.i(TAG, "DTalkService stopped.");
 				}
 			}
-			
-			// Shutdown executor service.
-//			ExecutorService threadPool = DTalkService.getInstance().getConfiguration().getThreadPool();
-//			shutdownAndWaitTermination(threadPool, 3333L);
-
-			// Just print a message.
-			LOG.i(TAG, "DTalkService stopped.");
-		}
+		});
 	}
 
 	/**
@@ -380,7 +394,7 @@ public class DTalkService implements Runnable {
 	}
 
 	// NOTE: must be called from inside synchronized(this) {..} block
-	private synchronized void updateServiceInfo(ZConfServiceInfo serviceInfo) {
+	private void updateServiceInfo(ZConfServiceInfo serviceInfo) {
 		LOG.v(TAG, ">>> updateServiceInfo: %s", serviceInfo);
 
 		final ExecutorService threadPool = mConfiguration.getThreadPool();
@@ -396,12 +410,12 @@ public class DTalkService implements Runnable {
 			}
 
 			// Disable WebPresence...
-			// threadPool.execute(new Runnable() {
-			// @Override
-			// public void run() {
-			enableWebPresence(false);
-			// }
-			// });
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					enableWebPresence(false);
+				}
+			});
 		}
 
 		mZConfServiceInfo = serviceInfo;
@@ -417,12 +431,12 @@ public class DTalkService implements Runnable {
 			}
 
 			// Enable/disable WebPresence...
-			// threadPool.execute(new Runnable() {
-			// @Override
-			// public void run() {
-			enableWebPresence(mConfiguration.isWebPresenceEnabled());
-			// }
-			// });
+			threadPool.execute(new Runnable() {
+				@Override
+				public void run() {
+					enableWebPresence(mConfiguration.isWebPresenceEnabled());
+				}
+			});
 		}
 	}
 
@@ -460,10 +474,7 @@ public class DTalkService implements Runnable {
 				if (webPresenceURI == null || webPresenceURI.trim().length() == 0) {
 					return;
 				}
-				// getWebPresenceService().publish(new URI(webPresenceURI),
-				// mConfiguration.getJmDNS(), getLocalServiceInfo());
-				// TODO getWebPresenceService().publish(new URI(webPresenceURI),
-				// mConfiguration.getNsdManager(), getLocalServiceInfo());
+				getWebPresenceService().publish(new URI(webPresenceURI), getLocalServiceInfo());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -541,7 +552,7 @@ public class DTalkService implements Runnable {
 		sb.append(resource.getAbsolutePath());
 		return sb.toString();
 	}
-	
+
 	/**
 	 * Shuts down an ExecutorService in two phases, first by calling shutdown to
 	 * reject incoming tasks, and then calling shutdownNow, if necessary, to

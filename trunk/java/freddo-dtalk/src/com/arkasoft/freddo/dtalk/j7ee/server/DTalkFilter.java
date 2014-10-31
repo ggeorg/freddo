@@ -31,52 +31,55 @@ import javax.servlet.http.HttpSession;
 
 import freddo.dtalk.util.LOG;
 
+/**
+ * {@code DTalkFilter} helper class that adds e.g.: {@code dtalk-remote-address}
+ * information to the request parameter map.
+ */
 public class DTalkFilter implements Filter {
-  private static final String TAG = LOG.tag(DTalkFilter.class);
-  
-  public static final String DTALK_REMOTE_ADDRESS_KEY = "dtalk-remote-address";
+	private static final String TAG = LOG.tag(DTalkFilter.class);
 
-  private FilterConfig filterConfig = null;
+	public static final String DTALK_REMOTE_ADDRESS_KEY = "dtalk-remote-address";
 
-  @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
-    LOG.v(TAG, ">>> init: %s", filterConfig);
-    this.filterConfig = filterConfig;
-  }
+	private FilterConfig filterConfig = null;
 
-  @Override
-  public void destroy() {
-    LOG.v(TAG, ">>> destroy");
-    filterConfig = null;
-  }
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+		LOG.v(TAG, ">>> init: %s", filterConfig);
+		this.filterConfig = filterConfig;
+	}
 
-  @Override
-  public void doFilter(final ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-    LOG.v(TAG, ">>> doFilter: %s", ((HttpServletRequest) request).getRequestURI());
-    
-    if (filterConfig == null) {
-      return;
-    }
-    
-    // Create HttpSession if not already done so.
-    HttpSession session = ((HttpServletRequest) request).getSession();
-    LOG.d(TAG, "HTTPSession ID: %s", session.getId());
+	@Override
+	public void destroy() {
+		LOG.v(TAG, ">>> destroy");
+		filterConfig = null;
+	}
 
-    // For each request replace the default HttpServletRequest with a custom
-    // one that adds the remote address into the request parameters.
-    chain.doFilter(new HttpServletRequestWrapper((HttpServletRequest) request) {
-      private Map<String, String[]> requestParams = null;
+	@Override
+	public void doFilter(final ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		LOG.v(TAG, ">>> doFilter: %s", ((HttpServletRequest) request).getRequestURI());
 
-      public Map<String, String[]> getParameterMap() {
-        if (requestParams == null) {
-          requestParams = new ConcurrentHashMap<String, String[]>(super.getParameterMap());
-          requestParams.put(DTALK_REMOTE_ADDRESS_KEY, new String[] {getRemoteAddr()});
-          // map.put("dtalk-remote-host", new String[] {getRemoteHost()});
-        }
-        return requestParams;
-      }
+		if (filterConfig == null) {
+			return;
+		}
 
-    }, response);
-  }
+		// Create HttpSession if not already done so.
+		HttpSession session = ((HttpServletRequest) request).getSession();
+		LOG.d(TAG, "HTTPSession ID: %s", session.getId());
+
+		// For each request replace the default HttpServletRequest with a custom
+		// one that adds the remote address into the request parameters.
+		chain.doFilter(new HttpServletRequestWrapper((HttpServletRequest) request) {
+			private Map<String, String[]> requestParams = null;
+
+			public Map<String, String[]> getParameterMap() {
+				if (requestParams == null) {
+					requestParams = new ConcurrentHashMap<String, String[]>(super.getParameterMap());
+					requestParams.put(DTALK_REMOTE_ADDRESS_KEY, new String[] { getRemoteAddr() });
+				}
+				return requestParams;
+			}
+
+		}, response);
+	}
 
 }

@@ -410,7 +410,15 @@ public class DTalkNettyServerHandler extends SimpleChannelInboundHandler<Object>
 	}
 
 	protected static HttpRequestHandler getRequestHandler(String uri) {
-		return (sRequestHandlers != null) ? sRequestHandlers.get(uri) : null;
+		HttpRequestHandler requestHandler = (sRequestHandlers != null) ? sRequestHandlers.get(uri) : null;
+		if (requestHandler == null && sRequestHandlers != null) {
+			for (String key : sRequestHandlers.keySet()) {
+				if (uri.startsWith(key)) {
+					requestHandler = sRequestHandlers.get(key);
+				}
+			}
+		}
+		return requestHandler;
 	}
 
 }

@@ -21,6 +21,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.arkasoft.freddo.messagebus.MessageBus;
 import com.arkasoft.freddo.messagebus.MessageBusListener;
 
 import freddo.dtalk.DTalkService;
@@ -32,18 +33,22 @@ import freddo.dtalk.zeroconf.ZConfManager;
 public abstract class DTalkContextListener implements ServletContextListener, DTalkServiceContext {
 	private static final String TAG = LOG.tag(DTalkContextListener.class);
 
-	// private final Map<String, DTalkConnectionImpl> mConnections = new
-	// ConcurrentHashMap<String, DTalkConnectionImpl>();
+	public static final String CONFIG_DTALK_PORT = "dtalksrv.port";
+	public static final String CONFIG_REMOTE_ADDR_POLICY = "dtalk.remoteAddr.policy";
 
 	/** DTalkConnectionEvent listener. */
 	private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
 		@Override
 		public void messageSent(String topic, DTalkConnectionEvent message) {
-			DTalkServerEndpoint conn = message.getConnection();
-			if (message.isOpen()) {
-				onConnectionOpen(conn);
-			} else {
-				onConnectionClose(conn);
+			try {
+				DTalkServerEndpoint conn = message.getConnection();
+				if (message.isOpen()) {
+					onConnectionOpen(conn);
+				} else {
+					onConnectionClose(conn);
+				}
+			} catch (Throwable t) {
+				LOG.e(TAG, "Uncaughted exception: %s", t.getMessage(), t);
 			}
 		}
 	};
@@ -60,19 +65,10 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 	public void contextInitialized(ServletContextEvent sce) {
 		LOG.v(TAG, ">>> contextInitialized");
 
-		//
-		// TODO read configuration settings
-		//
-
 		DTalkService.init(getConfiguration(sce));
 		DTalkService.getInstance().startup();
 
-		// MessageBus.subscribe(DTalkConnectionEvent.class.getName(),
-		// dtalkConnectionEL);
-		// MessageBus.subscribe(OutgoingMessageEvent.class.getName(),
-		// outgoingEventListener);
-		// MessageBus.subscribe(IncomingMessageEvent.class.getName(),
-		// incomingEventListener);
+		MessageBus.subscribe(DTalkConnectionEvent.class.getName(), dtalkConnectionEL);
 	}
 
 	@Override
@@ -82,7 +78,7 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 		// Shutdown DTalkService
 		DTalkService.getInstance().shutdown();
 	}
-	
+
 	@Override
 	public void runOnUiThread(Runnable r) {
 		r.run();
@@ -129,7 +125,7 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 
 			@Override
 			public int getPort() {
-				return Integer.parseInt((String) ctx.getInitParameter("dtalksrv.port"));
+				return Integer.parseInt((String) ctx.getInitParameter(CONFIG_DTALK_PORT));
 			}
 		};
 	}

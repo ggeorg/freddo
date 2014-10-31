@@ -38,16 +38,15 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.util.CharsetUtil;
 
 import java.net.URI;
-import java.util.Enumeration;
+import java.util.Set;
 
 import org.json.JSONObject;
 
-import com.arkasoft.freddo.jmdns.JmDNS;
-import com.arkasoft.freddo.jmdns.ServiceInfo;
 import com.arkasoft.freddo.messagebus.MessageBus;
 
 import freddo.dtalk.DTalk;
@@ -58,161 +57,167 @@ import freddo.dtalk.util.LOG;
 import freddo.dtalk.zeroconf.ZConfServiceInfo;
 
 public class WebPresenceService {
-  private static final String TAG = LOG.tag(WebPresenceService.class);
+	private static final String TAG = LOG.tag(WebPresenceService.class);
 
-  private static EventLoopGroup group = null;
+	private static EventLoopGroup group = null;
 
-  private Channel ch = null;
+	private Channel ch = null;
 
-  public void publish(URI uri, JmDNS jmdns, ZConfServiceInfo serviceInfo) {
-    LOG.v(TAG, ">>> publishService: %s", serviceInfo);
-    LOG.v(TAG, ">>> publishService: %s", uri);
+	public void publish(URI uri, ZConfServiceInfo serviceInfo) {
+		LOG.v(TAG, ">>> publishService: %s", serviceInfo);
+		LOG.v(TAG, ">>> publishService: %s", uri);
 
-    if (group == null) {
-      group = new NioEventLoopGroup();
-    }
+		if (group == null) {
+			group = new NioEventLoopGroup();
+		}
 
-    try {
-      Bootstrap b = new Bootstrap();
-      String protocol = uri.getScheme();
-      if (!"ws".equals(protocol)) {
-        throw new IllegalArgumentException("Unsupported protocol: " + protocol);
-      }
+		try {
+			Bootstrap b = new Bootstrap();
+			String protocol = uri.getScheme();
+			if (!"ws".equals(protocol)) {
+				throw new IllegalArgumentException("Unsupported protocol: " + protocol);
+			}
 
-      JSONObject presence = new JSONObject();
+			JSONObject presence = new JSONObject();
 
-//      Enumeration<String> pNames = serviceInfo.getPropertyNames();
-//      while (pNames.hasMoreElements()) {
-//        String property = pNames.nextElement();
-//        presence.put(property, serviceInfo.getPropertyString(property));
-//      }
-//
-//      presence.put(DTalk.KEY_NAME, serviceInfo.getName());
-//      presence.put(DTalk.KEY_SERVER, DTalkService.getAddress(serviceInfo));
-//      presence.put(DTalk.KEY_PORT, serviceInfo.getPort());
-//
-     HttpHeaders customHeaders = new DefaultHttpHeaders();
-//      customHeaders.add("presence", presence.toString());
+			Set<String> pNames = serviceInfo.getTxtRecord().keySet();
+			for (String property : pNames) {
+				presence.put(property, serviceInfo.getTxtRecordValue(property));
+			}
 
-      // We don't need this...
-      String pr = Base64.encodeBytes(presence.toString().getBytes());
-      uri = URI.create(uri.toString() + "?presence=" + pr);
+			presence.put(DTalk.KEY_NAME, serviceInfo.getServiceName());
+			presence.put(DTalk.KEY_SERVER, DTalkService.getWebSocketAddress(serviceInfo));
+			//presence.put(DTalk.KEY_PORT, serviceInfo.getPort());
 
-      final WebPresenceClientHandler handler = new WebPresenceClientHandler(uri, customHeaders);
-      b.group(group)
-          .channel(NioSocketChannel.class)
-          .handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            public void initChannel(SocketChannel ch) throws Exception {
-              ChannelPipeline pipeline = ch.pipeline();
-              pipeline.addLast("http-codec", new HttpClientCodec());
-              pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
-              pipeline.addLast("ws-handler", handler);
-            }
-          });
+			// One way to register is with custom header...
+			HttpHeaders customHeaders = new DefaultHttpHeaders();
+			customHeaders.add("presence", presence.toString());
 
-      LOG.d(TAG, "WebSocket Client connecting");
-      ch = b.connect(uri.getHost(), uri.getPort()).sync().channel();
-      handler.handshakeFuture().sync();
-    } catch (Exception e) {
-      LOG.w(TAG, "Error: %s", e.getMessage());
-      // e.printStackTrace();
+			// ... the other way is with request parameter.
+			String pr = Base64.encodeBytes(presence.toString().getBytes());
+			uri = URI.create(uri.toString() + "?presence=" + pr);
 
-      group.shutdownGracefully();
-      group = null;
+			final WebPresenceClientHandler handler = new WebPresenceClientHandler(uri, customHeaders);
+			b.group(group)
+					.channel(NioSocketChannel.class)
+					.handler(new ChannelInitializer<SocketChannel>() {
+						@Override
+						public void initChannel(SocketChannel ch) throws Exception {
+							ChannelPipeline pipeline = ch.pipeline();
+							pipeline.addLast("http-codec", new HttpClientCodec());
+							pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
+							pipeline.addLast("ws-handler", handler);
+						}
+					});
 
-      MessageBus.sendMessage(new WebPresenceEvent(false));
-    }
-  }
+			LOG.d(TAG, "WebSocket Client connecting");
+			ch = b.connect(uri.getHost(), uri.getPort()).sync().channel();
+			handler.handshakeFuture().sync();
+		} catch (Exception e) {
+			LOG.e(TAG, "Error: %s", e.getMessage());
+			if (group != null) {
+				group.shutdownGracefully();
+				group = null;
+			}
+			MessageBus.sendMessage(new WebPresenceEvent(false));
+		}
+	}
 
-  public void unpublish() {
-    LOG.d(TAG, ">>> unpublish");
-    if (ch != null) {
-      ch.close();
-      ch = null;
-    }
-  }
+	public void unpublish() {
+		LOG.d(TAG, ">>> unpublish");
+		if (ch != null) {
+			ch.close();
+			ch = null;
+		}
+	}
 
-  public class WebPresenceClientHandler extends SimpleChannelInboundHandler<Object> {
-    private final String TAG = LOG.tag(WebPresenceClientHandler.class);
+	public class WebPresenceClientHandler extends SimpleChannelInboundHandler<Object> {
+		private final String TAG = LOG.tag(WebPresenceClientHandler.class);
 
-    private final WebSocketClientHandshaker handshaker;
-    private ChannelPromise handshakeFuture;
+		private final WebSocketClientHandshaker handshaker;
+		private ChannelPromise handshakeFuture;
 
-    public WebPresenceClientHandler(URI uri, HttpHeaders customHeaders) {
-      handshaker = WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, false, customHeaders);
-    }
+		public WebPresenceClientHandler(URI uri, HttpHeaders customHeaders) {
+			handshaker = WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13, null, false, customHeaders);
+		}
 
-    public ChannelFuture handshakeFuture() {
-      return handshakeFuture;
-    }
+		public ChannelFuture handshakeFuture() {
+			return handshakeFuture;
+		}
 
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-      LOG.d(TAG, ">>> handlerAdded: %s", ctx);
+		@Override
+		public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+			LOG.d(TAG, ">>> handlerAdded: %s", ctx);
 
-      handshakeFuture = ctx.newPromise();
-    }
+			handshakeFuture = ctx.newPromise();
+		}
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-      LOG.d(TAG, ">>> channelActive: %s", ctx);
+		@Override
+		public void channelActive(ChannelHandlerContext ctx) throws Exception {
+			LOG.d(TAG, ">>> channelActive: %s", ctx);
 
-      handshaker.handshake(ctx.channel());
+			handshaker.handshake(ctx.channel());
 
-      // Notify listeners that the WebPresence connection is open.
-      MessageBus.sendMessage(new WebPresenceEvent(true));
-    }
+			// Notify listeners that the WebPresence connection is open.
+			MessageBus.sendMessage(new WebPresenceEvent(true));
+		}
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-      LOG.d(TAG, ">>> channelInactive");
+		@Override
+		public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+			LOG.d(TAG, ">>> channelInactive");
 
-      // Notify listeners that the WebPresence connection is closed.
-      MessageBus.sendMessage(new WebPresenceEvent(false));
-    }
+			// Notify listeners that the WebPresence connection is closed.
+			MessageBus.sendMessage(new WebPresenceEvent(false));
+		}
 
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-      LOG.v(TAG, ">>> channelRead0: %s", msg);
+		@Override
+		public void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+			LOG.v(TAG, ">>> channelRead0: %s", msg);
 
-      Channel ch = ctx.channel();
-      if (!handshaker.isHandshakeComplete()) {
-        handshaker.finishHandshake(ch, (FullHttpResponse) msg);
-        LOG.d(TAG, "WebSocket Client connected!");
-        handshakeFuture.setSuccess();
-        return;
-      }
+			Channel ch = ctx.channel();
+			if (!handshaker.isHandshakeComplete()) {
+				
+				try {
+					handshaker.finishHandshake(ch, (FullHttpResponse) msg);
+				} catch (WebSocketHandshakeException e) {
+					handshakeFuture.setFailure(e);
+					return;
+				}
+				
+				LOG.d(TAG, "WebSocket Client connected!");
+				handshakeFuture.setSuccess();
+				return;
+			}
 
-      if (msg instanceof FullHttpResponse) {
-        FullHttpResponse response = (FullHttpResponse) msg;
-        throw new Exception("Unexpected FullHttpResponse (getStatus=" + response.getStatus() + ", content="
-            + response.content().toString(CharsetUtil.UTF_8) + ')');
-      }
+			if (msg instanceof FullHttpResponse) {
+				FullHttpResponse response = (FullHttpResponse) msg;
+				throw new Exception("Unexpected FullHttpResponse (getStatus=" + response.getStatus() + ", content="
+						+ response.content().toString(CharsetUtil.UTF_8) + ')');
+			}
 
-      WebSocketFrame frame = (WebSocketFrame) msg;
-      if (frame instanceof TextWebSocketFrame) {
-        TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
-        System.out.println("WebSocket Client received message: " + textFrame.text());
-      } else if (frame instanceof PongWebSocketFrame) {
-        LOG.d(TAG, "WebSocket Client received pong");
-      } else if (frame instanceof CloseWebSocketFrame) {
-        LOG.d(TAG, "WebSocket Client received closing");
-        ch.close();
-      }
-    }
+			WebSocketFrame frame = (WebSocketFrame) msg;
+			if (frame instanceof TextWebSocketFrame) {
+				TextWebSocketFrame textFrame = (TextWebSocketFrame) frame;
+				System.out.println("WebSocket Client received message: " + textFrame.text());
+			} else if (frame instanceof PongWebSocketFrame) {
+				LOG.d(TAG, "WebSocket Client received pong");
+			} else if (frame instanceof CloseWebSocketFrame) {
+				LOG.d(TAG, "WebSocket Client received closing");
+				ch.close();
+			}
+		}
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-      LOG.e(TAG, ">>> exceptionCaught: %s (error: %s)", ctx, cause);
-      // cause.printStackTrace();
+		@Override
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+			LOG.e(TAG, ">>> exceptionCaught: %s (error: %s)", ctx, cause);
+			// cause.printStackTrace();
 
-      if (!handshakeFuture.isDone()) {
-        handshakeFuture.setFailure(cause);
-        ctx.close();
-      }
+			if (!handshakeFuture.isDone()) {
+				handshakeFuture.setFailure(cause);
+				ctx.close();
+			}
 
-      // ctx.close();
-    }
-  }
+			// ctx.close();
+		}
+	}
 }
