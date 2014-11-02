@@ -88,10 +88,6 @@ public class DTalkServerEndpoint implements DTalkConnection {
 				}
 			}
 			LOG.v(TAG, "=================================");
-			LOG.v(TAG, "================================= %s", session.getUserPrincipal());
-			// LOG.v(TAG, "================================= %s",
-			// req.isUserInRole(arg0));
-			LOG.v(TAG, "=================================");
 		}
 
 		final String id = String.format("%s%s", DTalkService.LOCAL_CHANNEL_PREFIX, mSession.getId());
