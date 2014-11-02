@@ -31,7 +31,7 @@ import freddo.dtalk.util.LOG;
 import freddo.dtalk.zeroconf.ZConfManager;
 
 public abstract class DTalkContextListener implements ServletContextListener, DTalkServiceContext {
-	private static final String TAG = LOG.tag(DTalkContextListener.class);
+	private static final String TAG = DTalkContextListener.class.getName();
 
 	public static final String CONFIG_DTALK_PORT = "dtalksrv.port";
 	public static final String CONFIG_REMOTE_ADDR_POLICY = "dtalk.remoteAddr.policy";
@@ -40,6 +40,7 @@ public abstract class DTalkContextListener implements ServletContextListener, DT
 	private final MessageBusListener<DTalkConnectionEvent> dtalkConnectionEL = new MessageBusListener<DTalkConnectionEvent>() {
 		@Override
 		public void messageSent(String topic, DTalkConnectionEvent message) {
+			LOG.v(TAG, ">>> dtalkConnectionEL:messageSent: %s", topic);
 			try {
 				DTalkServerEndpoint conn = message.getConnection();
 				if (message.isOpen()) {
